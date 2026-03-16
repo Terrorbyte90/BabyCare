@@ -1,6 +1,8 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Home View
+
 struct HomeView: View {
     @Binding var selectedTab: Int
     @Environment(\.modelContext) private var modelContext
@@ -10,6 +12,7 @@ struct HomeView: View {
     @State private var showAddFeeding = false
     @State private var showAddJournal = false
     @State private var showAddAppointment = false
+    @State private var hasAppeared = false
 
     private var user: UserData? { userData.first }
 
@@ -19,149 +22,208 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    welcomeSection
-                    quickActionsSection
-                    if !upcomingAppointments.isEmpty {
-                        upcomingAppointmentsSection
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: DS.s6) {
+                        greetingSection
+                            .staggerAppear(index: 0)
+
+                        statusCard
+                            .staggerAppear(index: 1)
+
+                        quickActionsSection
+                            .staggerAppear(index: 2)
+
+                        if !upcomingAppointments.isEmpty {
+                            upcomingSection
+                                .staggerAppear(index: 3)
+                        }
+
+                        // Bottom padding for tab bar
+                        Color.clear.frame(height: 90)
                     }
-                    Spacer(minLength: 24)
+                    .padding(.horizontal, DS.s4)
+                    .padding(.top, DS.s2)
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
             }
-            .navigationTitle("BabyCare")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { navToolbar }
         }
-        .sheet(isPresented: $showAddFeeding) {
-            AddFeedingSheet()
-        }
-        .sheet(isPresented: $showAddJournal) {
-            AddJournalSheet()
-        }
-        .sheet(isPresented: $showAddAppointment) {
-            AddAppointmentSheet()
-        }
+        .sheet(isPresented: $showAddFeeding)     { AddFeedingSheet() }
+        .sheet(isPresented: $showAddJournal)     { AddJournalSheet() }
+        .sheet(isPresented: $showAddAppointment) { AddAppointmentSheet() }
     }
 
-    // MARK: - Sections
+    // MARK: - Greeting
 
     @ViewBuilder
-    private var welcomeSection: some View {
-        if let user {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(user.name.isEmpty ? (user.isPregnant ? "Welcome back!" : "Welcome back!") :
-                        (user.isPregnant ? "Hi, \(user.name)! 👋" : "Hi, \(user.name)! 👋"))
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+    private var greetingSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: DS.s1) {
+                Text(greetingText)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
 
-                if user.isPregnant, let dueDate = user.dueDate {
-                    PregnancyProgressCard(dueDate: dueDate)
-                } else if let birthDate = user.babyBirthDate {
-                    BabyAgeCard(birthDate: birthDate, babyName: user.babyName)
-                }
+                Text(user?.name.isEmpty == false ? user!.name : "BabyCare")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.appText)
+            }
+
+            Spacer()
+
+            // Date chip
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(Date().formatted(.dateTime.weekday(.wide)))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.appPink)
+                    .textCase(.uppercase)
+                    .tracking(0.6)
+
+                Text(Date().formatted(.dateTime.day().month(.abbreviated)))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+            }
+            .padding(.horizontal, DS.s3)
+            .padding(.vertical, DS.s2)
+            .background(Color.appSurface)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+        }
+    }
+
+    private var greetingText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 0..<5:  return "Good night"
+        case 5..<12: return "Good morning"
+        case 12..<17: return "Good afternoon"
+        default:     return "Good evening"
+        }
+    }
+
+    // MARK: - Status Card
+
+    @ViewBuilder
+    private var statusCard: some View {
+        if let user {
+            if user.isPregnant, let dueDate = user.dueDate {
+                PregnancyHeroCard(dueDate: dueDate)
+            } else if let birthDate = user.babyBirthDate {
+                BabyAgeHeroCard(birthDate: birthDate, babyName: user.babyName)
+            } else {
+                noProfileHeroCard
             }
         } else {
-            emptyStateCard
+            noProfileHeroCard
         }
     }
 
-    private var emptyStateCard: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "heart.text.square.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(.pink.gradient)
+    private var noProfileHeroCard: some View {
+        Button { selectedTab = 4 } label: {
+            GradientCard(gradient: .pinkPurple) {
+                HStack(spacing: DS.s4) {
+                    Image(systemName: "person.badge.plus")
+                        .font(.system(size: 36, weight: .medium))
+                        .foregroundStyle(.white)
 
-            Text("Welcome to BabyCare")
-                .font(.title2)
-                .fontWeight(.bold)
+                    VStack(alignment: .leading, spacing: DS.s1) {
+                        Text("Set Up Your Profile")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(.white)
+                        Text("Tap to get started with BabyCare")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.white.opacity(0.75))
+                    }
 
-            Text("Set up your profile to start tracking your pregnancy or baby's growth.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+                    Spacer()
 
-            Button {
-                selectedTab = 4
-            } label: {
-                Label("Set Up Profile", systemImage: "person.badge.plus")
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(.pink.gradient)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.6))
+                }
             }
         }
-        .padding(24)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.06), radius: 12, y: 4)
-        )
+        .buttonStyle(ScaleButtonStyle())
     }
+
+    // MARK: - Quick Actions
 
     private var quickActionsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Quick Actions")
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Quick Add")
 
-            HStack(spacing: 12) {
-                QuickActionCard(title: "Feeding", icon: "drop.fill", color: .orange) {
-                    showAddFeeding = true
-                }
-                QuickActionCard(title: "Journal", icon: "note.text", color: .blue) {
-                    showAddJournal = true
-                }
-                QuickActionCard(title: "Appointment", icon: "calendar.badge.plus", color: .green) {
-                    showAddAppointment = true
-                }
-                QuickActionCard(title: "Baby Stats", icon: "chart.line.uptrend.xyaxis", color: .purple) {
-                    selectedTab = 3
+            HStack(spacing: DS.s3) {
+                QuickActionTile(
+                    title: "Feeding",
+                    icon: "drop.fill",
+                    gradient: .orangePink
+                ) { showAddFeeding = true }
+
+                QuickActionTile(
+                    title: "Journal",
+                    icon: "note.text",
+                    gradient: .blueIndigo
+                ) { showAddJournal = true }
+
+                QuickActionTile(
+                    title: "Appointment",
+                    icon: "calendar.badge.plus",
+                    gradient: .greenTeal
+                ) { showAddAppointment = true }
+
+                QuickActionTile(
+                    title: "Baby Stats",
+                    icon: "chart.line.uptrend.xyaxis",
+                    gradient: .tealMint
+                ) { selectedTab = 2 }
+            }
+        }
+    }
+
+    // MARK: - Upcoming Appointments
+
+    private var upcomingSection: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Upcoming", action: "See All") { selectedTab = 1 }
+
+            VStack(spacing: DS.s2) {
+                ForEach(Array(upcomingAppointments.enumerated()), id: \.element.id) { idx, appt in
+                    AppointmentRow(appointment: appt)
+                        .staggerAppear(index: idx + 4)
                 }
             }
         }
     }
 
-    private var upcomingAppointmentsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Upcoming")
-                    .font(.headline)
-                Spacer()
-                Button("See All") { selectedTab = 1 }
-                    .font(.subheadline)
-                    .foregroundStyle(.pink)
-            }
+    // MARK: - Toolbar
 
-            VStack(spacing: 8) {
-                ForEach(upcomingAppointments) { appointment in
-                    AppointmentRowView(appointment: appointment)
-                }
-            }
+    @ToolbarContentBuilder
+    private var navToolbar: some ToolbarContent {
+        ToolbarItem(placement: .principal) {
+            Image(systemName: "heart.fill")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(LinearGradient.pinkPurple)
         }
     }
 }
 
-// MARK: - Pregnancy Progress Card
+// MARK: - Pregnancy Hero Card
 
-struct PregnancyProgressCard: View {
+struct PregnancyHeroCard: View {
     let dueDate: Date
+    @State private var appeared = false
 
     private var weeksPregnant: Int {
-        // Conception date ≈ due date - 40 weeks
-        let conceptionDate = Calendar.current.date(byAdding: .weekOfYear, value: -40, to: dueDate) ?? dueDate
-        let weeks = Calendar.current.dateComponents([.weekOfYear], from: conceptionDate, to: Date()).weekOfYear ?? 0
-        return max(0, min(weeks, 40))
+        let start = Calendar.current.date(byAdding: .weekOfYear, value: -40, to: dueDate) ?? dueDate
+        let w = Calendar.current.dateComponents([.weekOfYear], from: start, to: Date()).weekOfYear ?? 0
+        return max(0, min(w, 40))
     }
-
     private var weeksLeft: Int { max(0, 40 - weeksPregnant) }
+    private var progress: Double { Double(weeksPregnant) / 40.0 }
 
-    private var trimesterText: String {
+    private var trimester: String {
         switch weeksPregnant {
         case 0..<13:  return "1st Trimester"
         case 13..<27: return "2nd Trimester"
@@ -170,177 +232,214 @@ struct PregnancyProgressCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Pregnancy Progress")
-                        .font(.headline)
-                    Text(trimesterText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("Week \(weeksPregnant)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.pink)
-                    Text("of 40")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+        GradientCard(gradient: .pinkPurple) {
+            HStack(spacing: DS.s5) {
+                // Circular progress ring
+                ZStack {
+                    CircularProgressRing(
+                        progress: appeared ? progress : 0,
+                        lineWidth: 8,
+                        gradient: .pinkPurple
+                    )
 
-            ProgressView(value: Double(weeksPregnant), total: 40)
-                .tint(.pink)
-                .scaleEffect(x: 1, y: 1.5, anchor: .center)
+                    VStack(spacing: 0) {
+                        Text("\(weeksPregnant)")
+                            .font(.system(size: 26, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                        Text("wks")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                }
+                .frame(width: 90, height: 90)
+                .onAppear {
+                    withAnimation(.spring(response: 1.0, dampingFraction: 0.8).delay(0.2)) {
+                        appeared = true
+                    }
+                }
 
-            HStack {
-                Label("\(weeksLeft) weeks left", systemImage: "clock")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("Pregnancy")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .textCase(.uppercase)
+                        .tracking(0.6)
+
+                    Text(trimester)
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    HStack(spacing: DS.s1) {
+                        Image(systemName: "clock.fill")
+                            .font(.system(size: 11))
+                        Text("\(weeksLeft) weeks left")
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    .foregroundStyle(.white.opacity(0.7))
+
+                    HStack(spacing: DS.s1) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 11))
+                        Text(dueDate.formatted(.dateTime.day().month(.abbreviated).year()))
+                            .font(.system(size: 12, weight: .medium))
+                    }
+                    .foregroundStyle(.white.opacity(0.55))
+                }
+
                 Spacer()
-                Label(dueDate.formatted(date: .abbreviated, time: .omitted), systemImage: "calendar")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.pink.opacity(0.08))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.pink.opacity(0.2), lineWidth: 1))
-        )
     }
 }
 
-// MARK: - Baby Age Card
+// MARK: - Baby Age Hero Card
 
-struct BabyAgeCard: View {
+struct BabyAgeHeroCard: View {
     let birthDate: Date
     let babyName: String?
 
     private var ageComponents: DateComponents {
-        Calendar.current.dateComponents([.year, .month, .weekOfYear, .day], from: birthDate, to: Date())
+        Calendar.current.dateComponents([.year, .month, .weekOfYear], from: birthDate, to: Date())
     }
 
     private var ageText: String {
         let months = (ageComponents.year ?? 0) * 12 + (ageComponents.month ?? 0)
-        if months >= 24 {
-            return "\(months / 12) years"
-        } else if months > 0 {
-            return "\(months) month\(months == 1 ? "" : "s")"
-        } else {
-            let weeks = ageComponents.weekOfYear ?? 0
-            return "\(weeks) week\(weeks == 1 ? "" : "s")"
-        }
+        if months >= 24 { return "\(months / 12)" }
+        if months > 0   { return "\(months)" }
+        return "\(ageComponents.weekOfYear ?? 0)"
+    }
+
+    private var ageUnit: String {
+        let months = (ageComponents.year ?? 0) * 12 + (ageComponents.month ?? 0)
+        if months >= 24 { let y = months / 12; return y == 1 ? "year" : "years" }
+        if months > 0   { return months == 1 ? "month" : "months" }
+        let w = ageComponents.weekOfYear ?? 0
+        return w == 1 ? "week" : "weeks"
     }
 
     var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: "figure.child")
-                .font(.system(size: 44))
-                .foregroundStyle(.blue.gradient)
-                .frame(width: 60)
+        GradientCard(gradient: .blueIndigo) {
+            HStack(spacing: DS.s5) {
+                // Age display
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.08))
+                        .frame(width: 90, height: 90)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(babyName.map { "\($0)'s Age" } ?? "Baby's Age")
-                    .font(.headline)
-                Text(ageText)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.blue)
-                Text("Born \(birthDate.formatted(date: .abbreviated, time: .omitted))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    VStack(spacing: 0) {
+                        Text(ageText)
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                        Text(ageUnit)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("Your Baby")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .textCase(.uppercase)
+                        .tracking(0.6)
+
+                    Text(babyName ?? "Baby's Age")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    HStack(spacing: DS.s1) {
+                        Image(systemName: "gift.fill")
+                            .font(.system(size: 11))
+                        Text(birthDate.formatted(.dateTime.day().month(.abbreviated).year()))
+                            .font(.system(size: 12, weight: .medium))
+                    }
+                    .foregroundStyle(.white.opacity(0.6))
+                }
+
+                Spacer()
             }
-
-            Spacer()
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.blue.opacity(0.08))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.blue.opacity(0.2), lineWidth: 1))
-        )
     }
 }
 
-// MARK: - Quick Action Card
+// MARK: - Quick Action Tile
 
-struct QuickActionCard: View {
+struct QuickActionTile: View {
     let title: String
     let icon: String
-    let color: Color
+    let gradient: LinearGradient
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: DS.s2) {
                 Image(systemName: icon)
-                    .font(.title3)
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(.white)
-                    .frame(width: 48, height: 48)
-                    .background(color.gradient)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .frame(width: 52, height: 52)
+                    .background(gradient)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
 
                 Text(title)
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: .black.opacity(0.06), radius: 8, y: 3)
-            )
+            .padding(.vertical, DS.s3)
+            .background(Color.appSurface)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ScaleButtonStyle())
     }
 }
 
-// MARK: - Appointment Row (shared)
+// MARK: - Appointment Row (shared across views)
 
-struct AppointmentRowView: View {
+struct AppointmentRow: View {
     let appointment: Appointment
 
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: appointment.type.icon)
-                .foregroundStyle(appointment.type.color)
-                .frame(width: 32, height: 32)
-                .background(appointment.type.color.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(appointment.title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Text(appointment.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Text(appointment.type.rawValue)
-                .font(.caption2)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(appointment.type.color.opacity(0.12))
-                .foregroundStyle(appointment.type.color)
-                .clipShape(Capsule())
+    private var typeGradient: LinearGradient {
+        switch appointment.type {
+        case .prenatal:    return .pinkPurple
+        case .ultrasound:  return .blueIndigo
+        case .diabetesTest: return LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .groupBStrep: return .orangePink
+        case .pediatric:   return .greenTeal
+        case .vaccination: return .tealMint
+        case .other:       return LinearGradient(colors: [.appTextSec, .appTextTert], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.04), radius: 6, y: 2)
-        )
+    }
+
+    var body: some View {
+        GlassCard {
+            HStack(spacing: DS.s3) {
+                IconBadge(icon: appointment.type.icon, gradient: typeGradient, size: 40)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(appointment.title)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+                        .lineLimit(1)
+
+                    Text(appointment.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).hour().minute()))
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Color.appTextSec)
+                }
+
+                Spacer()
+
+                Text(appointment.type.rawValue.components(separatedBy: " ").first ?? "")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(appointment.type.color)
+                    .padding(.horizontal, DS.s2)
+                    .padding(.vertical, 4)
+                    .background(appointment.type.color.opacity(0.12))
+                    .clipShape(Capsule())
+            }
+        }
     }
 }
 
@@ -351,69 +450,86 @@ struct AddFeedingSheet: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var feedingType: FeedingType = .breastfeeding
-    @State private var amount: String = ""
-    @State private var durationMinutes: String = ""
+    @State private var amount = ""
+    @State private var durationMinutes = ""
     @State private var side: FeedingSide = .left
     @State private var date = Date()
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Feeding Details") {
-                    Picker("Type", selection: $feedingType) {
-                        ForEach(FeedingType.allCases, id: \.self) { Text($0.displayName).tag($0) }
+        DSSheet(title: "Log Feeding", onSave: save) {
+            VStack(spacing: DS.s5) {
+                // Type selector
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("TYPE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        ForEach(FeedingType.allCases, id: \.self) { type in
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    feedingType = type
+                                }
+                            } label: {
+                                Text(type.displayName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(feedingType == type ? .white : Color.appTextSec)
+                                    .padding(.horizontal, DS.s3)
+                                    .padding(.vertical, DS.s2)
+                                    .background(feedingType == type ? LinearGradient.orangePink : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
+                                    .clipShape(Capsule())
+                                    .overlay(Capsule().stroke(feedingType == type ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                        }
                     }
-                    DatePicker("Time", selection: $date, displayedComponents: [.date, .hourAndMinute])
                 }
 
+                // Date
+                datePickerRow(label: "TIME", selection: $date, components: [.date, .hourAndMinute])
+
+                // Conditional fields
                 if feedingType == .breastfeeding {
-                    Section("Breastfeeding") {
-                        Picker("Side", selection: $side) {
-                            ForEach(FeedingSide.allCases, id: \.self) { Text($0.displayName).tag($0) }
-                        }
-                        .pickerStyle(.segmented)
-                        HStack {
-                            Text("Duration (min)")
-                            Spacer()
-                            TextField("0", text: $durationMinutes)
-                                .keyboardType(.numberPad)
-                                .multilineTextAlignment(.trailing)
+                    // Side
+                    VStack(alignment: .leading, spacing: DS.s2) {
+                        Text("SIDE")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color.appTextTert)
+                            .tracking(0.6)
+
+                        HStack(spacing: DS.s2) {
+                            ForEach(FeedingSide.allCases, id: \.self) { s in
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { side = s }
+                                } label: {
+                                    Text(s.displayName)
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(side == s ? .white : Color.appTextSec)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, DS.s2)
+                                        .background(side == s ? LinearGradient.orangePink : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
+                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                }
+                                .buttonStyle(ScaleButtonStyle())
+                            }
                         }
                     }
+
+                    DSTextField(title: "Duration (min)", text: $durationMinutes, keyboard: .numberPad)
                 } else if feedingType == .bottle {
-                    Section("Bottle") {
-                        HStack {
-                            Text("Amount (ml)")
-                            Spacer()
-                            TextField("0", text: $amount)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Add Feeding")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
-                        .fontWeight(.semibold)
+                    DSTextField(title: "Amount (ml)", text: $amount, keyboard: .decimalPad)
                 }
             }
         }
     }
 
     private func save() {
-        let amountValue = Double(amount)
-        let durationValue = Double(durationMinutes).map { $0 * 60 }
         let log = FeedingLog(
             date: date,
             type: feedingType,
-            amount: amountValue,
-            duration: durationValue,
+            amount: Double(amount),
+            duration: Double(durationMinutes).map { $0 * 60 },
             side: feedingType == .breastfeeding ? side : nil
         )
         modelContext.insert(log)
@@ -434,64 +550,69 @@ struct AddJournalSheet: View {
     @State private var date = Date()
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Entry") {
-                    TextField("Title", text: $title)
-                    DatePicker("Date", selection: $date, displayedComponents: .date)
-                }
+        DSSheet(title: "New Entry", onSave: save, canSave: !title.isEmpty) {
+            VStack(spacing: DS.s5) {
+                DSTextField(title: "Title", text: $title)
 
-                Section("Mood") {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(Mood.allCases, id: \.self) { mood in
-                                Button {
+                datePickerRow(label: "DATE", selection: $date, components: .date)
+
+                // Mood
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("MOOD")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        ForEach(Mood.allCases, id: \.self) { mood in
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                     selectedMood = selectedMood == mood ? nil : mood
-                                } label: {
-                                    VStack(spacing: 4) {
-                                        Text(mood.emoji).font(.title2)
-                                        Text(mood.rawValue).font(.caption2)
-                                    }
-                                    .padding(10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(selectedMood == mood ? mood.color.opacity(0.2) : Color(.systemGray6))
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(selectedMood == mood ? mood.color : Color.clear, lineWidth: 2)
-                                    )
                                 }
-                                .buttonStyle(.plain)
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Text(mood.emoji).font(.title3)
+                                    Text(mood.rawValue)
+                                        .font(.system(size: 9, weight: .medium))
+                                        .foregroundStyle(selectedMood == mood ? mood.color : Color.appTextTert)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, DS.s2)
+                                .background(selectedMood == mood ? mood.color.opacity(0.15) : Color.appSurface2)
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: DS.radiusSm)
+                                        .stroke(selectedMood == mood ? mood.color.opacity(0.5) : Color.appBorder, lineWidth: 1)
+                                )
                             }
+                            .buttonStyle(ScaleButtonStyle())
                         }
-                        .padding(.vertical, 4)
                     }
                 }
 
-                Section("Write") {
+                // Content
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("WRITE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
                     TextEditor(text: $content)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.appText)
+                        .scrollContentBackground(.hidden)
                         .frame(minHeight: 120)
-                }
-            }
-            .navigationTitle("New Journal Entry")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
-                        .fontWeight(.semibold)
-                        .disabled(title.isEmpty)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
                 }
             }
         }
     }
 
     private func save() {
-        let entry = JournalEntry(date: date, title: title, content: content, mood: selectedMood)
-        modelContext.insert(entry)
+        modelContext.insert(JournalEntry(date: date, title: title, content: content, mood: selectedMood))
         try? modelContext.save()
         dismiss()
     }
@@ -509,49 +630,131 @@ struct AddAppointmentSheet: View {
     @State private var notes = ""
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Appointment") {
-                    TextField("Title", text: $title)
-                    DatePicker("Date & Time", selection: $date, displayedComponents: [.date, .hourAndMinute])
-                    Picker("Type", selection: $type) {
-                        ForEach(AppointmentType.allCases, id: \.self) { t in
-                            Label(t.rawValue, systemImage: t.icon).tag(t)
+        DSSheet(title: "Add Appointment", onSave: save, canSave: !title.isEmpty) {
+            VStack(spacing: DS.s5) {
+                DSTextField(title: "Title", text: $title)
+
+                datePickerRow(label: "DATE & TIME", selection: $date, components: [.date, .hourAndMinute])
+
+                // Type
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("TYPE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: DS.s2) {
+                            ForEach(AppointmentType.allCases, id: \.self) { t in
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { type = t }
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: t.icon)
+                                            .font(.system(size: 12, weight: .semibold))
+                                        Text(t.rawValue)
+                                            .font(.system(size: 12, weight: .semibold))
+                                    }
+                                    .foregroundStyle(type == t ? .white : Color.appTextSec)
+                                    .padding(.horizontal, DS.s3)
+                                    .padding(.vertical, DS.s2)
+                                    .background(type == t ? t.color.gradient : Color.appSurface2.gradient)
+                                    .clipShape(Capsule())
+                                }
+                                .buttonStyle(ScaleButtonStyle())
+                            }
                         }
+                        .padding(.vertical, 2)
                     }
                 }
 
-                Section("Notes (optional)") {
+                // Notes
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("NOTES (OPTIONAL)")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
                     TextEditor(text: $notes)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.appText)
+                        .scrollContentBackground(.hidden)
                         .frame(minHeight: 80)
-                }
-            }
-            .navigationTitle("Add Appointment")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
-                        .fontWeight(.semibold)
-                        .disabled(title.isEmpty)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
                 }
             }
         }
     }
 
     private func save() {
-        let appointment = Appointment(date: date, title: title, notes: notes, type: type)
-        modelContext.insert(appointment)
+        modelContext.insert(Appointment(date: date, title: title, notes: notes, type: type))
         try? modelContext.save()
         dismiss()
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: [UserData.self, PregnancyWeek.self, Appointment.self,
-                                JournalEntry.self, BabyMeasurement.self, FeedingLog.self,
-                                SleepLog.self, DiaperLog.self], inMemory: true)
+// MARK: - DS Sheet Wrapper
+
+struct DSSheet<Content: View>: View {
+    @Environment(\.dismiss) private var dismiss
+    let title: String
+    let onSave: () -> Void
+    var canSave: Bool = true
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    content()
+                        .padding(.horizontal, DS.s4)
+                        .padding(.top, DS.s4)
+                        .padding(.bottom, DS.s12)
+                }
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundStyle(Color.appTextSec)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { onSave() }
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(canSave ? Color.appPink : Color.appTextTert)
+                        .disabled(!canSave)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// MARK: - Date Picker Row Helper
+
+private func datePickerRow(label: String, selection: Binding<Date>, components: DatePickerComponents) -> some View {
+    VStack(alignment: .leading, spacing: DS.s2) {
+        Text(label)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(Color.appTextTert)
+            .tracking(0.6)
+
+        DatePicker("", selection: selection, displayedComponents: components)
+            .datePickerStyle(.compact)
+            .labelsHidden()
+            .tint(.appPink)
+            .padding(DS.s3)
+            .background(Color.appSurface2)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
 }

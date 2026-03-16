@@ -1,39 +1,96 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Baby View (main)
+// MARK: - Baby View
 
 struct BabyView: View {
     enum Section: String, CaseIterable {
         case feeding = "Feeding"
-        case sleep = "Sleep"
-        case diaper = "Diaper"
-        case growth = "Growth"
+        case sleep   = "Sleep"
+        case diaper  = "Diaper"
+        case growth  = "Growth"
+
+        var icon: String {
+            switch self {
+            case .feeding: return "drop.fill"
+            case .sleep:   return "moon.fill"
+            case .diaper:  return "circle.fill"
+            case .growth:  return "chart.line.uptrend.xyaxis"
+            }
+        }
+
+        var gradient: LinearGradient {
+            switch self {
+            case .feeding: return .orangePink
+            case .sleep:   return .blueIndigo
+            case .diaper:  return .tealMint
+            case .growth:  return .pinkPurple
+            }
+        }
     }
 
     @State private var activeSection: Section = .feeding
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Segmented section picker
-                Picker("Section", selection: $activeSection) {
-                    ForEach(Section.allCases, id: \.self) { section in
-                        Text(section.rawValue).tag(section)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding()
+            ZStack {
+                Color.appBg.ignoresSafeArea()
 
-                // Content
-                switch activeSection {
-                case .feeding: FeedingSection()
-                case .sleep:   SleepSection()
-                case .diaper:  DiaperSection()
-                case .growth:  GrowthSection()
+                VStack(spacing: 0) {
+                    sectionPicker
+                    sectionContent
                 }
             }
             .navigationTitle("Baby Tracker")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+        }
+    }
+
+    // MARK: - Segmented Picker
+
+    private var sectionPicker: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DS.s2) {
+                ForEach(Section.allCases, id: \.self) { section in
+                    Button {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                            activeSection = section
+                        }
+                    } label: {
+                        HStack(spacing: DS.s1 + 2) {
+                            Image(systemName: section.icon)
+                                .font(.system(size: 13, weight: .semibold))
+                            Text(section.rawValue)
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(activeSection == section ? .white : Color.appTextSec)
+                        .padding(.horizontal, DS.s4)
+                        .padding(.vertical, DS.s2 + 2)
+                        .background(
+                            activeSection == section
+                                ? section.gradient
+                                : LinearGradient(colors: [Color.appSurface], startPoint: .top, endPoint: .bottom)
+                        )
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(activeSection == section ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                }
+            }
+            .padding(.horizontal, DS.s4)
+            .padding(.vertical, DS.s3)
+        }
+    }
+
+    @ViewBuilder
+    private var sectionContent: some View {
+        switch activeSection {
+        case .feeding: FeedingSection()
+        case .sleep:   SleepSection()
+        case .diaper:  DiaperSection()
+        case .growth:  GrowthSection()
         }
     }
 }
@@ -46,107 +103,95 @@ struct FeedingSection: View {
 
     @State private var showAdd = false
 
-    private var todayLogs: [FeedingLog] {
-        logs.filter { Calendar.current.isDateInToday($0.date) }
-    }
+    private var todayCount: Int { logs.filter { Calendar.current.isDateInToday($0.date) }.count }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Today summary bar
-            if !todayLogs.isEmpty {
-                todaySummary
+        ZStack(alignment: .bottomTrailing) {
+            VStack(spacing: 0) {
+                if todayCount > 0 {
+                    todayBanner(count: todayCount, label: "feeding", gradient: .orangePink)
+                }
+
+                if logs.isEmpty {
+                    DSEmptyState(
+                        icon: "drop.fill",
+                        gradient: .orangePink,
+                        title: "No Feedings Logged",
+                        subtitle: "Track breastfeeding, bottle feeding,\nand solid foods.",
+                        actionLabel: "Log Feeding"
+                    ) { showAdd = true }
+                } else {
+                    logList
+                }
             }
 
-            if logs.isEmpty {
-                emptyState(
-                    icon: "drop.fill",
-                    color: .orange,
-                    title: "No Feedings Logged",
-                    subtitle: "Track breastfeeding, bottles, and solid foods."
-                ) { showAdd = true }
-            } else {
-                logList
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { showAdd = true } label: { Image(systemName: "plus") }
-            }
+            // FAB
+            addFAB(gradient: .orangePink) { showAdd = true }
         }
         .sheet(isPresented: $showAdd) { AddFeedingSheet() }
     }
 
-    private var todaySummary: some View {
-        HStack {
-            Label("\(todayLogs.count) today", systemImage: "checkmark.circle.fill")
-                .font(.subheadline)
-                .foregroundStyle(.green)
-            Spacer()
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(Color.green.opacity(0.06))
-    }
-
     private var logList: some View {
-        List {
-            ForEach(logs) { log in
-                FeedingLogRow(log: log)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(Color.clear)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: DS.s2) {
+                ForEach(Array(logs.enumerated()), id: \.element.id) { idx, log in
+                    FeedingLogRow(log: log)
+                        .staggerAppear(index: idx)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                withAnimation { modelContext.delete(log) }
+                            } label: { Label("Delete", systemImage: "trash") }
+                        }
+                }
+                Color.clear.frame(height: 100)
             }
-            .onDelete { offsets in
-                for i in offsets { modelContext.delete(logs[i]) }
-                try? modelContext.save()
-            }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s2)
         }
-        .listStyle(.plain)
     }
 }
 
 struct FeedingLogRow: View {
     let log: FeedingLog
 
+    private var subtitle: String {
+        if let amount = log.amount { return "\(Int(amount)) ml" }
+        if let dur = log.duration {
+            let mins = Int(dur) / 60
+            return "\(mins) min" + (log.side.map { " · \($0.displayName)" } ?? "")
+        }
+        if let side = log.side { return side.displayName }
+        return "—"
+    }
+
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: log.type.icon)
-                .foregroundStyle(.orange)
-                .frame(width: 36, height: 36)
-                .background(Color.orange.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+        HStack(spacing: DS.s3) {
+            IconBadge(icon: log.type.icon, gradient: .orangePink, size: 44)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(log.type.displayName)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-
-                Group {
-                    if let amount = log.amount {
-                        Text("\(Int(amount)) ml")
-                    } else if let dur = log.duration {
-                        let mins = Int(dur) / 60
-                        Text("\(mins) min" + (log.side.map { " · \($0.displayName)" } ?? ""))
-                    } else if let side = log.side {
-                        Text(side.displayName)
-                    }
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+                Text(subtitle)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
             }
 
             Spacer()
 
-            Text(log.date.formatted(date: .omitted, time: .shortened))
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .trailing, spacing: 3) {
+                Text(log.date.formatted(.dateTime.hour().minute()))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+                Text(log.date.formatted(.dateTime.month(.abbreviated).day()))
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
+            }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
-        )
+        .padding(DS.s4)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
     }
 }
 
@@ -158,41 +203,71 @@ struct SleepSection: View {
 
     @State private var showAdd = false
 
+    private var totalTodayHours: String {
+        let todayLogs = logs.filter { Calendar.current.isDateInToday($0.startDate) }
+        let total = todayLogs.reduce(0.0) { $0 + $1.duration }
+        let h = Int(total) / 3600
+        let m = (Int(total) % 3600) / 60
+        return h > 0 ? "\(h)h \(m)m" : "\(m)m"
+    }
+
+    private var hasTodayLogs: Bool {
+        logs.contains { Calendar.current.isDateInToday($0.startDate) }
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
-            if logs.isEmpty {
-                emptyState(
-                    icon: "moon.fill",
-                    color: .indigo,
-                    title: "No Sleep Logged",
-                    subtitle: "Track your baby's sleep sessions."
-                ) { showAdd = true }
-            } else {
-                sleepList
+        ZStack(alignment: .bottomTrailing) {
+            VStack(spacing: 0) {
+                if hasTodayLogs {
+                    HStack {
+                        Image(systemName: "moon.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.appIndigo)
+                        Text("Today: \(totalTodayHours) total sleep")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.appTextSec)
+                        Spacer()
+                    }
+                    .padding(.horizontal, DS.s4)
+                    .padding(.vertical, DS.s3)
+                    .background(Color.appIndigo.opacity(0.06))
+                }
+
+                if logs.isEmpty {
+                    DSEmptyState(
+                        icon: "moon.fill",
+                        gradient: .blueIndigo,
+                        title: "No Sleep Logged",
+                        subtitle: "Track your baby's sleep sessions\nto understand their patterns.",
+                        actionLabel: "Log Sleep"
+                    ) { showAdd = true }
+                } else {
+                    sleepList
+                }
             }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { showAdd = true } label: { Image(systemName: "plus") }
-            }
+
+            addFAB(gradient: .blueIndigo) { showAdd = true }
         }
         .sheet(isPresented: $showAdd) { AddSleepSheet() }
     }
 
     private var sleepList: some View {
-        List {
-            ForEach(logs) { log in
-                SleepLogRow(log: log)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(Color.clear)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: DS.s2) {
+                ForEach(Array(logs.enumerated()), id: \.element.id) { idx, log in
+                    SleepLogRow(log: log)
+                        .staggerAppear(index: idx)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                withAnimation { modelContext.delete(log) }
+                            } label: { Label("Delete", systemImage: "trash") }
+                        }
+                }
+                Color.clear.frame(height: 100)
             }
-            .onDelete { offsets in
-                for i in offsets { modelContext.delete(logs[i]) }
-                try? modelContext.save()
-            }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s2)
         }
-        .listStyle(.plain)
     }
 }
 
@@ -200,47 +275,40 @@ struct SleepLogRow: View {
     let log: SleepLog
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "moon.fill")
-                .foregroundStyle(.indigo)
-                .frame(width: 36, height: 36)
-                .background(Color.indigo.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+        HStack(spacing: DS.s3) {
+            IconBadge(icon: "moon.fill", gradient: .blueIndigo, size: 44)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(log.durationString)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-
-                Text("\(log.startDate.formatted(date: .omitted, time: .shortened)) – \(log.endDate.formatted(date: .omitted, time: .shortened))")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+                Text("\(log.startDate.formatted(.dateTime.hour().minute())) – \(log.endDate.formatted(.dateTime.hour().minute()))")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
             }
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(log.startDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(log.startDate.formatted(.dateTime.month(.abbreviated).day()))
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
 
-                if let quality = log.quality {
-                    Text(quality.displayName)
-                        .font(.caption2)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(quality.color.opacity(0.12))
-                        .foregroundStyle(quality.color)
+                if let q = log.quality {
+                    Text(q.displayName)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(q.color)
+                        .padding(.horizontal, DS.s2)
+                        .padding(.vertical, 3)
+                        .background(q.color.opacity(0.12))
                         .clipShape(Capsule())
                 }
             }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
-        )
+        .padding(DS.s4)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
     }
 }
 
@@ -252,56 +320,50 @@ struct DiaperSection: View {
 
     @State private var showAdd = false
 
-    private var todayCount: Int {
-        logs.filter { Calendar.current.isDateInToday($0.date) }.count
-    }
+    private var todayCount: Int { logs.filter { Calendar.current.isDateInToday($0.date) }.count }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if logs.isEmpty {
-                emptyState(
-                    icon: "moon.stars.fill",
-                    color: .teal,
-                    title: "No Diaper Changes",
-                    subtitle: "Log diaper changes to track your baby's health."
-                ) { showAdd = true }
-            } else {
+        ZStack(alignment: .bottomTrailing) {
+            VStack(spacing: 0) {
                 if todayCount > 0 {
-                    HStack {
-                        Label("\(todayCount) change\(todayCount == 1 ? "" : "s") today", systemImage: "checkmark.circle.fill")
-                            .font(.subheadline)
-                            .foregroundStyle(.teal)
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.teal.opacity(0.06))
+                    todayBanner(count: todayCount, label: "change", gradient: .tealMint)
                 }
-                diaperList
+
+                if logs.isEmpty {
+                    DSEmptyState(
+                        icon: "circle.fill",
+                        gradient: .tealMint,
+                        title: "No Diaper Changes",
+                        subtitle: "Log diaper changes to track\nyour baby's health patterns.",
+                        actionLabel: "Log Change"
+                    ) { showAdd = true }
+                } else {
+                    diaperList
+                }
             }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { showAdd = true } label: { Image(systemName: "plus") }
-            }
+
+            addFAB(gradient: .tealMint) { showAdd = true }
         }
         .sheet(isPresented: $showAdd) { AddDiaperSheet() }
     }
 
     private var diaperList: some View {
-        List {
-            ForEach(logs) { log in
-                DiaperLogRow(log: log)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(Color.clear)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: DS.s2) {
+                ForEach(Array(logs.enumerated()), id: \.element.id) { idx, log in
+                    DiaperLogRow(log: log)
+                        .staggerAppear(index: idx)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                withAnimation { modelContext.delete(log) }
+                            } label: { Label("Delete", systemImage: "trash") }
+                        }
+                }
+                Color.clear.frame(height: 100)
             }
-            .onDelete { offsets in
-                for i in offsets { modelContext.delete(logs[i]) }
-                try? modelContext.save()
-            }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s2)
         }
-        .listStyle(.plain)
     }
 }
 
@@ -309,30 +371,29 @@ struct DiaperLogRow: View {
     let log: DiaperLog
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: log.type.icon)
-                .foregroundStyle(log.type.color)
-                .frame(width: 36, height: 36)
-                .background(log.type.color.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+        HStack(spacing: DS.s3) {
+            IconBadge(icon: log.type.icon, gradient: .tealMint, size: 44)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(log.type.displayName)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Text(log.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+
+                Text(log.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated)))
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
             }
 
             Spacer()
+
+            Text(log.date.formatted(.dateTime.hour().minute()))
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color.appText)
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
-        )
+        .padding(DS.s4)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
     }
 }
 
@@ -345,40 +406,43 @@ struct GrowthSection: View {
     @State private var showAdd = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            if measurements.isEmpty {
-                emptyState(
-                    icon: "chart.line.uptrend.xyaxis",
-                    color: .purple,
-                    title: "No Measurements",
-                    subtitle: "Track your baby's weight, height, and head size."
-                ) { showAdd = true }
-            } else {
-                measurementList
+        ZStack(alignment: .bottomTrailing) {
+            VStack(spacing: 0) {
+                if measurements.isEmpty {
+                    DSEmptyState(
+                        icon: "chart.line.uptrend.xyaxis",
+                        gradient: .pinkPurple,
+                        title: "No Measurements",
+                        subtitle: "Track your baby's weight, height,\nand head circumference over time.",
+                        actionLabel: "Add Measurement"
+                    ) { showAdd = true }
+                } else {
+                    measurementList
+                }
             }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { showAdd = true } label: { Image(systemName: "plus") }
-            }
+
+            addFAB(gradient: .pinkPurple) { showAdd = true }
         }
         .sheet(isPresented: $showAdd) { AddMeasurementSheet() }
     }
 
     private var measurementList: some View {
-        List {
-            ForEach(measurements) { m in
-                MeasurementRow(measurement: m)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(Color.clear)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: DS.s2) {
+                ForEach(Array(measurements.enumerated()), id: \.element.id) { idx, m in
+                    MeasurementRow(measurement: m)
+                        .staggerAppear(index: idx)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                withAnimation { modelContext.delete(m) }
+                            } label: { Label("Delete", systemImage: "trash") }
+                        }
+                }
+                Color.clear.frame(height: 100)
             }
-            .onDelete { offsets in
-                for i in offsets { modelContext.delete(measurements[i]) }
-                try? modelContext.save()
-            }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s2)
         }
-        .listStyle(.plain)
     }
 }
 
@@ -386,37 +450,41 @@ struct MeasurementRow: View {
     let measurement: BabyMeasurement
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "ruler.fill")
-                .foregroundStyle(.purple)
-                .frame(width: 36, height: 36)
-                .background(Color.purple.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(measurement.date.formatted(date: .abbreviated, time: .omitted))
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-
-                HStack(spacing: 12) {
-                    Label(String(format: "%.1f kg", measurement.weight), systemImage: "scalemass.fill")
-                    Label(String(format: "%.0f cm", measurement.height), systemImage: "ruler")
-                    if let head = measurement.headCircumference {
-                        Label(String(format: "%.0f cm", head), systemImage: "circle")
-                    }
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: DS.s3) {
+            HStack {
+                Text(measurement.date.formatted(.dateTime.weekday(.abbreviated).day().month(.wide).year()))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+                Spacer()
+                IconBadge(icon: "ruler.fill", gradient: .pinkPurple, size: 32)
             }
 
-            Spacer()
+            HStack(spacing: DS.s4) {
+                measureStat(value: String(format: "%.2f", measurement.weight), unit: "kg", icon: "scalemass.fill", color: .appPink)
+                measureStat(value: String(format: "%.0f", measurement.height), unit: "cm", icon: "ruler", color: .appBlue)
+                if let h = measurement.headCircumference {
+                    measureStat(value: String(format: "%.0f", h), unit: "cm", icon: "circle", color: .appPurple)
+                }
+            }
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
-        )
+        .padding(DS.s4)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+    }
+
+    private func measureStat(value: String, unit: String, icon: String, color: Color) -> some View {
+        HStack(spacing: DS.s1) {
+            Image(systemName: icon)
+                .font(.system(size: 11))
+                .foregroundStyle(color)
+            Text(value)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.appText)
+            Text(unit)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Color.appTextSec)
+        }
     }
 }
 
@@ -430,52 +498,81 @@ struct AddSleepSheet: View {
     @State private var endDate = Date()
     @State private var quality: SleepQuality? = nil
 
+    private var durationString: String {
+        let d = endDate.timeIntervalSince(startDate)
+        guard d > 0 else { return "—" }
+        let h = Int(d) / 3600
+        let m = (Int(d) % 3600) / 60
+        return h > 0 ? "\(h)h \(m)m" : "\(m)m"
+    }
+
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Sleep Period") {
-                    DatePicker("Start", selection: $startDate, displayedComponents: [.date, .hourAndMinute])
-                    DatePicker("End", selection: $endDate, in: startDate..., displayedComponents: [.date, .hourAndMinute])
+        DSSheet(title: "Log Sleep", onSave: save, canSave: endDate > startDate) {
+            VStack(spacing: DS.s5) {
+                datePickerRow(label: "START", selection: $startDate, components: [.date, .hourAndMinute])
+                datePickerRow(label: "END", selection: $endDate, components: [.date, .hourAndMinute])
+
+                // Duration preview
+                if endDate > startDate {
+                    HStack(spacing: DS.s3) {
+                        Image(systemName: "clock.fill")
+                            .foregroundStyle(LinearGradient.blueIndigo)
+                            .frame(width: 32)
+                        Text("Duration: \(durationString)")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.appText)
+                    }
+                    .padding(DS.s3)
+                    .background(Color.appSurface2)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
                 }
 
-                Section("Quality (optional)") {
-                    Picker("Quality", selection: $quality) {
-                        Text("None").tag(Optional<SleepQuality>.none)
+                // Quality
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("QUALITY (OPTIONAL)")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { quality = nil }
+                        } label: {
+                            Text("None")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(quality == nil ? .white : Color.appTextSec)
+                                .padding(.horizontal, DS.s3)
+                                .padding(.vertical, DS.s2)
+                                .background(quality == nil ? LinearGradient.blueIndigo : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
+                                .clipShape(Capsule())
+                        }
+                        .buttonStyle(ScaleButtonStyle())
+
                         ForEach(SleepQuality.allCases, id: \.self) { q in
-                            Text(q.displayName).tag(Optional(q))
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { quality = q }
+                            } label: {
+                                Text(q.displayName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(quality == q ? .white : Color.appTextSec)
+                                    .padding(.horizontal, DS.s3)
+                                    .padding(.vertical, DS.s2)
+                                    .background(quality == q ? q.color.gradient : Color.appSurface2.gradient)
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(ScaleButtonStyle())
                         }
                     }
-                }
-
-                let duration = endDate.timeIntervalSince(startDate)
-                if duration > 0 {
-                    Section {
-                        let mins = Int(duration) / 60
-                        let h = mins / 60
-                        let m = mins % 60
-                        Label("Duration: \(h > 0 ? "\(h)h " : "")\(m)m", systemImage: "clock")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .navigationTitle("Log Sleep")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        let log = SleepLog(startDate: startDate, endDate: endDate, quality: quality)
-                        modelContext.insert(log)
-                        try? modelContext.save()
-                        dismiss()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(endDate <= startDate)
+                    .horizontalScrollIfNeeded()
                 }
             }
         }
+    }
+
+    private func save() {
+        modelContext.insert(SleepLog(startDate: startDate, endDate: endDate, quality: quality))
+        try? modelContext.save()
+        dismiss()
     }
 }
 
@@ -489,35 +586,47 @@ struct AddDiaperSheet: View {
     @State private var date = Date()
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Diaper Change") {
-                    DatePicker("Time", selection: $date, displayedComponents: [.date, .hourAndMinute])
-                    Picker("Type", selection: $type) {
-                        ForEach(DiaperType.allCases, id: \.self) {
-                            Text($0.displayName).tag($0)
+        DSSheet(title: "Log Diaper Change", onSave: save) {
+            VStack(spacing: DS.s5) {
+                datePickerRow(label: "TIME", selection: $date, components: [.date, .hourAndMinute])
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("TYPE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        ForEach(DiaperType.allCases, id: \.self) { t in
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { type = t }
+                            } label: {
+                                VStack(spacing: DS.s1) {
+                                    Image(systemName: t.icon)
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundStyle(type == t ? .white : t.color)
+                                    Text(t.displayName)
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundStyle(type == t ? .white : Color.appTextSec)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, DS.s3)
+                                .background(type == t ? t.color.gradient : Color.appSurface2.gradient)
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(type == t ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                            }
+                            .buttonStyle(ScaleButtonStyle())
                         }
                     }
-                    .pickerStyle(.segmented)
-                }
-            }
-            .navigationTitle("Log Diaper")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        let log = DiaperLog(date: date, type: type)
-                        modelContext.insert(log)
-                        try? modelContext.save()
-                        dismiss()
-                    }
-                    .fontWeight(.semibold)
                 }
             }
         }
+    }
+
+    private func save() {
+        modelContext.insert(DiaperLog(date: date, type: type))
+        try? modelContext.save()
+        dismiss()
     }
 }
 
@@ -532,101 +641,84 @@ struct AddMeasurementSheet: View {
     @State private var height = ""
     @State private var headCirc = ""
 
-    private var canSave: Bool {
-        Double(weight) != nil && Double(height) != nil
-    }
+    private var canSave: Bool { Double(weight) != nil && Double(height) != nil }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Date") {
-                    DatePicker("Date", selection: $date, displayedComponents: .date)
-                }
-                Section("Measurements") {
-                    HStack {
-                        Text("Weight (kg)")
-                        Spacer()
-                        TextField("0.0", text: $weight)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    HStack {
-                        Text("Height (cm)")
-                        Spacer()
-                        TextField("0", text: $height)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    HStack {
-                        Text("Head Circ. (cm)")
-                        Spacer()
-                        TextField("Optional", text: $headCirc)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                }
-            }
-            .navigationTitle("Add Measurement")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        guard let w = Double(weight), let h = Double(height) else { return }
-                        let measurement = BabyMeasurement(
-                            date: date,
-                            weight: w,
-                            height: h,
-                            headCircumference: Double(headCirc)
-                        )
-                        modelContext.insert(measurement)
-                        try? modelContext.save()
-                        dismiss()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(!canSave)
-                }
+        DSSheet(title: "Add Measurement", onSave: save, canSave: canSave) {
+            VStack(spacing: DS.s5) {
+                datePickerRow(label: "DATE", selection: $date, components: .date)
+                DSTextField(title: "Weight (kg)", text: $weight, keyboard: .decimalPad, placeholder: "e.g. 3.5")
+                DSTextField(title: "Height (cm)", text: $height, keyboard: .decimalPad, placeholder: "e.g. 52")
+                DSTextField(title: "Head Circumference (cm) — Optional", text: $headCirc, keyboard: .decimalPad, placeholder: "e.g. 34")
             }
         }
+    }
+
+    private func save() {
+        guard let w = Double(weight), let h = Double(height) else { return }
+        modelContext.insert(BabyMeasurement(date: date, weight: w, height: h, headCircumference: Double(headCirc)))
+        try? modelContext.save()
+        dismiss()
     }
 }
 
-// MARK: - Shared Empty State Helper
+// MARK: - Shared Helpers
 
-private func emptyState(
-    icon: String,
-    color: Color,
-    title: String,
-    subtitle: String,
-    action: @escaping () -> Void
-) -> some View {
-    VStack(spacing: 16) {
-        Spacer()
-        Image(systemName: icon)
-            .font(.system(size: 60))
-            .foregroundStyle(color.opacity(0.6))
-        Text(title)
-            .font(.title3)
-            .fontWeight(.semibold)
-        Text(subtitle)
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal)
-        Button(action: action) {
-            Label("Add Entry", systemImage: "plus")
-                .font(.headline)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(color.gradient)
-                .foregroundStyle(.white)
-                .clipShape(Capsule())
-        }
+private func todayBanner(count: Int, label: String, gradient: LinearGradient) -> some View {
+    HStack(spacing: DS.s2) {
+        Image(systemName: "checkmark.circle.fill")
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(gradient)
+        Text("\(count) \(label)\(count == 1 ? "" : "s") today")
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(Color.appTextSec)
         Spacer()
     }
-    .padding()
+    .padding(.horizontal, DS.s4)
+    .padding(.vertical, DS.s3)
+    .background(Color.appSurface2)
+}
+
+private func addFAB(gradient: LinearGradient, action: @escaping () -> Void) -> some View {
+    Button(action: action) {
+        Image(systemName: "plus")
+            .font(.system(size: 20, weight: .bold))
+            .foregroundStyle(.white)
+            .frame(width: 56, height: 56)
+            .background(gradient)
+            .clipShape(Circle())
+            .shadow(color: .black.opacity(0.35), radius: 12, y: 6)
+    }
+    .buttonStyle(ScaleButtonStyle())
+    .padding(.trailing, DS.s5)
+    .padding(.bottom, DS.s10 + DS.s5)
+}
+
+private func datePickerRow(label: String, selection: Binding<Date>, components: DatePickerComponents) -> some View {
+    VStack(alignment: .leading, spacing: DS.s2) {
+        Text(label)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(Color.appTextTert)
+            .tracking(0.6)
+
+        DatePicker("", selection: selection, displayedComponents: components)
+            .datePickerStyle(.compact)
+            .labelsHidden()
+            .tint(.appPink)
+            .padding(DS.s3)
+            .background(Color.appSurface2)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Scroll helper extension
+
+private extension View {
+    func horizontalScrollIfNeeded() -> some View {
+        ScrollView(.horizontal, showsIndicators: false) { self }
+    }
 }
 
 #Preview {

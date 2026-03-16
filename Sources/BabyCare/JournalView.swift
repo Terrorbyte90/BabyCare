@@ -5,11 +5,11 @@ struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \JournalEntry.date, order: .reverse) private var entries: [JournalEntry]
 
-    @State private var showAddEntry = false
-    @State private var selectedEntry: JournalEntry?
+    @State private var showAdd = false
+    @State private var selected: JournalEntry?
     @State private var searchText = ""
 
-    private var filteredEntries: [JournalEntry] {
+    private var filtered: [JournalEntry] {
         guard !searchText.isEmpty else { return entries }
         return entries.filter {
             $0.title.localizedCaseInsensitiveContains(searchText) ||
@@ -19,151 +19,136 @@ struct JournalView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
                 if entries.isEmpty {
-                    emptyState
+                    DSEmptyState(
+                        icon: "book.closed.fill",
+                        gradient: .pinkPurple,
+                        title: "Your Journal Awaits",
+                        subtitle: "Capture your thoughts and feelings\nduring this special time.",
+                        actionLabel: "Write First Entry"
+                    ) { showAdd = true }
                 } else {
                     entryList
                 }
             }
             .navigationTitle("Journal")
-            .searchable(text: $searchText, prompt: "Search entries…")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        showAddEntry = true
+                        showAdd = true
                     } label: {
                         Image(systemName: "square.and.pencil")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.appPink)
                     }
                 }
             }
-            .sheet(isPresented: $showAddEntry) {
-                AddJournalSheet()
-            }
-            .sheet(item: $selectedEntry) { entry in
-                JournalEntryDetailView(entry: entry)
-            }
+            .searchable(text: $searchText, prompt: "Search entries…")
+            .sheet(isPresented: $showAdd)  { AddJournalSheet() }
+            .sheet(item: $selected) { JournalDetailSheet(entry: $0) }
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Entry List
 
     private var entryList: some View {
-        List {
-            ForEach(filteredEntries) { entry in
-                Button {
-                    selectedEntry = entry
-                } label: {
-                    JournalEntryRow(entry: entry)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: DS.s3) {
+                ForEach(Array(filtered.enumerated()), id: \.element.id) { idx, entry in
+                    Button { selected = entry } label: {
+                        JournalCard(entry: entry)
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                    .staggerAppear(index: idx)
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            withAnimation { modelContext.delete(entry) }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
-                .buttonStyle(.plain)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                .listRowBackground(Color.clear)
+                Color.clear.frame(height: 100)
             }
-            .onDelete(perform: deleteEntries)
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s3)
         }
-        .listStyle(.plain)
-    }
-
-    private var emptyState: some View {
-        VStack(spacing: 16) {
-            Spacer()
-            Image(systemName: "book.closed.fill")
-                .font(.system(size: 64))
-                .foregroundStyle(.blue.opacity(0.5))
-
-            Text("Your Journal Awaits")
-                .font(.title3)
-                .fontWeight(.semibold)
-
-            Text("Capture your thoughts, feelings, and memories during this special time.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-
-            Button {
-                showAddEntry = true
-            } label: {
-                Label("Write First Entry", systemImage: "square.and.pencil")
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(.blue.gradient)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
-            }
-            Spacer()
-        }
-        .padding()
-    }
-
-    private func deleteEntries(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(filteredEntries[index])
-        }
-        try? modelContext.save()
     }
 }
 
-// MARK: - Journal Entry Row
+// MARK: - Journal Card
 
-struct JournalEntryRow: View {
+struct JournalCard: View {
     let entry: JournalEntry
 
-    var body: some View {
-        HStack(spacing: 12) {
-            // Mood indicator
-            if let mood = entry.mood {
-                Text(mood.emoji)
-                    .font(.title2)
-                    .frame(width: 44, height: 44)
-                    .background(mood.color.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            } else {
-                Image(systemName: "book.fill")
-                    .font(.title3)
-                    .foregroundStyle(.blue)
-                    .frame(width: 44, height: 44)
-                    .background(Color.blue.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
+    private var accentGradient: LinearGradient {
+        guard let mood = entry.mood else { return .blueIndigo }
+        switch mood {
+        case .great: return .greenTeal
+        case .good:  return .tealMint
+        case .okay:  return .blueIndigo
+        case .bad:   return .orangePink
+        case .awful: return LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(entry.title)
-                    .font(.headline)
-                    .lineLimit(1)
+    var body: some View {
+        HStack(alignment: .top, spacing: 0) {
+            // Left accent bar
+            RoundedRectangle(cornerRadius: 2)
+                .fill(accentGradient)
+                .frame(width: 3)
+                .padding(.vertical, DS.s4)
+
+            VStack(alignment: .leading, spacing: DS.s2) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(entry.title)
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.appText)
+                            .lineLimit(1)
+
+                        Text(entry.date.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).year()))
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(Color.appTextSec)
+                    }
+
+                    Spacer()
+
+                    if let mood = entry.mood {
+                        Text(mood.emoji)
+                            .font(.system(size: 24))
+                    }
+                }
 
                 if !entry.content.isEmpty {
                     Text(entry.content)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.appTextSec)
                         .lineLimit(2)
+                        .lineSpacing(3)
                 }
             }
-
-            Spacer()
-
-            Text(entry.date.formatted(date: .abbreviated, time: .omitted))
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            .padding(.horizontal, DS.s4)
+            .padding(.vertical, DS.s4)
         }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
-        )
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
     }
 }
 
-// MARK: - Journal Entry Detail
+// MARK: - Journal Detail Sheet
 
-struct JournalEntryDetailView: View {
+struct JournalDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-
     let entry: JournalEntry
 
     @State private var isEditing = false
@@ -173,12 +158,45 @@ struct JournalEntryDetailView: View {
 
     var body: some View {
         NavigationStack {
-            if isEditing {
-                editForm
-            } else {
-                detailView
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                if isEditing {
+                    editForm
+                } else {
+                    detailView
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(isEditing ? "Cancel" : "Done") {
+                        if isEditing { isEditing = false } else { dismiss() }
+                    }
+                    .foregroundStyle(Color.appTextSec)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    if isEditing {
+                        Button("Save") {
+                            entry.title = editTitle
+                            entry.content = editContent
+                            entry.mood = editMood
+                            try? modelContext.save()
+                            isEditing = false
+                        }
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appPink)
+                        .disabled(editTitle.isEmpty)
+                    } else {
+                        Button("Edit") { isEditing = true }
+                            .foregroundStyle(Color.appPink)
+                    }
+                }
             }
         }
+        .preferredColorScheme(.dark)
         .onAppear {
             editTitle = entry.title
             editContent = entry.content
@@ -186,116 +204,120 @@ struct JournalEntryDetailView: View {
         }
     }
 
+    // MARK: - Detail View
+
     private var detailView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: DS.s5) {
                 // Header
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(entry.title)
-                            .font(.title2)
-                            .fontWeight(.bold)
-
-                        HStack(spacing: 8) {
-                            Text(entry.date.formatted(date: .long, time: .omitted))
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-
-                            if let mood = entry.mood {
-                                Text(mood.emoji + " " + mood.rawValue)
-                                    .font(.caption)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 3)
-                                    .background(mood.color.opacity(0.12))
-                                    .foregroundStyle(mood.color)
-                                    .clipShape(Capsule())
-                            }
+                VStack(alignment: .leading, spacing: DS.s3) {
+                    if let mood = entry.mood {
+                        HStack(spacing: DS.s2) {
+                            Text(mood.emoji).font(.system(size: 28))
+                            Text(mood.rawValue)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(mood.color)
+                                .padding(.horizontal, DS.s3)
+                                .padding(.vertical, 4)
+                                .background(mood.color.opacity(0.12))
+                                .clipShape(Capsule())
                         }
                     }
-                    Spacer()
+
+                    Text(entry.title)
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.appText)
+
+                    Text(entry.date.formatted(.dateTime.weekday(.wide).day().month(.wide).year()))
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(Color.appTextSec)
                 }
 
-                Divider()
+                Rectangle()
+                    .fill(Color.appBorder)
+                    .frame(height: 1)
 
                 if entry.content.isEmpty {
-                    Text("No content.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
+                    Text("No content written.")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.appTextTert)
                         .italic()
                 } else {
                     Text(entry.content)
-                        .font(.body)
+                        .font(.system(size: 16))
+                        .foregroundStyle(Color.appText)
                         .lineSpacing(6)
                 }
+
+                Color.clear.frame(height: 40)
             }
-            .padding()
-        }
-        .navigationTitle("Entry")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Done") { dismiss() }
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Button("Edit") { isEditing = true }
-            }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s5)
         }
     }
 
+    // MARK: - Edit Form
+
     private var editForm: some View {
-        Form {
-            Section("Entry") {
-                TextField("Title", text: $editTitle)
-            }
-            Section("Mood") {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: DS.s5) {
+                DSTextField(title: "Title", text: $editTitle)
+
+                // Mood
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("MOOD")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
                         ForEach(Mood.allCases, id: \.self) { mood in
                             Button {
-                                editMood = editMood == mood ? nil : mood
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    editMood = editMood == mood ? nil : mood
+                                }
                             } label: {
                                 VStack(spacing: 4) {
-                                    Text(mood.emoji).font(.title2)
-                                    Text(mood.rawValue).font(.caption2)
+                                    Text(mood.emoji).font(.title3)
+                                    Text(mood.rawValue)
+                                        .font(.system(size: 9, weight: .medium))
+                                        .foregroundStyle(editMood == mood ? mood.color : Color.appTextTert)
                                 }
-                                .padding(10)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(editMood == mood ? mood.color.opacity(0.2) : Color(.systemGray6))
-                                )
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, DS.s2)
+                                .background(editMood == mood ? mood.color.opacity(0.15) : Color.appSurface2)
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(editMood == mood ? mood.color : Color.clear, lineWidth: 2)
+                                    RoundedRectangle(cornerRadius: DS.radiusSm)
+                                        .stroke(editMood == mood ? mood.color.opacity(0.5) : Color.appBorder, lineWidth: 1)
                                 )
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(ScaleButtonStyle())
                         }
                     }
-                    .padding(.vertical, 4)
                 }
-            }
-            Section("Content") {
-                TextEditor(text: $editContent)
-                    .frame(minHeight: 160)
-            }
-        }
-        .navigationTitle("Edit Entry")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { isEditing = false }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    entry.title = editTitle
-                    entry.content = editContent
-                    entry.mood = editMood
-                    try? modelContext.save()
-                    isEditing = false
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("CONTENT")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    TextEditor(text: $editContent)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.appText)
+                        .scrollContentBackground(.hidden)
+                        .frame(minHeight: 160)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
                 }
-                .fontWeight(.semibold)
-                .disabled(editTitle.isEmpty)
+
+                Color.clear.frame(height: 40)
             }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s4)
         }
     }
 }

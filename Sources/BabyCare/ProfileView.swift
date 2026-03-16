@@ -11,215 +11,263 @@ struct ProfileView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
                 if let user {
                     profileContent(user: user)
                 } else {
-                    noProfileState
+                    noProfileView
                 }
             }
             .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 if user != nil {
                     ToolbarItem(placement: .primaryAction) {
                         Button("Edit") { showSetup = true }
+                            .foregroundStyle(Color.appPink)
                     }
                 }
             }
             .sheet(isPresented: $showSetup) {
-                if let user {
-                    ProfileSetupSheet(user: user)
-                } else {
-                    ProfileSetupSheet(user: nil)
-                }
+                ProfileSetupSheet(user: user)
             }
         }
     }
 
     // MARK: - Profile Content
 
+    @ViewBuilder
     private func profileContent(user: UserData) -> some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Avatar header
-                avatarHeader(user: user)
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: DS.s5) {
+                avatarSection(user: user)
+                    .staggerAppear(index: 0)
 
-                // Status card
-                statusCard(user: user)
+                statusSection(user: user)
+                    .staggerAppear(index: 1)
 
-                // Settings card
-                settingsCard(user: user)
+                settingsSection(user: user)
+                    .staggerAppear(index: 2)
 
-                // Danger zone
-                dangerZone(user: user)
+                dangerSection(user: user)
+                    .staggerAppear(index: 3)
+
+                Color.clear.frame(height: 90)
             }
-            .padding(.horizontal)
-            .padding(.top, 8)
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s4)
         }
     }
 
-    private func avatarHeader(user: UserData) -> some View {
-        VStack(spacing: 12) {
+    // MARK: - Avatar Section
+
+    private func avatarSection(user: UserData) -> some View {
+        VStack(spacing: DS.s3) {
             ZStack {
                 Circle()
-                    .fill(user.isPregnant ? Color.pink.opacity(0.15) : Color.blue.opacity(0.15))
-                    .frame(width: 96, height: 96)
+                    .fill(user.isPregnant ? LinearGradient.pinkPurple : LinearGradient.blueIndigo)
+                    .frame(width: 88, height: 88)
+                    .opacity(0.2)
+
+                Circle()
+                    .stroke(user.isPregnant ? LinearGradient.pinkPurple : LinearGradient.blueIndigo, lineWidth: 2)
+                    .frame(width: 88, height: 88)
+
                 Image(systemName: user.isPregnant ? "figure.pregnant" : "figure.and.child.holdinghands")
-                    .font(.system(size: 44))
-                    .foregroundStyle(user.isPregnant ? .pink : .blue)
+                    .font(.system(size: 40, weight: .medium))
+                    .foregroundStyle(user.isPregnant ? LinearGradient.pinkPurple : LinearGradient.blueIndigo)
             }
 
-            if !user.name.isEmpty {
-                Text(user.name)
-                    .font(.title2)
-                    .fontWeight(.bold)
-            }
+            VStack(spacing: DS.s1) {
+                if !user.name.isEmpty {
+                    Text(user.name)
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.appText)
+                }
 
-            Text(user.isPregnant ? "Expecting Parent" : "Parent")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                Text(user.isPregnant ? "Expecting Parent" : "Parent")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(user.isPregnant ? Color.appPink : Color.appBlue)
+                    .padding(.horizontal, DS.s3)
+                    .padding(.vertical, 4)
+                    .background((user.isPregnant ? Color.appPink : Color.appBlue).opacity(0.1))
+                    .clipShape(Capsule())
+            }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
     }
 
-    private func statusCard(user: UserData) -> some View {
-        VStack(spacing: 0) {
-            if user.isPregnant, let dueDate = user.dueDate {
-                profileRow(icon: "calendar.heart.fill", color: .pink, label: "Due Date") {
-                    Text(dueDate.formatted(date: .long, time: .omitted))
-                        .foregroundStyle(.secondary)
-                }
-                Divider().padding(.leading, 52)
-                profileRow(icon: "figure.pregnant", color: .pink, label: "Status") {
-                    Text("Pregnant")
-                        .foregroundStyle(.pink)
-                        .fontWeight(.medium)
-                }
-            }
+    // MARK: - Status Section
 
-            if let birthDate = user.babyBirthDate {
-                if user.isPregnant { Divider().padding(.leading, 52) }
-                profileRow(icon: "figure.child", color: .blue, label: "Baby Born") {
-                    Text(birthDate.formatted(date: .long, time: .omitted))
-                        .foregroundStyle(.secondary)
-                }
-                if let name = user.babyName, !name.isEmpty {
-                    Divider().padding(.leading, 52)
-                    profileRow(icon: "heart.fill", color: .pink, label: "Baby's Name") {
-                        Text(name).foregroundStyle(.secondary)
+    private func statusSection(user: UserData) -> some View {
+        VStack(spacing: 0) {
+            DSSectionHeader(title: "Status")
+                .padding(.bottom, DS.s2)
+
+            GlassCard(padding: 0) {
+                VStack(spacing: 0) {
+                    if user.isPregnant, let dueDate = user.dueDate {
+                        profileRow(
+                            icon: "calendar.heart.fill",
+                            gradient: .pinkPurple,
+                            label: "Due Date",
+                            value: dueDate.formatted(.dateTime.day().month(.wide).year())
+                        )
+                    }
+
+                    if user.isPregnant {
+                        DSRowDivider()
+                        profileRow(
+                            icon: "figure.pregnant",
+                            gradient: .pinkPurple,
+                            label: "Status",
+                            value: "Pregnant"
+                        )
+                    }
+
+                    if let birthDate = user.babyBirthDate {
+                        if user.isPregnant { DSRowDivider() }
+                        profileRow(
+                            icon: "gift.fill",
+                            gradient: .blueIndigo,
+                            label: "Baby's Birthday",
+                            value: birthDate.formatted(.dateTime.day().month(.wide).year())
+                        )
+                    }
+
+                    if let babyName = user.babyName, !babyName.isEmpty {
+                        DSRowDivider()
+                        profileRow(
+                            icon: "heart.fill",
+                            gradient: .pinkPurple,
+                            label: "Baby's Name",
+                            value: babyName
+                        )
                     }
                 }
             }
         }
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.06), radius: 10, y: 3)
-        )
     }
 
-    private func settingsCard(user: UserData) -> some View {
+    // MARK: - Settings Section
+
+    private func settingsSection(user: UserData) -> some View {
         VStack(spacing: 0) {
-            profileRow(icon: "scalemass.fill", color: .teal, label: "Units") {
-                Text(user.preferredUnits.displayName)
-                    .foregroundStyle(.secondary)
-                    .font(.subheadline)
-            }
-            if let weight = user.currentWeight {
-                Divider().padding(.leading, 52)
-                profileRow(icon: "figure.stand", color: .orange, label: "Weight") {
-                    Text(String(format: "%.1f kg", weight))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            if let height = user.height {
-                Divider().padding(.leading, 52)
-                profileRow(icon: "ruler.fill", color: .indigo, label: "Height") {
-                    Text(String(format: "%.0f cm", height))
-                        .foregroundStyle(.secondary)
+            DSSectionHeader(title: "Details")
+                .padding(.bottom, DS.s2)
+
+            GlassCard(padding: 0) {
+                VStack(spacing: 0) {
+                    profileRow(
+                        icon: "scalemass.fill",
+                        gradient: .tealMint,
+                        label: "Units",
+                        value: user.preferredUnits == .metric ? "Metric" : "Imperial"
+                    )
+
+                    if let weight = user.currentWeight {
+                        DSRowDivider()
+                        profileRow(
+                            icon: "figure.stand",
+                            gradient: .orangePink,
+                            label: "Weight",
+                            value: String(format: "%.1f kg", weight)
+                        )
+                    }
+
+                    if let height = user.height {
+                        DSRowDivider()
+                        profileRow(
+                            icon: "ruler.fill",
+                            gradient: .blueIndigo,
+                            label: "Height",
+                            value: String(format: "%.0f cm", height)
+                        )
+                    }
                 }
             }
         }
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.06), radius: 10, y: 3)
-        )
     }
 
-    private func dangerZone(user: UserData) -> some View {
+    // MARK: - Danger Section
+
+    private func dangerSection(user: UserData) -> some View {
         Button(role: .destructive) {
             modelContext.delete(user)
             try? modelContext.save()
         } label: {
-            Label("Delete Profile", systemImage: "trash")
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+            HStack(spacing: DS.s2) {
+                Image(systemName: "trash")
+                    .font(.system(size: 14, weight: .semibold))
+                Text("Delete Profile")
+                    .font(.system(size: 15, weight: .semibold))
+            }
+            .foregroundStyle(Color.appRed)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, DS.s4)
+            .background(Color.appRed.opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appRed.opacity(0.2), lineWidth: 1))
         }
-        .buttonStyle(.bordered)
-        .tint(.red)
-        .padding(.top, 8)
+        .buttonStyle(ScaleButtonStyle())
     }
 
-    @ViewBuilder
-    private func profileRow<Content: View>(
-        icon: String,
-        color: Color,
-        label: String,
-        @ViewBuilder trailing: () -> Content
-    ) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(color)
-                .frame(width: 32, height: 32)
-                .background(color.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+    // MARK: - Profile Row
+
+    private func profileRow(icon: String, gradient: LinearGradient, label: String, value: String) -> some View {
+        HStack(spacing: DS.s3) {
+            IconBadge(icon: icon, gradient: gradient, size: 36)
 
             Text(label)
-                .font(.subheadline)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Color.appText)
 
             Spacer()
 
-            trailing()
-                .font(.subheadline)
+            Text(value)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Color.appTextSec)
+                .lineLimit(1)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.horizontal, DS.s4)
+        .padding(.vertical, DS.s3 + 2)
     }
 
-    // MARK: - No Profile State
+    // MARK: - No Profile
 
-    private var noProfileState: some View {
-        VStack(spacing: 20) {
+    private var noProfileView: some View {
+        VStack(spacing: DS.s5) {
             Spacer()
-            Image(systemName: "person.badge.plus")
-                .font(.system(size: 72))
-                .foregroundStyle(.pink.opacity(0.6))
 
-            Text("Set Up Your Profile")
-                .font(.title2)
-                .fontWeight(.bold)
+            ZStack {
+                Circle()
+                    .fill(LinearGradient.pinkPurple.opacity(0.1))
+                    .frame(width: 120, height: 120)
 
-            Text("Tell us a little about you so BabyCare can personalize your experience.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-
-            Button {
-                showSetup = true
-            } label: {
-                Label("Get Started", systemImage: "arrow.right")
-                    .font(.headline)
-                    .padding(.horizontal, 32)
-                    .padding(.vertical, 14)
-                    .background(.pink.gradient)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
+                Image(systemName: "person.badge.plus")
+                    .font(.system(size: 52, weight: .medium))
+                    .foregroundStyle(LinearGradient.pinkPurple)
             }
+
+            VStack(spacing: DS.s2) {
+                Text("Set Up Your Profile")
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.appText)
+
+                Text("Tell us about you so BabyCare can\npersonalize your experience.")
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color.appTextSec)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+            }
+
+            Button("Get Started") { showSetup = true }
+                .buttonStyle(PrimaryButtonStyle())
+
             Spacer()
         }
         .sheet(isPresented: $showSetup) {
@@ -248,59 +296,164 @@ struct ProfileSetupSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("About You") {
-                    TextField("Your Name (optional)", text: $name)
-                    Picker("Units", selection: $units) {
-                        ForEach(UnitSystem.allCases, id: \.self) {
-                            Text($0.displayName).tag($0)
-                        }
-                    }
-                    HStack {
-                        Text("Weight (\(units == .metric ? "kg" : "lb"))")
-                        Spacer()
-                        TextField("Optional", text: $weightString)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    HStack {
-                        Text("Height (\(units == .metric ? "cm" : "in"))")
-                        Spacer()
-                        TextField("Optional", text: $heightString)
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                }
+            ZStack {
+                Color.appBg.ignoresSafeArea()
 
-                Section("Pregnancy & Baby") {
-                    Toggle("Currently Pregnant", isOn: $isPregnant)
-
-                    if isPregnant {
-                        DatePicker("Due Date", selection: $dueDate, displayedComponents: .date)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: DS.s6) {
+                        aboutSection
+                        pregnancySection
+                        Color.clear.frame(height: DS.s10)
                     }
-
-                    Toggle("Baby Already Born", isOn: $hasBabyBirthDate)
-
-                    if hasBabyBirthDate {
-                        DatePicker("Birth Date", selection: $babyBirthDate, in: ...Date(), displayedComponents: .date)
-                        TextField("Baby's Name (optional)", text: $babyName)
-                    }
+                    .padding(.horizontal, DS.s4)
+                    .padding(.top, DS.s4)
                 }
             }
             .navigationTitle(user == nil ? "Set Up Profile" : "Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .foregroundStyle(Color.appTextSec)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
-                        .fontWeight(.semibold)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appPink)
                 }
             }
             .onAppear { loadExisting() }
         }
+        .preferredColorScheme(.dark)
     }
+
+    // MARK: - About Section
+
+    private var aboutSection: some View {
+        VStack(alignment: .leading, spacing: DS.s4) {
+            DSSectionHeader(title: "About You")
+
+            DSTextField(title: "Your Name (optional)", text: $name)
+
+            // Units
+            VStack(alignment: .leading, spacing: DS.s2) {
+                Text("UNITS")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.appTextTert)
+                    .tracking(0.6)
+
+                HStack(spacing: DS.s2) {
+                    ForEach(UnitSystem.allCases, id: \.self) { u in
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { units = u }
+                        } label: {
+                            Text(u == .metric ? "Metric" : "Imperial")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(units == u ? .white : Color.appTextSec)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, DS.s2 + 2)
+                                .background(units == u ? LinearGradient.tealMint : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        }
+                        .buttonStyle(ScaleButtonStyle())
+                    }
+                }
+            }
+
+            DSTextField(title: "Weight (\(units == .metric ? "kg" : "lb")) — Optional", text: $weightString, keyboard: .decimalPad)
+            DSTextField(title: "Height (\(units == .metric ? "cm" : "in")) — Optional", text: $heightString, keyboard: .decimalPad)
+        }
+    }
+
+    // MARK: - Pregnancy Section
+
+    private var pregnancySection: some View {
+        VStack(alignment: .leading, spacing: DS.s4) {
+            DSSectionHeader(title: "Pregnancy & Baby")
+
+            // Pregnant toggle
+            toggleRow(
+                label: "Currently Pregnant",
+                icon: "figure.pregnant",
+                gradient: .pinkPurple,
+                isOn: $isPregnant
+            )
+
+            if isPregnant {
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("DUE DATE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    DatePicker("", selection: $dueDate, displayedComponents: .date)
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .tint(.appPink)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+
+            toggleRow(
+                label: "Baby Already Born",
+                icon: "figure.child",
+                gradient: .blueIndigo,
+                isOn: $hasBabyBirthDate
+            )
+
+            if hasBabyBirthDate {
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("BIRTH DATE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    DatePicker("", selection: $babyBirthDate, in: ...Date(), displayedComponents: .date)
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .tint(.appBlue)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                DSTextField(title: "Baby's Name (optional)", text: $babyName)
+            }
+        }
+    }
+
+    // MARK: - Toggle Row
+
+    private func toggleRow(label: String, icon: String, gradient: LinearGradient, isOn: Binding<Bool>) -> some View {
+        HStack(spacing: DS.s3) {
+            IconBadge(icon: icon, gradient: gradient, size: 36)
+
+            Text(label)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Color.appText)
+
+            Spacer()
+
+            Toggle("", isOn: isOn)
+                .tint(.appPink)
+                .labelsHidden()
+        }
+        .padding(.horizontal, DS.s4)
+        .padding(.vertical, DS.s3)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+    }
+
+    // MARK: - Logic
 
     private func loadExisting() {
         guard let user else { return }
@@ -308,18 +461,15 @@ struct ProfileSetupSheet: View {
         babyName = user.babyName ?? ""
         isPregnant = user.isPregnant
         if let dd = user.dueDate { dueDate = dd }
-        if let bd = user.babyBirthDate {
-            babyBirthDate = bd
-            hasBabyBirthDate = true
-        }
+        if let bd = user.babyBirthDate { babyBirthDate = bd; hasBabyBirthDate = true }
         if let w = user.currentWeight { weightString = String(format: "%.1f", w) }
         if let h = user.height { heightString = String(format: "%.0f", h) }
         units = user.preferredUnits
     }
 
     private func save() {
-        let weightValue = Double(weightString)
-        let heightValue = Double(heightString)
+        let w = Double(weightString)
+        let h = Double(heightString)
 
         if let existing = user {
             existing.name = name
@@ -327,23 +477,21 @@ struct ProfileSetupSheet: View {
             existing.isPregnant = isPregnant
             existing.dueDate = isPregnant ? dueDate : nil
             existing.babyBirthDate = hasBabyBirthDate ? babyBirthDate : nil
-            existing.currentWeight = weightValue
-            existing.height = heightValue
+            existing.currentWeight = w
+            existing.height = h
             existing.preferredUnits = units
         } else {
-            let newUser = UserData(
+            modelContext.insert(UserData(
                 name: name,
                 babyName: babyName.isEmpty ? nil : babyName,
                 isPregnant: isPregnant,
                 dueDate: isPregnant ? dueDate : nil,
                 babyBirthDate: hasBabyBirthDate ? babyBirthDate : nil,
-                currentWeight: weightValue,
-                height: heightValue,
+                currentWeight: w,
+                height: h,
                 preferredUnits: units
-            )
-            modelContext.insert(newUser)
+            ))
         }
-
         try? modelContext.save()
         dismiss()
     }

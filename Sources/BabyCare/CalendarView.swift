@@ -5,17 +5,17 @@ struct CalendarView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Appointment.date) private var appointments: [Appointment]
 
-    @State private var showAddAppointment = false
-    @State private var filter: AppointmentFilter = .upcoming
-    @State private var selectedAppointment: Appointment?
+    @State private var filter: Filter = .upcoming
+    @State private var showAdd = false
+    @State private var selected: Appointment?
 
-    enum AppointmentFilter: String, CaseIterable {
+    enum Filter: String, CaseIterable {
         case upcoming = "Upcoming"
-        case past = "Past"
-        case all = "All"
+        case past     = "Past"
+        case all      = "All"
     }
 
-    private var filteredAppointments: [Appointment] {
+    private var filtered: [Appointment] {
         let now = Date()
         switch filter {
         case .upcoming: return appointments.filter { $0.date >= now }
@@ -26,131 +26,201 @@ struct CalendarView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Filter picker
-                Picker("Filter", selection: $filter) {
-                    ForEach(AppointmentFilter.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding()
+            ZStack {
+                Color.appBg.ignoresSafeArea()
 
-                if filteredAppointments.isEmpty {
-                    emptyState
-                } else {
-                    appointmentList
+                VStack(spacing: 0) {
+                    filterBar
+
+                    if filtered.isEmpty {
+                        DSEmptyState(
+                            icon: "calendar.badge.plus",
+                            gradient: .greenTeal,
+                            title: filter == .past ? "No Past Appointments" : "Nothing Scheduled",
+                            subtitle: "Add appointments to keep track of your prenatal visits and checkups.",
+                            actionLabel: "Add Appointment"
+                        ) { showAdd = true }
+                    } else {
+                        appointmentList
+                    }
                 }
             }
             .navigationTitle("Calendar")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
-                        showAddAppointment = true
+                        showAdd = true
                     } label: {
                         Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.appPink)
                     }
                 }
             }
-            .sheet(isPresented: $showAddAppointment) {
-                AddAppointmentSheet()
-            }
-            .sheet(item: $selectedAppointment) { appointment in
-                AppointmentDetailSheet(appointment: appointment)
-            }
+            .sheet(isPresented: $showAdd) { AddAppointmentSheet() }
+            .sheet(item: $selected) { AppointmentDetailSheet(appointment: $0) }
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Filter Bar
+
+    private var filterBar: some View {
+        HStack(spacing: DS.s2) {
+            ForEach(Filter.allCases, id: \.self) { f in
+                Button {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) { filter = f }
+                } label: {
+                    Text(f.rawValue)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(filter == f ? .white : Color.appTextSec)
+                        .padding(.horizontal, DS.s4)
+                        .padding(.vertical, DS.s2)
+                        .background(filter == f ? LinearGradient.greenTeal : LinearGradient(colors: [Color.appSurface], startPoint: .top, endPoint: .bottom))
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(filter == f ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                }
+                .buttonStyle(ScaleButtonStyle())
+            }
+            Spacer()
+        }
+        .padding(.horizontal, DS.s4)
+        .padding(.vertical, DS.s3)
+    }
+
+    // MARK: - Appointment List
 
     private var appointmentList: some View {
-        List {
-            ForEach(groupedByMonth, id: \.key) { group in
-                Section(group.key) {
-                    ForEach(group.appointments) { appointment in
-                        Button {
-                            selectedAppointment = appointment
-                        } label: {
-                            AppointmentRowView(appointment: appointment)
-                                .padding(.vertical, 2)
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: 0, pinnedViews: .sectionHeaders) {
+                ForEach(groupedByMonth, id: \.key) { group in
+                    Section {
+                        ForEach(Array(group.items.enumerated()), id: \.element.id) { idx, appt in
+                            Button { selected = appt } label: {
+                                CalendarRow(appointment: appt)
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                            .padding(.horizontal, DS.s4)
+                            .padding(.bottom, DS.s2)
+                            .staggerAppear(index: idx)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    withAnimation { modelContext.delete(appt) }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
-                        .buttonStyle(.plain)
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                    }
-                    .onDelete { indexSet in
-                        deleteAppointments(in: group.appointments, at: indexSet)
+                    } header: {
+                        monthHeader(group.key)
                     }
                 }
+                Color.clear.frame(height: 100)
             }
         }
-        .listStyle(.plain)
     }
 
-    private var emptyState: some View {
-        VStack(spacing: 16) {
-            Spacer()
-            Image(systemName: "calendar.badge.plus")
-                .font(.system(size: 60))
-                .foregroundStyle(.green.opacity(0.6))
-
-            Text(filter == .upcoming ? "No Upcoming Appointments" : "No Appointments")
-                .font(.title3)
-                .fontWeight(.semibold)
-
-            Text("Tap + to add your first appointment.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            Button {
-                showAddAppointment = true
-            } label: {
-                Label("Add Appointment", systemImage: "plus")
-                    .font(.headline)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(.green.gradient)
-                    .foregroundStyle(.white)
-                    .clipShape(Capsule())
-            }
+    private func monthHeader(_ title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color.appTextTert)
+                .textCase(.uppercase)
+                .tracking(0.8)
             Spacer()
         }
-        .padding()
+        .padding(.horizontal, DS.s4)
+        .padding(.vertical, DS.s2)
+        .background(Color.appBg)
     }
 
-    // MARK: - Helpers
+    // MARK: - Grouping
 
-    struct MonthGroup {
-        let key: String
-        let appointments: [Appointment]
-    }
+    struct MonthGroup { let key: String; let items: [Appointment] }
 
     private var groupedByMonth: [MonthGroup] {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        let grouped = Dictionary(grouping: filteredAppointments) { appointment in
-            formatter.string(from: appointment.date)
+        let fmt = DateFormatter(); fmt.dateFormat = "MMMM yyyy"
+        let dict = Dictionary(grouping: filtered) { fmt.string(from: $0.date) }
+        let keys = dict.keys.sorted {
+            (fmt.date(from: $0) ?? .distantPast) < (fmt.date(from: $1) ?? .distantPast)
         }
-        let sortedKeys: [String]
-        if filter == .past {
-            sortedKeys = grouped.keys.sorted { a, b in
-                formatter.date(from: a)! > formatter.date(from: b)!
-            }
-        } else {
-            sortedKeys = grouped.keys.sorted { a, b in
-                formatter.date(from: a)! < formatter.date(from: b)!
-            }
+        return keys.map { MonthGroup(key: $0, items: dict[$0] ?? []) }
+    }
+}
+
+// MARK: - Calendar Row
+
+struct CalendarRow: View {
+    let appointment: Appointment
+
+    private var typeGradient: LinearGradient {
+        switch appointment.type {
+        case .prenatal:    return .pinkPurple
+        case .ultrasound:  return .blueIndigo
+        case .diabetesTest: return LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .groupBStrep: return .orangePink
+        case .pediatric:   return .greenTeal
+        case .vaccination: return .tealMint
+        case .other:       return LinearGradient(colors: [.appSurface3, .appSurface3], startPoint: .top, endPoint: .bottom)
         }
-        return sortedKeys.map { MonthGroup(key: $0, appointments: grouped[$0] ?? []) }
     }
 
-    private func deleteAppointments(in list: [Appointment], at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(list[index])
+    var body: some View {
+        HStack(spacing: DS.s3) {
+            // Day/time column
+            VStack(spacing: 2) {
+                Text(appointment.date.formatted(.dateTime.day()))
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.appText)
+                Text(appointment.date.formatted(.dateTime.month(.abbreviated)))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.appTextSec)
+                    .textCase(.uppercase)
+            }
+            .frame(width: 44)
+
+            // Divider accent
+            RoundedRectangle(cornerRadius: 2)
+                .fill(typeGradient)
+                .frame(width: 3, height: 52)
+
+            // Main content
+            VStack(alignment: .leading, spacing: 4) {
+                Text(appointment.title)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+                    .lineLimit(1)
+
+                HStack(spacing: DS.s2) {
+                    Image(systemName: appointment.type.icon)
+                        .font(.system(size: 11))
+                        .foregroundStyle(appointment.type.color)
+
+                    Text(appointment.type.rawValue)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Color.appTextSec)
+
+                    Text("·")
+                        .foregroundStyle(Color.appTextTert)
+
+                    Text(appointment.date.formatted(.dateTime.hour().minute()))
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Color.appTextSec)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Color.appTextTert)
         }
-        try? modelContext.save()
+        .padding(DS.s4)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
     }
 }
 
@@ -159,23 +229,68 @@ struct CalendarView: View {
 struct AppointmentDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-
     let appointment: Appointment
 
     @State private var isEditing = false
-    @State private var editTitle: String = ""
-    @State private var editDate: Date = Date()
+    @State private var editTitle = ""
+    @State private var editDate = Date()
     @State private var editType: AppointmentType = .prenatal
-    @State private var editNotes: String = ""
+    @State private var editNotes = ""
+
+    private var typeGradient: LinearGradient {
+        switch appointment.type {
+        case .prenatal:    return .pinkPurple
+        case .ultrasound:  return .blueIndigo
+        case .diabetesTest: return LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .groupBStrep: return .orangePink
+        case .pediatric:   return .greenTeal
+        case .vaccination: return .tealMint
+        case .other:       return LinearGradient(colors: [.appSurface3, .appSurface3], startPoint: .top, endPoint: .bottom)
+        }
+    }
 
     var body: some View {
         NavigationStack {
-            if isEditing {
-                editForm
-            } else {
-                detailView
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                if isEditing {
+                    editForm
+                } else {
+                    detailContent
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(isEditing ? "Cancel" : "Done") {
+                        if isEditing { isEditing = false } else { dismiss() }
+                    }
+                    .foregroundStyle(Color.appTextSec)
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    if isEditing {
+                        Button("Save") {
+                            appointment.title = editTitle
+                            appointment.date = editDate
+                            appointment.type = editType
+                            appointment.notes = editNotes
+                            try? modelContext.save()
+                            isEditing = false
+                        }
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appPink)
+                        .disabled(editTitle.isEmpty)
+                    } else {
+                        Button("Edit") { isEditing = true }
+                            .foregroundStyle(Color.appPink)
+                    }
+                }
             }
         }
+        .preferredColorScheme(.dark)
         .onAppear {
             editTitle = appointment.title
             editDate = appointment.date
@@ -184,115 +299,156 @@ struct AppointmentDetailSheet: View {
         }
     }
 
-    private var detailView: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Header
-                VStack(spacing: 8) {
-                    Image(systemName: appointment.type.icon)
-                        .font(.system(size: 44))
-                        .foregroundStyle(appointment.type.color)
-                        .frame(width: 80, height: 80)
-                        .background(appointment.type.color.opacity(0.12))
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
+    private var detailContent: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: DS.s5) {
+                // Hero
+                VStack(spacing: DS.s4) {
+                    IconBadge(icon: appointment.type.icon, gradient: typeGradient, size: 72)
 
-                    Text(appointment.title)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
+                    VStack(spacing: DS.s1) {
+                        Text(appointment.title)
+                            .font(.system(size: 22, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.appText)
+                            .multilineTextAlignment(.center)
 
-                    Text(appointment.type.rawValue)
-                        .font(.subheadline)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 5)
-                        .background(appointment.type.color.opacity(0.12))
-                        .foregroundStyle(appointment.type.color)
-                        .clipShape(Capsule())
+                        Text(appointment.type.rawValue)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(appointment.type.color)
+                            .padding(.horizontal, DS.s3)
+                            .padding(.vertical, 4)
+                            .background(appointment.type.color.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
                 }
-                .padding(.top, 8)
+                .frame(maxWidth: .infinity)
+                .padding(.top, DS.s4)
 
                 // Date card
-                HStack {
-                    Label {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(appointment.date.formatted(date: .long, time: .omitted))
-                                .font(.headline)
-                            Text(appointment.date.formatted(date: .omitted, time: .shortened))
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    } icon: {
+                GlassCard {
+                    HStack(spacing: DS.s3) {
                         Image(systemName: "calendar")
-                            .foregroundStyle(.green)
-                    }
-                    Spacer()
-                }
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Color.appGreen)
+                            .frame(width: 32)
 
-                // Notes card
-                if !appointment.notes.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Notes", systemImage: "note.text")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        Text(appointment.notes)
-                            .font(.body)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(appointment.date.formatted(.dateTime.weekday(.wide).day().month(.wide).year()))
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+                            Text(appointment.date.formatted(.dateTime.hour().minute()))
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
+                        }
+
+                        Spacer()
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(.systemGray6)))
                 }
-            }
-            .padding()
-        }
-        .navigationTitle("Appointment")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Done") { dismiss() }
-            }
-            ToolbarItem(placement: .primaryAction) {
-                Button("Edit") { isEditing = true }
+                .padding(.horizontal, DS.s4)
+
+                if !appointment.notes.isEmpty {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: DS.s2) {
+                            HStack(spacing: DS.s2) {
+                                Image(systemName: "note.text")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(Color.appTextSec)
+                                Text("Notes")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(Color.appTextSec)
+                                    .textCase(.uppercase)
+                                    .tracking(0.6)
+                            }
+                            Text(appointment.notes)
+                                .font(.system(size: 15))
+                                .foregroundStyle(Color.appText)
+                                .lineSpacing(4)
+                        }
+                    }
+                    .padding(.horizontal, DS.s4)
+                }
+
+                Color.clear.frame(height: 40)
             }
         }
     }
 
     private var editForm: some View {
-        Form {
-            Section("Appointment") {
-                TextField("Title", text: $editTitle)
-                DatePicker("Date & Time", selection: $editDate, displayedComponents: [.date, .hourAndMinute])
-                Picker("Type", selection: $editType) {
-                    ForEach(AppointmentType.allCases, id: \.self) { t in
-                        Label(t.rawValue, systemImage: t.icon).tag(t)
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: DS.s5) {
+                DSTextField(title: "Title", text: $editTitle)
+
+                datePickerRow(label: "DATE & TIME", selection: $editDate, components: [.date, .hourAndMinute])
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("TYPE")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: DS.s2) {
+                            ForEach(AppointmentType.allCases, id: \.self) { t in
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { editType = t }
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: t.icon).font(.system(size: 12, weight: .semibold))
+                                        Text(t.rawValue).font(.system(size: 12, weight: .semibold))
+                                    }
+                                    .foregroundStyle(editType == t ? .white : Color.appTextSec)
+                                    .padding(.horizontal, DS.s3)
+                                    .padding(.vertical, DS.s2)
+                                    .background(editType == t ? t.color.gradient : Color.appSurface2.gradient)
+                                    .clipShape(Capsule())
+                                }
+                                .buttonStyle(ScaleButtonStyle())
+                            }
+                        }
                     }
                 }
-            }
-            Section("Notes") {
-                TextEditor(text: $editNotes)
-                    .frame(minHeight: 80)
-            }
-        }
-        .navigationTitle("Edit Appointment")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { isEditing = false }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    appointment.title = editTitle
-                    appointment.date = editDate
-                    appointment.type = editType
-                    appointment.notes = editNotes
-                    try? modelContext.save()
-                    isEditing = false
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("NOTES (OPTIONAL)")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    TextEditor(text: $editNotes)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.appText)
+                        .scrollContentBackground(.hidden)
+                        .frame(minHeight: 80)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
                 }
-                .fontWeight(.semibold)
-                .disabled(editTitle.isEmpty)
+
+                Color.clear.frame(height: 40)
             }
+            .padding(.horizontal, DS.s4)
+            .padding(.top, DS.s4)
         }
+    }
+}
+
+private func datePickerRow(label: String, selection: Binding<Date>, components: DatePickerComponents) -> some View {
+    VStack(alignment: .leading, spacing: DS.s2) {
+        Text(label)
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(Color.appTextTert)
+            .tracking(0.6)
+
+        DatePicker("", selection: selection, displayedComponents: components)
+            .datePickerStyle(.compact)
+            .labelsHidden()
+            .tint(.appPink)
+            .padding(DS.s3)
+            .background(Color.appSurface2)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
