@@ -3,9 +3,15 @@ import SwiftData
 
 @main
 struct BabyCareApp: App {
+    @AppStorage("onboardingComplete") private var onboardingComplete = false
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if onboardingComplete {
+                ContentView()
+            } else {
+                OnboardingView()
+            }
         }
         .modelContainer(for: [
             UserData.self,

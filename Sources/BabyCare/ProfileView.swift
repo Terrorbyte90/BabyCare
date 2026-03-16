@@ -6,6 +6,8 @@ struct ProfileView: View {
     @Query private var userData: [UserData]
 
     @State private var showSetup = false
+    @State private var showBVCConfirm = false
+    @State private var bvcScheduleAdded = false
 
     private var user: UserData? { userData.first }
 
@@ -53,8 +55,13 @@ struct ProfileView: View {
                 settingsSection(user: user)
                     .staggerAppear(index: 2)
 
+                if user.babyBirthDate != nil {
+                    bvcSection
+                        .staggerAppear(index: 3)
+                }
+
                 dangerSection(user: user)
-                    .staggerAppear(index: 3)
+                    .staggerAppear(index: 4)
 
                 Color.clear.frame(height: 90)
             }
@@ -190,6 +197,112 @@ struct ProfileView: View {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - BVC Section
+
+    private var bvcSection: some View {
+        VStack(spacing: 0) {
+            DSSectionHeader(title: "BVC Schedule")
+                .padding(.bottom, DS.s2)
+
+            if bvcScheduleAdded {
+                GlassCard {
+                    HStack(spacing: DS.s3) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 22))
+                            .foregroundStyle(Color.appGreen)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("BVC visits added")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+                            Text("Check the Calendar tab to see all visits")
+                                .font(.system(size: 12))
+                                .foregroundStyle(Color.appTextSec)
+                        }
+                        Spacer()
+                    }
+                }
+            } else {
+                Button {
+                    showBVCConfirm = true
+                } label: {
+                    HStack(spacing: DS.s3) {
+                        IconBadge(icon: "cross.case.fill", gradient: LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing), size: 40)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Generate BVC Schedule")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+                            Text("Auto-create all standard Swedish BVC visits")
+                                .font(.system(size: 12))
+                                .foregroundStyle(Color.appTextSec)
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(Color.appTextTert)
+                    }
+                    .padding(DS.s4)
+                    .background(Color.appSurface)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+                    .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+                }
+                .buttonStyle(ScaleButtonStyle())
+                .confirmationDialog("Generate BVC Schedule", isPresented: $showBVCConfirm, titleVisibility: .visible) {
+                    Button("Add BVC Visits to Calendar") {
+                        if let user = userData.first, let birthDate = user.babyBirthDate {
+                            generateBVCSchedule(from: birthDate)
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("This will add all standard Swedish BVC visits to your calendar based on your baby's birth date.")
+                }
+            }
+        }
+    }
+
+    // MARK: - BVC Schedule Generator
+
+    private func generateBVCSchedule(from birthDate: Date) {
+        let cal = Calendar.current
+        // Swedish BVC schedule (visit name → offset from birth)
+        let visits: [(title: String, component: Calendar.Component, value: Int)] = [
+            ("BVC — Home Visit",   .day,   5),
+            ("BVC — 1 Week",       .day,   7),
+            ("BVC — 3 Weeks",      .day,   21),
+            ("BVC — 6 Weeks",      .day,   42),
+            ("BVC — 3 Months",     .month, 3),
+            ("BVC — 4 Months",     .month, 4),
+            ("BVC — 5 Months",     .month, 5),
+            ("BVC — 6 Months",     .month, 6),
+            ("BVC — 8 Months",     .month, 8),
+            ("BVC — 10 Months",    .month, 10),
+            ("BVC — 12 Months",    .month, 12),
+            ("BVC — 15 Months",    .month, 15),
+            ("BVC — 18 Months",    .month, 18),
+        ]
+
+        for visit in visits {
+            guard let visitDate = cal.date(byAdding: visit.component, value: visit.value, to: birthDate) else { continue }
+            // Only add future visits
+            if visitDate >= cal.startOfDay(for: Date()) {
+                let appt = Appointment(
+                    date: visitDate,
+                    title: visit.title,
+                    notes: "Swedish child health clinic visit",
+                    type: .bvc
+                )
+                modelContext.insert(appt)
+            }
+        }
+        try? modelContext.save()
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+            bvcScheduleAdded = true
         }
     }
 

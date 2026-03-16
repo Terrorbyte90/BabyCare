@@ -96,6 +96,7 @@ enum AppointmentType: String, Codable, CaseIterable {
     case groupBStrep = "Group B Strep"
     case pediatric = "Pediatric Visit"
     case vaccination = "Vaccination"
+    case bvc = "BVC Visit"
     case other = "Other"
 
     var icon: String {
@@ -106,6 +107,7 @@ enum AppointmentType: String, Codable, CaseIterable {
         case .groupBStrep: return "staroflife.fill"
         case .pediatric:   return "figure.child"
         case .vaccination: return "syringe.fill"
+        case .bvc:         return "cross.case.fill"
         case .other:       return "calendar"
         }
     }
@@ -118,6 +120,7 @@ enum AppointmentType: String, Codable, CaseIterable {
         case .groupBStrep: return .orange
         case .pediatric:   return .green
         case .vaccination: return .purple
+        case .bvc:         return Color(hex: "5E5CE6")
         case .other:       return .gray
         }
     }

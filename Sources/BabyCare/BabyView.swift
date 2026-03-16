@@ -29,7 +29,10 @@ struct BabyView: View {
         }
     }
 
+    @Query private var userData: [UserData]
     @State private var activeSection: Section = .feeding
+
+    private var user: UserData? { userData.first }
 
     var body: some View {
         NavigationStack {
@@ -88,7 +91,7 @@ struct BabyView: View {
     private var sectionContent: some View {
         switch activeSection {
         case .feeding: FeedingSection()
-        case .sleep:   SleepSection()
+        case .sleep:   SleepSection(birthDate: user?.babyBirthDate)
         case .diaper:  DiaperSection()
         case .growth:  GrowthSection()
         }
@@ -195,9 +198,32 @@ struct FeedingLogRow: View {
     }
 }
 
+// MARK: - Wake Window Engine
+
+private struct WakeWindow {
+    let min: Double  // hours
+    let max: Double
+
+    static func forAgeMonths(_ m: Int) -> WakeWindow {
+        switch m {
+        case 0...1:   return WakeWindow(min: 0.75, max: 1.0)   // 45–60 min
+        case 2:       return WakeWindow(min: 1.0,  max: 1.5)   // 60–90 min
+        case 3:       return WakeWindow(min: 1.25, max: 2.0)   // 75–120 min
+        case 4...5:   return WakeWindow(min: 1.5,  max: 2.5)   // 90–150 min
+        case 6...8:   return WakeWindow(min: 2.0,  max: 3.0)   // 2–3 h
+        case 9...11:  return WakeWindow(min: 2.5,  max: 3.5)   // 2.5–3.5 h
+        case 12...17: return WakeWindow(min: 3.0,  max: 5.5)   // 3–5.5 h
+        case 18...23: return WakeWindow(min: 4.0,  max: 6.0)   // 4–6 h
+        default:      return WakeWindow(min: 5.0,  max: 7.0)   // 5–7 h
+        }
+    }
+}
+
 // MARK: - Sleep Section
 
 struct SleepSection: View {
+    var birthDate: Date? = nil
+
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \SleepLog.startDate, order: .reverse) private var logs: [SleepLog]
 
@@ -215,9 +241,39 @@ struct SleepSection: View {
         logs.contains { Calendar.current.isDateInToday($0.startDate) }
     }
 
+    // MARK: - Wake window calculation
+
+    private var ageInMonths: Int? {
+        guard let bd = birthDate else { return nil }
+        let comps = Calendar.current.dateComponents([.month], from: bd, to: Date())
+        return comps.month
+    }
+
+    private var lastWakeTime: Date? {
+        // Most recent completed sleep log's end time
+        logs.first(where: { $0.endDate <= Date() })?.endDate
+    }
+
+    private var wakeWindowBanner: (earliest: Date, latest: Date, ageMonths: Int)? {
+        guard let months = ageInMonths, let wakeTime = lastWakeTime else { return nil }
+        // Only show if the wake time was within the last 8 hours (i.e., data is fresh)
+        guard Date().timeIntervalSince(wakeTime) < 8 * 3600 else { return nil }
+        // Don't show if currently sleeping
+        if logs.first?.endDate ?? .distantPast < logs.first?.startDate ?? .distantPast { return nil }
+        let window = WakeWindow.forAgeMonths(months)
+        let earliest = wakeTime.addingTimeInterval(window.min * 3600)
+        let latest   = wakeTime.addingTimeInterval(window.max * 3600)
+        return (earliest, latest, months)
+    }
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
+                // Wake window recommendation
+                if let wwb = wakeWindowBanner {
+                    wakeWindowCard(earliest: wwb.earliest, latest: wwb.latest, ageMonths: wwb.ageMonths)
+                }
+
                 if hasTodayLogs {
                     HStack {
                         Image(systemName: "moon.fill")
@@ -249,6 +305,48 @@ struct SleepSection: View {
             addFAB(gradient: .blueIndigo) { showAdd = true }
         }
         .sheet(isPresented: $showAdd) { AddSleepSheet() }
+    }
+
+    private func wakeWindowCard(earliest: Date, latest: Date, ageMonths: Int) -> some View {
+        let now = Date()
+        let isNow = now >= earliest && now <= latest
+        let isPast = now > latest
+        let gradient: LinearGradient = isNow ? .greenTeal : (isPast ? LinearGradient(colors: [.appTextTert, .appTextTert], startPoint: .top, endPoint: .bottom) : .blueIndigo)
+
+        return HStack(spacing: DS.s3) {
+            Image(systemName: isNow ? "moon.stars.fill" : "moon.fill")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(gradient)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(isNow ? "Sleep window — now!" : (isPast ? "Sleep window passed" : "Next sleep window"))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(isNow ? Color.appGreen : Color.appTextSec)
+                    .textCase(.uppercase)
+                    .tracking(0.4)
+
+                Text("\(earliest.formatted(.dateTime.hour().minute())) – \(latest.formatted(.dateTime.hour().minute()))")
+                    .font(.system(size: 15, weight: .bold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(Color.appText)
+            }
+
+            Spacer()
+
+            Text("\(ageMonths)mo")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(Color.appTextTert)
+                .padding(.horizontal, DS.s2)
+                .padding(.vertical, 3)
+                .background(Color.appSurface3)
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, DS.s4)
+        .padding(.vertical, DS.s3)
+        .background(isNow ? Color.appGreen.opacity(0.06) : Color.appIndigo.opacity(0.05))
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Color.appBorder).frame(height: 0.5)
+        }
     }
 
     private var sleepList: some View {

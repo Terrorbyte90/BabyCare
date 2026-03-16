@@ -9,15 +9,37 @@ struct HomeView: View {
     @Query private var userData: [UserData]
     @Query(sort: \Appointment.date) private var appointments: [Appointment]
 
+    @Query private var allFeedingLogs: [FeedingLog]
+    @Query private var allSleepLogs: [SleepLog]
+    @Query private var allDiaperLogs: [DiaperLog]
+
     @State private var showAddFeeding = false
     @State private var showAddJournal = false
     @State private var showAddAppointment = false
+    @State private var showContractions = false
     @State private var hasAppeared = false
 
     private var user: UserData? { userData.first }
 
     private var upcomingAppointments: [Appointment] {
         appointments.filter { $0.date >= Date() }.prefix(3).map { $0 }
+    }
+
+    private var todayFeedingCount: Int {
+        allFeedingLogs.filter { Calendar.current.isDateInToday($0.date) }.count
+    }
+
+    private var todaySleepString: String {
+        let todayLogs = allSleepLogs.filter { Calendar.current.isDateInToday($0.startDate) }
+        let total = todayLogs.reduce(0.0) { $0 + $1.duration }
+        guard total > 0 else { return "—" }
+        let h = Int(total) / 3600
+        let m = (Int(total) % 3600) / 60
+        return h > 0 ? "\(h)h \(m)m" : "\(m)m"
+    }
+
+    private var todayDiaperCount: Int {
+        allDiaperLogs.filter { Calendar.current.isDateInToday($0.date) }.count
     }
 
     var body: some View {
@@ -33,12 +55,15 @@ struct HomeView: View {
                         statusCard
                             .staggerAppear(index: 1)
 
-                        quickActionsSection
+                        todayStatsRow
                             .staggerAppear(index: 2)
+
+                        quickActionsSection
+                            .staggerAppear(index: 3)
 
                         if !upcomingAppointments.isEmpty {
                             upcomingSection
-                                .staggerAppear(index: 3)
+                                .staggerAppear(index: 4)
                         }
 
                         // Bottom padding for tab bar
@@ -54,6 +79,7 @@ struct HomeView: View {
         .sheet(isPresented: $showAddFeeding)     { AddFeedingSheet() }
         .sheet(isPresented: $showAddJournal)     { AddJournalSheet() }
         .sheet(isPresented: $showAddAppointment) { AddAppointmentSheet() }
+        .sheet(isPresented: $showContractions)   { ContractionTimerView() }
     }
 
     // MARK: - Greeting
@@ -148,6 +174,55 @@ struct HomeView: View {
         .buttonStyle(ScaleButtonStyle())
     }
 
+    // MARK: - Today Stats
+
+    private var todayStatsRow: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Today")
+
+            HStack(spacing: DS.s3) {
+                todayStat(
+                    value: todayFeedingCount > 0 ? "\(todayFeedingCount)" : "—",
+                    label: "Feedings",
+                    icon: "drop.fill",
+                    gradient: .orangePink
+                )
+                todayStat(
+                    value: todaySleepString,
+                    label: "Sleep",
+                    icon: "moon.fill",
+                    gradient: .blueIndigo
+                )
+                todayStat(
+                    value: todayDiaperCount > 0 ? "\(todayDiaperCount)" : "—",
+                    label: "Diapers",
+                    icon: "circle.lefthalf.filled",
+                    gradient: .tealMint
+                )
+            }
+        }
+    }
+
+    private func todayStat(value: String, label: String, icon: String, gradient: LinearGradient) -> some View {
+        GlassCard {
+            VStack(spacing: DS.s1 + 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(gradient)
+
+                Text(value)
+                    .font(.system(size: 20, weight: .bold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(Color.appText)
+                    .minimumScaleFactor(0.7)
+
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
     // MARK: - Quick Actions
 
     private var quickActionsSection: some View {
@@ -173,11 +248,20 @@ struct HomeView: View {
                     gradient: .greenTeal
                 ) { showAddAppointment = true }
 
-                QuickActionTile(
-                    title: "Baby Stats",
-                    icon: "chart.line.uptrend.xyaxis",
-                    gradient: .tealMint
-                ) { selectedTab = 2 }
+                // Context-sensitive: Contractions timer for pregnant users, Baby Stats otherwise
+                if user?.isPregnant == true {
+                    QuickActionTile(
+                        title: "Contractions",
+                        icon: "waveform",
+                        gradient: LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    ) { showContractions = true }
+                } else {
+                    QuickActionTile(
+                        title: "Baby Stats",
+                        icon: "chart.line.uptrend.xyaxis",
+                        gradient: .tealMint
+                    ) { selectedTab = 2 }
+                }
             }
         }
     }
