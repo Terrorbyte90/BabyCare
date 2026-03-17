@@ -128,26 +128,32 @@ struct WeekByWeekView: View {
             fetalHeroCard(data)
                 .staggerAppear(index: 1)
 
+            // Sinnet i fokus (Preggers-style sense spotlight)
+            if let sense = data.fetalSense {
+                senseSpotlightCard(sense)
+                    .staggerAppear(index: 2)
+            }
+
             // Fetal development
             developmentSection(data)
-                .staggerAppear(index: 2)
+                .staggerAppear(index: 3)
 
             // Mother's body
             motherSection(data)
-                .staggerAppear(index: 3)
+                .staggerAppear(index: 4)
 
             // Symptoms
             symptomsSection(data)
-                .staggerAppear(index: 4)
+                .staggerAppear(index: 5)
 
             // Tips
             tipsSection(data)
-                .staggerAppear(index: 5)
+                .staggerAppear(index: 6)
 
             // Prenatal visit if applicable
             if let visit = data.prenatalVisit {
                 prenatalVisitCard(visit)
-                    .staggerAppear(index: 6)
+                    .staggerAppear(index: 7)
             }
 
             // Forum card
@@ -157,7 +163,7 @@ struct WeekByWeekView: View {
                 quotes: data.forumSection.quotes,
                 source: data.forumSection.source
             ))
-            .staggerAppear(index: 7)
+            .staggerAppear(index: 8)
         }
     }
 
@@ -216,6 +222,84 @@ struct WeekByWeekView: View {
                 .foregroundStyle(.white.opacity(0.5))
         }
         .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Sense Spotlight Card (Preggers-style)
+
+    private func senseSpotlightCard(_ sense: FetalSense) -> some View {
+        let accentColor = Color(hex: sense.colorHex)
+        let gradient = LinearGradient(
+            colors: [accentColor.opacity(0.85), accentColor.opacity(0.55)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+
+        return ZStack {
+            // Background with warm gradient
+            RoundedRectangle(cornerRadius: DS.radiusLg)
+                .fill(gradient)
+
+            // Subtle pattern overlay
+            RoundedRectangle(cornerRadius: DS.radiusLg)
+                .fill(
+                    RadialGradient(
+                        colors: [Color.white.opacity(0.15), Color.clear],
+                        center: .topLeading,
+                        startRadius: 10,
+                        endRadius: 200
+                    )
+                )
+
+            HStack(spacing: DS.s4) {
+                // Left: Icon in circle
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.2))
+                        .frame(width: 72, height: 72)
+
+                    Circle()
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
+                        .frame(width: 72, height: 72)
+
+                    Image(systemName: sense.icon)
+                        .font(.system(size: 28, weight: .medium))
+                        .foregroundStyle(.white)
+                }
+
+                // Right: Text content
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    // Category label like Preggers
+                    HStack(spacing: DS.s2) {
+                        Rectangle()
+                            .fill(Color.white.opacity(0.5))
+                            .frame(width: 24, height: 1)
+
+                        Text(sense.name)
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.9))
+                            .tracking(2)
+                    }
+
+                    // Main headline
+                    Text(sense.headline)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .lineSpacing(2)
+
+                    // Detail text
+                    Text(sense.detail)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundStyle(.white.opacity(0.82))
+                        .lineSpacing(3)
+                        .lineLimit(4)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(DS.s4)
+        }
+        .frame(maxWidth: .infinity)
+        .shadow(color: accentColor.opacity(0.35), radius: 12, x: 0, y: 6)
     }
 
     // MARK: - Development Section

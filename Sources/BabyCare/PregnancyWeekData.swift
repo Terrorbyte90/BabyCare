@@ -41,6 +41,97 @@ extension PregnancyWeekContent {
     }
 }
 
+// MARK: - Fetal Sense (Preggers-style "Sinnet i fokus")
+
+struct FetalSense {
+    let name: String        // "HÖRSEL"
+    let headline: String    // "Bebisen kan uppfatta ljud"
+    let detail: String      // Längre förklaring
+    let icon: String        // SF Symbol
+    let colorHex: String    // Accentfärg
+}
+
+extension PregnancyWeekContent {
+    var fetalSense: FetalSense? {
+        switch week {
+        case 4...7:
+            return nil // För tidigt – embryostadiet
+
+        case 8...11:
+            return FetalSense(
+                name: "KÄNSEL",
+                headline: "Bebisen börjar registrera beröring",
+                detail: "Det perioral-området (runt munnen) är det allra första att bli känsligt – en embryonisk reflex som senare utvecklas till det välbekanta rooting-reflexen. Nervtrådar breder ut sig i huden.",
+                icon: "hand.point.up.left.fill",
+                colorHex: "F4A261"
+            )
+
+        case 12...15:
+            return FetalSense(
+                name: "SMAK",
+                headline: "Smaklökar börjar formas",
+                detail: "Fostrets smaklökar börjar ta form och bebisen slukar fostervattnet. Starka smaker du äter – vitlök, vanilj, curry – sprids till fostervatten och ditt barn lär sig dina matpreferenser redan nu!",
+                icon: "mouth.fill",
+                colorHex: "E76F51"
+            )
+
+        case 16...20:
+            return FetalSense(
+                name: "HÖRSEL",
+                headline: "Bebisen kan uppfatta ljud",
+                detail: "Hörselorganen är nu tillräckligt utvecklade för att registrera vibrationer och dova ljud. Fostret hör ditt hjärtslag, dina tarmar – och röster utifrån. Prata gärna högt med din bebis, den lär sig känna igen din röst!",
+                icon: "ear.fill",
+                colorHex: "8B9DC3"
+            )
+
+        case 21...24:
+            return FetalSense(
+                name: "RÖRELSE",
+                headline: "Du känner de första sparkarna",
+                detail: "Bebisen rör sig aktivt och sparkar! Musklerna är tillräckligt starka för att du tydligt ska känna rörelserna. Fostret reagerar på ljud och beröring – lägg en hand på magen och känn kontakten.",
+                icon: "figure.walk",
+                colorHex: "84A98C"
+            )
+
+        case 25...27:
+            return FetalSense(
+                name: "SYN",
+                headline: "Bebisen reagerar på ljus",
+                detail: "Ögonlocken öppnar sig och fotoreceptorerna börjar fungera. Håller du en ficklampa mot magen kan du se att fostret vänder sig bort från det starka ljuset. Synen är det sista sinnet att mogna – fullständig skärpa uppnås inte förrän flera månader efter födseln.",
+                icon: "eye.fill",
+                colorHex: "B5C0D0"
+            )
+
+        case 28...31:
+            return FetalSense(
+                name: "LUKT",
+                headline: "Luktsystemet aktiveras",
+                detail: "Luktreceptorerna är nu aktiva och bebisen kan uppfatta dofter som löses upp i fostervatten. Dofter från din kost sprider sig – din bebis lär känna doften av din matlagning och familj redan i magen!",
+                icon: "wind",
+                colorHex: "9B89B4"
+            )
+
+        case 32...36:
+            return FetalSense(
+                name: "ALLA SINNEN",
+                headline: "Alla fem sinnen är nu aktiva",
+                detail: "Känsel, smak, hörsel, syn och lukt – din bebis använder nu alla sina sinnen i livmodern. Sensorisk inlärning pågår för fullt. Musik du spelar, röster du hör, mat du äter – allt registreras och skapar minnen.",
+                icon: "brain.head.profile",
+                colorHex: "7B6FBF"
+            )
+
+        default: // 37–42
+            return FetalSense(
+                name: "HJÄRNAN",
+                headline: "Nervsystemet mognar i rasande fart",
+                detail: "Under de sista veckorna bildas 250 000 nervförbindelser per minut i bebisens hjärna. Alla sinnen är fullt funktionella och bebisen förbereder sig intensivt för livet utanför. Sensorisk stimulering direkt efter födseln är nu superviktig!",
+                icon: "brain.fill",
+                colorHex: "C77DFF"
+            )
+        }
+    }
+}
+
 // MARK: - All Weeks Data
 
 extension PregnancyWeekContent {
