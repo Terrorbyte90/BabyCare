@@ -27,8 +27,14 @@ struct BabyCareApp: App {
             FeedingLog.self,
             SleepLog.self,
             DiaperLog.self,
+            PeriodLog.self,
             KickSession.self,
             AchievedMilestone.self,
+            MedicineLog.self,
+            ContractionLog.self,
+            StoryProgress.self,
+            CourseProgress.self,
+            HospitalBagItem.self,
         ])
     }
 }
@@ -40,15 +46,13 @@ enum NotificationHelper {
         let center = UNUserNotificationCenter.current()
         let baseID = appointment.id.uuidString
 
-        // 24h before
         let content24 = UNMutableNotificationContent()
-        content24.title = "Appointment Tomorrow"
+        content24.title = "Möte imorgon"
         content24.body = appointment.title
         content24.sound = .default
 
-        // 1h before
         let content1 = UNMutableNotificationContent()
-        content1.title = "Appointment in 1 Hour"
+        content1.title = "Möte om 1 timme"
         content1.body = appointment.title
         content1.sound = .default
 

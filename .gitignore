@@ -1,0 +1,28 @@
+# Xcode
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+
+# Build
+.build/
+build/
+
+# Dependencies
+.swiftpm/
+Packages/
+
+# OS
+.DS_Store
+*.swp
+*~
+
+# Claude
+.claude/
+
+# Temp files
+_articles_*.swift
+
+# Competitive analysis docs
+COMPETITIVE_ANALYSIS.md
+SWEDISH_PARENT_MARKET_RESEARCH.md
