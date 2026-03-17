@@ -9,8 +9,7 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .executable(
+        .library(
             name: "BabyCare",
             targets: ["BabyCare"]),
     ],
@@ -26,6 +25,7 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "BabyCareTests",
-            dependencies: ["BabyCare"]),
+            dependencies: ["BabyCare"],
+            path: "Tests/BabyCareTests"),
     ]
 )

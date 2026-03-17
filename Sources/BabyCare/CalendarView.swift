@@ -163,6 +163,7 @@ struct CalendarRow: View {
         case .groupBStrep: return .orangePink
         case .pediatric:   return .greenTeal
         case .vaccination: return .tealMint
+        case .bvc:         return LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .other:       return LinearGradient(colors: [.appSurface3, .appSurface3], startPoint: .top, endPoint: .bottom)
         }
     }
@@ -245,6 +246,7 @@ struct AppointmentDetailSheet: View {
         case .groupBStrep: return .orangePink
         case .pediatric:   return .greenTeal
         case .vaccination: return .tealMint
+        case .bvc:         return LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .other:       return LinearGradient(colors: [.appSurface3, .appSurface3], startPoint: .top, endPoint: .bottom)
         }
     }

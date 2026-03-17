@@ -59,13 +59,13 @@ enum UnitSystem: String, Codable, CaseIterable {
 final class PregnancyWeek {
     @Attribute(.unique) var week: Int
     var title: String
-    var description: String
+    var weekDescription: String
     var tip: String
 
-    init(week: Int, title: String, description: String, tip: String) {
+    init(week: Int, title: String, weekDescription: String, tip: String) {
         self.week = week
         self.title = title
-        self.description = description
+        self.weekDescription = weekDescription
         self.tip = tip
     }
 }
@@ -296,6 +296,58 @@ final class DiaperLog {
         self.type = type
     }
 }
+
+// MARK: - KickSession
+
+@Model
+final class KickSession {
+    @Attribute(.unique) var id: UUID
+    var startTime: Date
+    var endTime: Date?
+    var kickCount: Int
+
+    init(id: UUID = UUID(), startTime: Date = Date(), kickCount: Int = 0) {
+        self.id = id
+        self.startTime = startTime
+        self.kickCount = kickCount
+    }
+
+    var isComplete: Bool { endTime != nil }
+
+    var duration: TimeInterval? {
+        guard let end = endTime else { return nil }
+        return end.timeIntervalSince(startTime)
+    }
+
+    var durationString: String {
+        guard let d = duration else { return "—" }
+        let h = Int(d) / 3600
+        let m = (Int(d) % 3600) / 60
+        let s = Int(d) % 60
+        if h > 0 { return "\(h)h \(m)m" }
+        if m > 0 { return "\(m)m \(s)s" }
+        return "\(s)s"
+    }
+}
+
+// MARK: - AchievedMilestone
+
+@Model
+final class AchievedMilestone {
+    @Attribute(.unique) var id: UUID
+    var milestoneKey: String
+    var achievedDate: Date
+    var note: String
+
+    init(id: UUID = UUID(), milestoneKey: String, achievedDate: Date = Date(), note: String = "") {
+        self.id = id
+        self.milestoneKey = milestoneKey
+        self.achievedDate = achievedDate
+        self.note = note
+    }
+}
+
+// MARK: - DiaperType
 
 enum DiaperType: String, Codable, CaseIterable {
     case wet = "Wet"

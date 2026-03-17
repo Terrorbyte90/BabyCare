@@ -12,6 +12,7 @@ struct HomeView: View {
     @Query private var allFeedingLogs: [FeedingLog]
     @Query private var allSleepLogs: [SleepLog]
     @Query private var allDiaperLogs: [DiaperLog]
+    @Query(sort: \BabyMeasurement.date, order: .reverse) private var measurements: [BabyMeasurement]
 
     @State private var showAddFeeding = false
     @State private var showAddJournal = false
@@ -61,9 +62,17 @@ struct HomeView: View {
                         quickActionsSection
                             .staggerAppear(index: 3)
 
+                        if let user, user.isPregnant {
+                            pregnancyTipCard(user: user)
+                                .staggerAppear(index: 4)
+                        }
+
+                        lastActivityRow
+                            .staggerAppear(index: 5)
+
                         if !upcomingAppointments.isEmpty {
                             upcomingSection
-                                .staggerAppear(index: 4)
+                                .staggerAppear(index: 6)
                         }
 
                         // Bottom padding for tab bar
@@ -172,6 +181,145 @@ struct HomeView: View {
             }
         }
         .buttonStyle(ScaleButtonStyle())
+    }
+
+    // MARK: - Pregnancy Week Tip Card
+
+    @ViewBuilder
+    private func pregnancyTipCard(user: UserData) -> some View {
+        let weeksPregnant: Int = {
+            guard let dueDate = user.dueDate else { return 0 }
+            let start = Calendar.current.date(byAdding: .weekOfYear, value: -40, to: dueDate) ?? dueDate
+            let w = Calendar.current.dateComponents([.weekOfYear], from: start, to: Date()).weekOfYear ?? 0
+            return max(4, min(w, 40))
+        }()
+        let content = PregnancyWeekContent.forWeek(weeksPregnant)
+
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "This Week")
+
+            GlassCard(gradient: .pinkPurple) {
+                VStack(alignment: .leading, spacing: DS.s3) {
+                    HStack(spacing: DS.s3) {
+                        Text(content.sizeEmoji)
+                            .font(.system(size: 36))
+                            .frame(width: 52, height: 52)
+                            .background(Color.appPink.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack(spacing: DS.s1) {
+                                Text("Week \(weeksPregnant)")
+                                    .font(.system(size: 13, weight: .bold))
+                                    .foregroundStyle(Color.appPink)
+                                Text("·")
+                                    .foregroundStyle(Color.appTextTert)
+                                Text(content.sizeComparison)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                            Text(content.highlight)
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+                                .lineSpacing(2)
+                        }
+                    }
+
+                    Rectangle()
+                        .fill(Color.appBorder)
+                        .frame(height: 0.5)
+
+                    HStack(alignment: .top, spacing: DS.s2) {
+                        Image(systemName: "lightbulb.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.appOrange)
+                            .padding(.top, 1)
+                        Text(content.tip)
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundStyle(Color.appTextSec)
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Last Activity Row
+
+    private var lastActivityRow: some View {
+        let lastFeed = allFeedingLogs.max(by: { $0.date < $1.date })
+        let lastSleep = allSleepLogs.max(by: { $0.endDate < $1.endDate })
+        let lastMeasurement = measurements.first
+
+        guard lastFeed != nil || lastSleep != nil || lastMeasurement != nil else {
+            return AnyView(EmptyView())
+        }
+
+        return AnyView(
+            VStack(spacing: DS.s3) {
+                DSSectionHeader(title: "Last Activity")
+
+                HStack(spacing: DS.s3) {
+                    if let feed = lastFeed {
+                        lastActivityChip(
+                            icon: "drop.fill",
+                            label: "Last feed",
+                            value: relativeTime(from: feed.date),
+                            gradient: .orangePink
+                        )
+                    }
+                    if let sleep = lastSleep {
+                        lastActivityChip(
+                            icon: "moon.fill",
+                            label: "Last sleep",
+                            value: relativeTime(from: sleep.endDate),
+                            gradient: .blueIndigo
+                        )
+                    }
+                    if let m = lastMeasurement {
+                        lastActivityChip(
+                            icon: "scalemass.fill",
+                            label: "Weight",
+                            value: String(format: "%.1f kg", m.weight),
+                            gradient: .pinkPurple
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+    private func lastActivityChip(icon: String, label: String, value: String, gradient: LinearGradient) -> some View {
+        GlassCard {
+            VStack(spacing: DS.s1 + 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(gradient)
+
+                Text(value)
+                    .font(.system(size: 14, weight: .bold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(Color.appText)
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(1)
+
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(Color.appTextSec)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func relativeTime(from date: Date) -> String {
+        let interval = Date().timeIntervalSince(date)
+        if interval < 60 { return "Just now" }
+        let minutes = Int(interval) / 60
+        if minutes < 60 { return "\(minutes)m ago" }
+        let hours = minutes / 60
+        if hours < 24 { return "\(hours)h ago" }
+        let days = hours / 24
+        return "\(days)d ago"
     }
 
     // MARK: - Today Stats
@@ -493,6 +641,7 @@ struct AppointmentRow: View {
         case .groupBStrep: return .orangePink
         case .pediatric:   return .greenTeal
         case .vaccination: return .tealMint
+        case .bvc:         return LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .other:       return LinearGradient(colors: [.appTextSec, .appTextTert], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
@@ -774,8 +923,10 @@ struct AddAppointmentSheet: View {
     }
 
     private func save() {
-        modelContext.insert(Appointment(date: date, title: title, notes: notes, type: type))
+        let appointment = Appointment(date: date, title: title, notes: notes, type: type)
+        modelContext.insert(appointment)
         try? modelContext.save()
+        NotificationHelper.scheduleAppointmentReminders(for: appointment)
         dismiss()
     }
 }

@@ -202,7 +202,7 @@ struct OnboardingView: View {
             .clipShape(RoundedRectangle(cornerRadius: DS.radiusLg))
             .overlay(
                 RoundedRectangle(cornerRadius: DS.radiusLg)
-                    .stroke(selected ? gradient.opacity(0.5) : LinearGradient(colors: [Color.appBorder], startPoint: .top, endPoint: .bottom), lineWidth: selected ? 1.5 : 1)
+                    .stroke(selected ? AnyShapeStyle(gradient.opacity(0.5)) : AnyShapeStyle(Color.appBorder), lineWidth: selected ? 1.5 : 1)
             )
         }
         .buttonStyle(ScaleButtonStyle())
