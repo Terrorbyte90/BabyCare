@@ -508,20 +508,32 @@ struct ProfileView: View {
 
                     DSRowDivider()
 
-                    aboutRow(
-                        icon: "info.circle.fill",
-                        gradient: .blueIndigo,
-                        label: "Om BabyCare",
-                        value: "Version 1.0"
-                    )
+                    NavigationLink(destination: AboutView()) {
+                        HStack(spacing: DS.s3) {
+                            IconBadge(icon: "info.circle.fill", gradient: .blueIndigo, size: 36)
+                            Text("Om BabyCare")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(Color.appText)
+                            Spacer()
+                            Text("Version 1.0")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextTert)
+                        }
+                        .padding(.horizontal, DS.s4)
+                        .padding(.vertical, DS.s3 + 2)
+                    }
+                    .buttonStyle(.plain)
 
                     DSRowDivider()
 
                     aboutRow(
                         icon: "heart.text.square.fill",
                         gradient: .pinkPurple,
-                        label: "Byggd med",
-                        value: "SwiftUI & SwiftData"
+                        label: "Byggt av",
+                        value: "Ted Svärd"
                     )
 
                     DSRowDivider()

@@ -360,8 +360,9 @@ final class FeedingLog {
     var duration: TimeInterval?
     var side: FeedingSide?
     var note: String?
+    var foodNote: String? // Vad åt bebisen (fast föda)
 
-    init(id: UUID = UUID(), date: Date = Date(), type: FeedingType, amount: Double? = nil, duration: TimeInterval? = nil, side: FeedingSide? = nil, note: String? = nil) {
+    init(id: UUID = UUID(), date: Date = Date(), type: FeedingType, amount: Double? = nil, duration: TimeInterval? = nil, side: FeedingSide? = nil, note: String? = nil, foodNote: String? = nil) {
         self.id = id
         self.date = date
         self.type = type
@@ -369,6 +370,7 @@ final class FeedingLog {
         self.duration = duration
         self.side = side
         self.note = note
+        self.foodNote = foodNote
     }
 }
 
@@ -466,43 +468,51 @@ final class DiaperLog {
     @Attribute(.unique) var id: UUID
     var date: Date
     var type: DiaperType
+    var diaperSize: DiaperSize?
+    var stoolConsistency: Int? // 1-5: 1=mycket hård, 3=normal, 5=mycket lös
     var color: StoolColor?
     var note: String?
 
-    init(id: UUID = UUID(), date: Date = Date(), type: DiaperType, color: StoolColor? = nil, note: String? = nil) {
+    init(id: UUID = UUID(), date: Date = Date(), type: DiaperType, diaperSize: DiaperSize? = nil, stoolConsistency: Int? = nil, color: StoolColor? = nil, note: String? = nil) {
         self.id = id
         self.date = date
         self.type = type
+        self.diaperSize = diaperSize
+        self.stoolConsistency = stoolConsistency
         self.color = color
         self.note = note
     }
 }
 
 enum DiaperType: String, Codable, CaseIterable {
-    case wet = "Blöt"
-    case messy = "Smutsig"
-    case both = "Båda"
-    case dry = "Torr"
+    case kiss = "Kiss"
+    case bajs = "Bajs"
+    case torr = "Torr"
 
     var displayName: String { rawValue }
 
     var icon: String {
         switch self {
-        case .wet:   return "drop.fill"
-        case .messy: return "circle.fill"
-        case .both:  return "circle.lefthalf.filled"
-        case .dry:   return "circle"
+        case .kiss:  return "drop.fill"
+        case .bajs:  return "circle.fill"
+        case .torr:  return "circle"
         }
     }
 
     var color: Color {
         switch self {
-        case .wet:   return .blue
-        case .messy: return .brown
-        case .both:  return .orange
-        case .dry:   return .gray
+        case .kiss:  return .blue
+        case .bajs:  return .brown
+        case .torr:  return .gray
         }
     }
+}
+
+enum DiaperSize: String, Codable, CaseIterable {
+    case liten = "Liten"
+    case mellan = "Mellan"
+    case stor = "Stor"
+    var displayName: String { rawValue }
 }
 
 enum StoolColor: String, Codable, CaseIterable {

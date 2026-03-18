@@ -365,11 +365,7 @@ struct HomeView: View {
     private var fertilityForumCard: some View {
         VStack(spacing: DS.s3) {
             DSSectionHeader(title: "Från forum")
-
-            CompactForumCard(
-                quote: "\"Vi försökte i 8 månader. Det viktigaste var att slappna av och lita på processen. Temperaturmätning hjälpte oss verkligen att förstå min cykel.\"",
-                source: "Anonymt inlägg, Familjeliv"
-            )
+            RotatingForumCard(quotes: HomeForumQuotes.fertilityQuotes)
         }
     }
 
@@ -578,11 +574,7 @@ struct HomeView: View {
     private var pregnancyForumCard: some View {
         VStack(spacing: DS.s3) {
             DSSectionHeader(title: "Från forum")
-
-            CompactForumCard(
-                quote: "\"Vecka 30 och bebisen sparkar som aldrig förr! Det bästa tipset jag fått är att räkna sparkar varje kväll, det lugnar ens oro.\"",
-                source: "Anonymt inlägg, Familjeliv"
-            )
+            RotatingForumCard(quotes: HomeForumQuotes.pregnancyQuotes)
         }
     }
 
@@ -602,16 +594,22 @@ struct HomeView: View {
         parentQuickActionsSection
             .staggerAppear(index: 4)
 
+        // BVC nästa kontroll
+        if let _ = user?.babyBirthDate {
+            parentBVCCard
+                .staggerAppear(index: 5)
+        }
+
         parentLastActivities
-            .staggerAppear(index: 5)
+            .staggerAppear(index: 6)
 
         if !upcomingAppointments.isEmpty {
             upcomingSection
-                .staggerAppear(index: 6)
+                .staggerAppear(index: 7)
         }
 
         parentForumCard
-            .staggerAppear(index: 7)
+            .staggerAppear(index: 8)
     }
 
     // Baby Age Hero
@@ -788,6 +786,104 @@ struct HomeView: View {
         }
     }
 
+    // BVC-schema kort
+    @ViewBuilder
+    private var parentBVCCard: some View {
+        if let birthDate = user?.babyBirthDate {
+            let nextVisit = nextBVCVisit(from: birthDate)
+
+            VStack(spacing: DS.s3) {
+                DSSectionHeader(title: "BVC-schema")
+
+                GlassCard(gradient: LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing)) {
+                    HStack(spacing: DS.s3) {
+                        IconBadge(
+                            icon: "cross.case.fill",
+                            gradient: LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing),
+                            size: 46
+                        )
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Nästa BVC-kontroll")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(Color.appTextTert)
+
+                            if let visit = nextVisit {
+                                Text(visit.title)
+                                    .font(.system(size: 15, weight: .bold))
+                                    .foregroundStyle(Color.appText)
+
+                                Text(visit.dateString)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+
+                                if !visit.description.isEmpty {
+                                    Text(visit.description)
+                                        .font(.system(size: 11))
+                                        .foregroundStyle(Color.appTextTert)
+                                        .lineSpacing(2)
+                                }
+                            } else {
+                                Text("Alla BVC-kontroller klara")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(Color.appGreen)
+                                Text("Nästa besök vid skolstart")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                        }
+
+                        Spacer()
+                    }
+                }
+            }
+        }
+    }
+
+    private struct BVCVisitInfo {
+        let title: String
+        let dateString: String
+        let description: String
+    }
+
+    private func nextBVCVisit(from birthDate: Date) -> BVCVisitInfo? {
+        let cal = Calendar.current
+        let now = Date()
+
+        // BVC-schema: (namn, dagar/månader, kalenderkomponent, beskrivning)
+        let schedule: [(name: String, value: Int, component: Calendar.Component, description: String)] = [
+            ("BVC – 1 vecka", 7, .day, "Vikt, amningsbedömning, allmän undersökning"),
+            ("BVC – 6 veckor", 42, .day, "Fullständig undersökning, hörselprov, vaccin (möjligt)"),
+            ("BVC – 3 månader", 3, .month, "Motorikbedömning, socialt samspel, synprov"),
+            ("BVC – 5 månader", 5, .month, "Vaccination: difteri, stelkramp, kikhosta, Hib, polio"),
+            ("BVC – 6 månader", 6, .month, "Vikt, längd, motorik, sömnguide, fast föda"),
+            ("BVC – 10 månader", 10, .month, "Motorik, kommunikation, separation, bett"),
+            ("BVC – 12 månader", 12, .month, "Vaccination: MPR (mässling, påssjuka, röda hund)"),
+            ("BVC – 18 månader", 18, .month, "Språkbedömning, gång, beteende, vaccination"),
+            ("BVC – 2,5 år", 30, .month, "Språk, socialt samspel, beteende, syn och hörsel"),
+            ("BVC – 4 år", 48, .month, "Syntest, hörsel, koordination, skolförberedelse"),
+            ("BVC – 5 år", 60, .month, "Sista BVC-besöket, fullständig bedömning inför skolan"),
+        ]
+
+        for visit in schedule {
+            guard let visitDate = cal.date(byAdding: visit.component, value: visit.value, to: birthDate) else { continue }
+            if visitDate >= cal.startOfDay(for: now) {
+                let formatter = DateFormatter()
+                formatter.locale = Locale(identifier: "sv_SE")
+                formatter.dateFormat = "d MMMM yyyy"
+                let ageComponents = cal.dateComponents([.month], from: birthDate, to: visitDate)
+                let months = ageComponents.month ?? 0
+                let ageStr = months >= 12 ? "\(months/12) år \(months%12) mån" : "\(months) månader"
+                return BVCVisitInfo(
+                    title: visit.name,
+                    dateString: "\(formatter.string(from: visitDate)) · \(ageStr)",
+                    description: visit.description
+                )
+            }
+        }
+        return nil
+    }
+
     // Quick Actions for Parent
     private var parentQuickActionsSection: some View {
         VStack(spacing: DS.s3) {
@@ -856,7 +952,7 @@ struct HomeView: View {
                     if let diaper = lastDiaper {
                         activityRow(
                             icon: diaper.type.icon,
-                            gradient: LinearGradient(colors: [diaper.type.color, diaper.type.color.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                            gradient: .tealMint,
                             title: "Blöjbyte",
                             detail: diaper.type.displayName,
                             time: relativeTime(from: diaper.date)
@@ -911,11 +1007,7 @@ struct HomeView: View {
     private var parentForumCard: some View {
         VStack(spacing: DS.s3) {
             DSSectionHeader(title: "Från forum")
-
-            CompactForumCard(
-                quote: "\"Bästa tipset: logga allt den första månaden. Det hjälper en se mönster i sömn och mat, och det är guld värt vid BVC-besöken.\"",
-                source: "Anonymt inlägg, Familjeliv"
-            )
+            RotatingForumCard(quotes: HomeForumQuotes.parentQuotes)
         }
     }
 
@@ -1075,8 +1167,9 @@ struct AddDiaperSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    @State private var diaperType: DiaperType = .wet
-    @State private var stoolColor: StoolColor? = nil
+    @State private var diaperType: DiaperType = .kiss
+    @State private var diaperSize: DiaperSize = .mellan
+    @State private var stoolConsistency: Int = 3
     @State private var note = ""
     @State private var date = Date()
 
@@ -1138,57 +1231,29 @@ struct AddDiaperSheet: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                // Stool color (only for messy/both)
-                if diaperType == .messy || diaperType == .both {
+                // Storlek (för kiss och bajs)
+                if diaperType != .torr {
                     VStack(alignment: .leading, spacing: DS.s2) {
-                        Text("AVFÖRINGSFÄRG")
+                        Text("STORLEK")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Color.appTextTert)
                             .tracking(0.6)
 
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: DS.s2) {
-                                ForEach(StoolColor.allCases, id: \.self) { color in
-                                    Button {
-                                        withAnimation { stoolColor = color }
-                                    } label: {
-                                        VStack(spacing: 4) {
-                                            Circle()
-                                                .fill(color.swiftUIColor)
-                                                .frame(width: 24, height: 24)
-                                                .overlay(
-                                                    Circle()
-                                                        .stroke(stoolColor == color ? .white : Color.clear, lineWidth: 2)
-                                                )
-
-                                            Text(color.displayName)
-                                                .font(.system(size: 10, weight: .medium))
-                                                .foregroundStyle(stoolColor == color ? Color.appText : Color.appTextTert)
-                                        }
+                        HStack(spacing: DS.s2) {
+                            ForEach(DiaperSize.allCases, id: \.self) { size in
+                                Button {
+                                    diaperSize = size
+                                } label: {
+                                    Text(size.displayName)
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .foregroundStyle(diaperSize == size ? .white : Color.appTextSec)
+                                        .frame(maxWidth: .infinity)
                                         .padding(.vertical, DS.s2)
-                                        .padding(.horizontal, DS.s3)
-                                        .background(stoolColor == color ? Color.appSurface3 : Color.appSurface2)
+                                        .background(diaperSize == size ? LinearGradient.tealMint : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
                                         .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
-                                    }
-                                    .buttonStyle(ScaleButtonStyle())
                                 }
+                                .buttonStyle(ScaleButtonStyle())
                             }
-                        }
-
-                        if let color = stoolColor, let warning = color.warning {
-                            HStack(alignment: .top, spacing: DS.s2) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color.appOrange)
-
-                                Text(warning)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color.appOrange)
-                                    .lineSpacing(2)
-                            }
-                            .padding(DS.s3)
-                            .background(Color.appOrange.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                         }
                     }
                 }
@@ -1200,7 +1265,13 @@ struct AddDiaperSheet: View {
     }
 
     private func save() {
-        let log = DiaperLog(date: date, type: diaperType, color: stoolColor, note: note.isEmpty ? nil : note)
+        let log = DiaperLog(
+            date: date,
+            type: diaperType,
+            diaperSize: diaperType != .torr ? diaperSize : nil,
+            stoolConsistency: diaperType == .bajs ? stoolConsistency : nil,
+            note: note.isEmpty ? nil : note
+        )
         modelContext.insert(log)
         try? modelContext.save()
         dismiss()
@@ -1760,6 +1831,72 @@ struct AddAppointmentSheet: View {
         NotificationHelper.scheduleAppointmentReminders(for: appointment)
         dismiss()
     }
+}
+
+// MARK: - Rotating Forum Card
+
+struct RotatingForumCard: View {
+    let quotes: [(text: String, source: String)]
+    @State private var currentIndex = 0
+    private let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        let item = quotes[currentIndex]
+        CompactForumCard(quote: item.text, source: item.source)
+            .id(currentIndex)
+            .transition(.asymmetric(
+                insertion: .move(edge: .trailing).combined(with: .opacity),
+                removal: .move(edge: .leading).combined(with: .opacity)
+            ))
+            .onReceive(timer) { _ in
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    currentIndex = (currentIndex + 1) % quotes.count
+                }
+            }
+    }
+}
+
+// MARK: - Home Forum Quotes Data
+
+struct HomeForumQuotes {
+    static let parentQuotes: [(text: String, source: String)] = [
+        ("\"Logga allt den första månaden. Det hjälper dig se mönster i sömn och mat – och är guld värt vid BVC.\"", "Familjeliv"),
+        ("\"Wake windows förändrade allt. Bebisen slutade skrika av trötthet när vi lade ner i tid.\"", "Babyhjälpen"),
+        ("\"Bästa investeringen: en bra babyvåg. Man ser direkt att amningen funkar.\"", "Amningshjälpen-forumet"),
+        ("\"Nattliga matningar: sätt upp ett nattljus och ha allt klart. Du vill inte hitta saker i mörkret.\"", "Reddit r/NewParents"),
+        ("\"BVC-sköterskan räddade oss. Vi var på väg att sluta amma – hon hjälpte oss hitta rätt tag.\"", "Föräldrakraft"),
+        ("\"Tupplur på promenad = fri tid för mig. Varje dag. Livsräddande.\"", "Familjeliv"),
+        ("\"Ta emot hjälp. Alla som erbjuder sig – tacka ja. Stolthet är lyxen du inte har råd med.\"", "Maternity-forumet"),
+        ("\"Kontakta läkare direkt om bebisen har feber under 3 månader. Vänta inte.\"", "1177.se"),
+        ("\"Hud mot hud de första veckorna – det lugnar bebisen, startar amningen och du mår bättre.\"", "Amningshjälpen"),
+        ("\"Knappt 6 veckor in och koliken exploderade. Vitt brus på Spotify – livräddande.\"", "Babyhjälpen")
+    ]
+
+    static let pregnancyQuotes: [(text: String, source: String)] = [
+        ("\"Räkna sparkar från vecka 28. Det gav mig enorm trygghet och vi hittade ett mönster direkt.\"", "Familjeliv"),
+        ("\"Vecka 30 och bebisen sparkar som aldrig förr! Bästa känslan.\"", "Föräldrakraft"),
+        ("\"Folsyra och D-vitamin – börja ta dem redan nu om du planerar graviditet.\"", "1177.se"),
+        ("\"Födelseförberedelsekursen på BB var fantastisk. Gå den med din partner.\"", "Stockholms BB"),
+        ("\"Tredje trimestern: köp en gravidkudde. Det förändrar nätterna helt.\"", "Babyhjälpen"),
+        ("\"Andningsövningar under förlossningen – de spelade en enorm roll. Öva i förväg.\"", "Barnmorskeguiden"),
+        ("\"Ultraljuden var magiska. Det riktiga mötet, innan mötet.\"", "Familjeliv"),
+        ("\"Ät järnrikt: linser, spenat, rött kött. Gravidanemi är jobbigt och förebyggbart.\"", "1177.se"),
+        ("\"Ha inlagt i kalendern: vad händer vecka 32, 36, 38. Koll på allt minskar oro.\"", "Reddit r/pregnant"),
+        ("\"Magmätning hemma: tätt väntar en snabbt körning till BB. Lugnt väntar gradvis.\"", "Barnmorskeguiden")
+    ]
+
+    static let fertilityQuotes: [(text: String, source: String)] = [
+        ("\"Temperaturkurvan avslöjade att jag ägglossnade dag 20, inte dag 14. Det förändrade allt.\"", "Fertilitetsforum"),
+        ("\"Vi försökte i 8 månader. Viktigaste var att slappna av och lita på processen.\"", "Familjeliv"),
+        ("\"Akupunktur hjälpte inte mig men en annan kvinna i gruppen svär vid det. Prova allt.\"", "Fertilitetsforumet"),
+        ("\"Folsyra 3 månader innan – läste forskningen och började direkt.\"", "1177.se"),
+        ("\"Cyklens 4 faser är fascinerande. Förstår min kropp på ett helt nytt sätt nu.\"", "Naturlig familjeplanering"),
+        ("\"Äggviteliknande flytning = fertilitetsfönster. Hur visste jag inte det förut?\"", "Fertilitetsforum"),
+        ("\"Spermierna lever 5 dagar. Börja inte samlag på ägglossningsdagen – börja 3 dagar innan.\"", "Fertilitetskliniken"),
+        ("\"Stödet från gruppen på Fertilitetscoachen online var enormt. Ni är inte ensamma.\"", "Fertilitetscoachen"),
+        ("\"Hormontest visade lågt östrogen. Vi hade aldrig hittat det utan utredning.\"", "Fertilitetskliniken"),
+        ("\"Drömmen är ett barn, men vägen dit har gjort oss starkare som par.\"", "Familjeliv")
+    ]
 }
 
 #Preview {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AABB000000000051 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AABB000000000050 /* Assets.xcassets */; };
+		AABB000000000200 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000100 /* AboutView.swift */; };
 		AABB000000000201 /* BabyCareApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000101 /* BabyCareApp.swift */; };
 		AABB000000000203 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000103 /* CalendarView.swift */; };
 		AABB000000000205 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000105 /* ContentView.swift */; };
@@ -51,6 +52,7 @@
 		AABB000000000011 /* BabyCare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BabyCare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AABB000000000050 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AABB000000000052 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AABB000000000100 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		AABB000000000101 /* BabyCareApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareApp.swift; sourceTree = "<group>"; };
 		AABB000000000103 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		AABB000000000105 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 		AABB000000000003 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				AABB000000000100 /* AboutView.swift */,
 				AABB000000000101 /* BabyCareApp.swift */,
 				AABB000000000103 /* CalendarView.swift */,
 				AABB000000000401 /* ChildrenStories.swift */,
@@ -270,6 +273,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AABB000000000200 /* AboutView.swift in Sources */,
 				AABB000000000201 /* BabyCareApp.swift in Sources */,
 				AABB000000000203 /* CalendarView.swift in Sources */,
 				AABB000000000301 /* ChildrenStories.swift in Sources */,

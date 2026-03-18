@@ -612,8 +612,14 @@ struct LoggingHub: View {
 
         for log in diaperLogs.filter({ Calendar.current.isDateInToday($0.date) }) {
             var subtitle = log.type.displayName
-            if let color = log.color {
-                subtitle += " (\(color.displayName))"
+            if let size = log.diaperSize {
+                subtitle += " (\(size.displayName))"
+            }
+            if log.type == .bajs, let cons = log.stoolConsistency {
+                let labels = ["", "Mycket hård", "Hård", "Normal", "Lös", "Mycket lös"]
+                if cons >= 1 && cons <= 5 {
+                    subtitle += " · \(labels[cons])"
+                }
             }
             entries.append(TimelineEntry(
                 date: log.date,
@@ -713,7 +719,7 @@ struct FeedingLogSheet: View {
 
                 case .solid:
                     VStack(alignment: .leading, spacing: DS.s2) {
-                        Text("ANTECKNING")
+                        Text("VAD ÅT BEBISEN?")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Color.appTextTert)
                             .tracking(0.6)
@@ -727,6 +733,10 @@ struct FeedingLogSheet: View {
                             .background(Color.appSurface2)
                             .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                             .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
+
+                        Text("T.ex. morotspuré, banan, havregrynsgröt...")
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color.appTextTert)
                     }
                 }
             }
@@ -855,7 +865,8 @@ struct FeedingLogSheet: View {
             amount: Double(amount),
             duration: duration,
             side: feedingType == .breastfeeding ? side : nil,
-            note: note.isEmpty ? nil : note
+            note: note.isEmpty ? nil : note,
+            foodNote: feedingType == .solid && !note.isEmpty ? note : nil
         )
         modelContext.insert(log)
         try? modelContext.save()
@@ -999,15 +1010,16 @@ struct DiaperLogSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    @State private var diaperType: DiaperType = .wet
-    @State private var stoolColor: StoolColor?
+    @State private var diaperType: DiaperType = .kiss
+    @State private var diaperSize: DiaperSize = .mellan
+    @State private var stoolConsistency: Int = 3
     @State private var note: String = ""
     @State private var date = Date()
 
     var body: some View {
         DSSheet(title: "Logga bloja", onSave: save) {
             VStack(spacing: DS.s5) {
-                // Type picker
+                // Type picker - Kiss / Bajs / Torr
                 VStack(alignment: .leading, spacing: DS.s2) {
                     Text("TYP")
                         .font(.system(size: 11, weight: .semibold))
@@ -1019,17 +1031,14 @@ struct DiaperLogSheet: View {
                             Button {
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                     diaperType = type
-                                    if type == .wet || type == .dry {
-                                        stoolColor = nil
-                                    }
                                 }
                                 HapticFeedback.selection()
                             } label: {
-                                VStack(spacing: 4) {
+                                VStack(spacing: 6) {
                                     Image(systemName: type.icon)
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(.system(size: 22, weight: .semibold))
                                     Text(type.displayName)
-                                        .font(.system(size: 11, weight: .medium))
+                                        .font(.system(size: 13, weight: .semibold))
                                 }
                                 .foregroundStyle(diaperType == type ? .white : Color.appTextSec)
                                 .frame(maxWidth: .infinity)
@@ -1046,69 +1055,92 @@ struct DiaperLogSheet: View {
                 // Date
                 datePickerField(label: "TID", selection: $date, components: [.date, .hourAndMinute])
 
-                // Stool color picker (only if messy or both)
-                if diaperType == .messy || diaperType == .both {
+                // Storlek (för kiss och bajs)
+                if diaperType == .kiss || diaperType == .bajs {
                     VStack(alignment: .leading, spacing: DS.s2) {
-                        Text("FÄRG PÅ AVFÖRING")
+                        Text("STORLEK")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Color.appTextTert)
                             .tracking(0.6)
 
-                        LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible()),
-                            GridItem(.flexible()),
-                        ], spacing: DS.s2) {
-                            ForEach(StoolColor.allCases, id: \.self) { color in
+                        HStack(spacing: DS.s2) {
+                            ForEach(DiaperSize.allCases, id: \.self) { size in
                                 Button {
                                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                        stoolColor = stoolColor == color ? nil : color
+                                        diaperSize = size
                                     }
                                     HapticFeedback.selection()
                                 } label: {
-                                    HStack(spacing: 6) {
-                                        Circle()
-                                            .fill(color.swiftUIColor)
-                                            .frame(width: 16, height: 16)
-                                            .overlay(
-                                                Circle().stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                            )
+                                    Text(size.displayName)
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundStyle(diaperSize == size ? .white : Color.appTextSec)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, DS.s2 + 2)
+                                        .background(diaperSize == size ? LinearGradient.tealMint : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
+                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(diaperSize == size ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                                }
+                                .buttonStyle(ScaleButtonStyle())
+                            }
+                        }
+                    }
+                }
 
-                                        Text(color.displayName)
-                                            .font(.system(size: 13, weight: .semibold))
+                // Konsistens (bara för bajs)
+                if diaperType == .bajs {
+                    VStack(alignment: .leading, spacing: DS.s3) {
+                        HStack {
+                            Text("KONSISTENS")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(Color.appTextTert)
+                                .tracking(0.6)
+                            Spacer()
+                            Text(consistencyLabel(stoolConsistency))
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(consistencyColor(stoolConsistency))
+                        }
+
+                        HStack(spacing: DS.s2) {
+                            ForEach(1...5, id: \.self) { level in
+                                Button {
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        stoolConsistency = level
                                     }
-                                    .foregroundStyle(stoolColor == color ? .white : Color.appTextSec)
+                                    HapticFeedback.selection()
+                                } label: {
+                                    VStack(spacing: 4) {
+                                        Circle()
+                                            .fill(stoolConsistency == level
+                                                  ? consistencyColor(level).gradient
+                                                  : Color.appSurface2.gradient)
+                                            .frame(width: 36, height: 36)
+                                            .overlay(
+                                                Text("\(level)")
+                                                    .font(.system(size: 14, weight: .bold))
+                                                    .foregroundStyle(stoolConsistency == level ? .white : Color.appTextSec)
+                                            )
+                                            .overlay(
+                                                Circle().stroke(stoolConsistency == level ? Color.clear : Color.appBorderMed, lineWidth: 1)
+                                            )
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, DS.s2 + 2)
-                                    .background(stoolColor == color ? color.swiftUIColor.opacity(0.3).gradient : Color.appSurface2.gradient)
-                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
-                                            .stroke(stoolColor == color ? color.swiftUIColor.opacity(0.5) : Color.appBorderMed, lineWidth: 1)
-                                    )
                                 }
                                 .buttonStyle(ScaleButtonStyle())
                             }
                         }
 
-                        // Warning for abnormal colors
-                        if let color = stoolColor, !color.isNormal, let warning = color.warning {
-                            HStack(alignment: .top, spacing: DS.s2) {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Color.appOrange)
-                                    .padding(.top, 1)
-
-                                Text(warning)
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundStyle(Color.appOrange)
-                                    .lineSpacing(3)
-                            }
-                            .padding(DS.s3)
-                            .background(Color.appOrange.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
-                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appOrange.opacity(0.3), lineWidth: 1))
-                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        HStack {
+                            Text("Mycket hård")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.appTextTert)
+                            Spacer()
+                            Text("Normal")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.appTextTert)
+                            Spacer()
+                            Text("Mycket lös")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.appTextTert)
                         }
                     }
                 }
@@ -1134,11 +1166,32 @@ struct DiaperLogSheet: View {
         }
     }
 
+    private func consistencyLabel(_ level: Int) -> String {
+        switch level {
+        case 1: return "Mycket hård"
+        case 2: return "Hård"
+        case 3: return "Normal"
+        case 4: return "Lös"
+        case 5: return "Mycket lös"
+        default: return "Normal"
+        }
+    }
+
+    private func consistencyColor(_ level: Int) -> Color {
+        switch level {
+        case 1, 2: return .appOrange
+        case 3: return .appGreen
+        case 4, 5: return .appBlue
+        default: return .appGreen
+        }
+    }
+
     private func save() {
         let log = DiaperLog(
             date: date,
             type: diaperType,
-            color: stoolColor,
+            diaperSize: diaperType != .torr ? diaperSize : nil,
+            stoolConsistency: diaperType == .bajs ? stoolConsistency : nil,
             note: note.isEmpty ? nil : note
         )
         modelContext.insert(log)

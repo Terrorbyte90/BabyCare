@@ -2201,6 +2201,354 @@ Undvik walker (gåstol med hjul). De är farliga (fallrisk, trappor) och bevisli
             ]
         ),
 
+        // =====================================================================
+        // MARK: EXTRA ARTICLES (15 nya)
+        // =====================================================================
+
+        Article(
+            id: "diaper-rash-guide",
+            category: .health,
+            title: "Blöjeksem – orsaker och behandling",
+            subtitle: "Vad gör du när barnets hud rodnar?",
+            icon: "cross.case.fill",
+            readTimeMinutes: 5,
+            intro: "Blöjeksem är en av de vanligaste hudåkommorna hos bebisar. Det är smärtsamt för barnet men oftast ofarligt och kan behandlas hemma.",
+            sections: [
+                ArticleSection(heading: "Vad är blöjeksem?", body: "Blöjeksem är en inflammation i huden under blöjzonen. Det orsakas av friktion, fukt, avföringens enzymer och ibland svampinfektioner. Det ser ut som röd, irriterad hud – ibland med utslag eller sår i svåra fall."),
+                ArticleSection(heading: "Förebygga blöjeksem", body: "Byt blöja ofta – varje 2–3 timme eller direkt efter avföring. Låt barnet vara utan blöja en stund dagligen. Torka alltid mjukt och noga. Använd oparfymerade produkter."),
+                ArticleSection(heading: "Behandling hemma", body: "Smörj med zinkoxid-kräm (t.ex. Sudocrem, Bepanthen) vid varje blöjbyte. Undvik blöjservetter med alkohol. Låt huden lufta. De flesta eksem läker inom 2–3 dagar."),
+                ArticleSection(heading: "När kontakta vården?", body: "Kontakta BVC om eksemmet inte läker inom 3 dagar, om huden blöder eller har sår, eller om barnet har feber. Det kan vara en svampinfektion som kräver läkemedelskräm.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om blöjeksem:",
+                consensus: "Snabb behandling och luftning fungerar bäst. Många föräldrar är nöjda med Bepanthen.",
+                quotes: ["\"Lufttid varje dag förebyggde eksem helt – vi la barnet på en handduk utan blöja 15 min per dag.\" – Mia, 28"],
+                source: "Föräldraforum"
+            ),
+            sources: ["Rikshandboken Barnhälsovård 2024", "1177 Vårdguiden"]
+        ),
+
+        Article(
+            id: "baby-solid-food-intro",
+            category: .feeding,
+            title: "Introduktion av fast föda",
+            subtitle: "Så startar du BLW eller puréer på rätt sätt",
+            icon: "fork.knife",
+            readTimeMinutes: 7,
+            intro: "Att starta fast föda är en spännande milstolpe – och det finns fler sätt att göra det på. Här går vi igenom tecken på mognad, BLW vs. puré, och vad du ska undvika.",
+            sections: [
+                ArticleSection(heading: "När är barnet redo?", body: "De flesta barn är redo vid 4–6 månaders ålder. Tecken: kan sitta upp med stöd, har tappat tungreflexen (skjuter inte automatiskt ut mat), visar intresse för mat och kan föra händer till munnen."),
+                ArticleSection(heading: "Puré vs. BLW", body: "Puré: du matar barnet med sked med slät mat. Gradvis tjockare konsistens. Passar bra om barnet verkar hungrig tidigt. BLW (Baby-Led Weaning): barnet matar sig självt med mjuka bitar från ca 6 månader. Forskning visar att BLW leder till bättre förhållande till mat och färre matningsproblem."),
+                ArticleSection(heading: "Vad ska du börja med?", body: "Börja med milda smaker: morot, potatis, äpple, päron, banan. Prova en ny matvara var 3:e dag för att se allergireaktioner. Undvik honung (botulism), hela nötter (kvävningsrisk), tillsatt salt och socker."),
+                ArticleSection(heading: "Allergier och säkerhet", body: "Introduktion av allergena livsmedel (jordnötter, ägg, gluten, fisk) tidigt (4–6 månader) kan faktiskt minska allergirisken. Prata med BVC om du har familjehistoria av allergier.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om att börja med fast föda:",
+                consensus: "BLW-föräldrar är generellt nöjda men stressade av röran. Puré-föräldrar stressar mer om mängden som äts.",
+                quotes: ["\"BLW var ett kaos i köket men hon äter allt nu som 2-åring. Värt varenda fläck.\" – Lina, 31"],
+                source: "Föräldraforum & Livsmedelsverket"
+            ),
+            sources: ["Livsmedelsverket 2024", "Rikshandboken BHV", "WHO Infant Feeding Guidelines"]
+        ),
+
+        Article(
+            id: "postpartum-depression",
+            category: .parentHealth,
+            title: "Förlossningsdepression – du är inte ensam",
+            subtitle: "Vad är normalt och när ska du söka hjälp?",
+            icon: "heart.text.square.fill",
+            readTimeMinutes: 8,
+            intro: "Upp till 10–15% av alla nyblivna föräldrar upplever förlossningsdepression. Det är en sjukdom, inte svaghet – och det finns mycket hjälp att få.",
+            sections: [
+                ArticleSection(heading: "Baby blues vs. förlossningsdepression", body: "Baby blues drabbar upp till 80% av alla mammor och ger gråtattacker, humörsvängningar och oro de första 1–2 veckorna. Det beror på hormonkasket och går över. Förlossningsdepression är längre, djupare och kräver behandling."),
+                ArticleSection(heading: "Symtom att känna igen", body: "Nedstämdhet under mer än 2 veckor, sömnproblem trots trötthet, känsla av att vara en dålig förälder, svårt att knyta an till barnet, ångest, tankegångar om att skada sig själv eller barnet. Ta dem på allvar."),
+                ArticleSection(heading: "Söka hjälp", body: "Prata med din barnmorska, BVC-sköterska eller läkare. Det finns effektiv behandling: samtal, KBT och medicinering om det behövs. Skammen är det enda hindret – ta bort den."),
+                ArticleSection(heading: "Drabbar inte bara mammor", body: "10% av pappor/partners drabbas också av förlossningsdepression. Symtomen kan visa sig som irritabilitet, ökad alkohol, tillbakadragenhet och känsla av inkompetens som förälder.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om förlossningsdepression:",
+                consensus: "Att söka hjälp är det modiga valet. De flesta som söker hjälp mår mycket bättre.",
+                quotes: ["\"Jag väntade 6 månader för att jag trodde det var normalt att känna sig ledsen. Det var det inte. Sök hjälp.\" – Anonym"],
+                source: "Föräldraforum & 1177"
+            ),
+            sources: ["SBU – Behandling av depression hos nyblivna föräldrar 2021", "1177 Vårdguiden", "Karolinska Institutet"]
+        ),
+
+        Article(
+            id: "safe-sleep-guidelines",
+            category: .sleep,
+            title: "Säker sömn – allt du behöver veta",
+            subtitle: "Hur minskar du risken för SIDS och skapar trygg sömnmiljö",
+            icon: "moon.stars.fill",
+            readTimeMinutes: 6,
+            intro: "Plötslig spädbarnsdöd (SIDS) är sällsynt men fruktad. Det finns konkreta åtgärder som dramatiskt minskar risken. Lär dig dem.",
+            sections: [
+                ArticleSection(heading: "Grundreglerna", body: "Lägg alltid barnet att sova på rygg. Håll sängen fri från kuddar, lösa filtar och leksaker. Använd en fast madrass. Barnet ska sova i sin egna säng i ditt rum de 6 första månaderna."),
+                ArticleSection(heading: "Rätt temperatur", body: "Rummet ska hålla 18–20 grader. Undvik överhettning – känn på nacken (ska vara varm men ej svettig). En bodysock och en tunn pyjamas räcker normalt."),
+                ArticleSection(heading: "Napp minskar risken", body: "Forskning visar att nappsugande minskar SIDS-risken med upp till 50%. Du behöver inte hålla nappen i – när barnet somnar och nappen ramlar ut är det okej."),
+                ArticleSection(heading: "Rökning och alkohol", body: "Rökning i hemmet ökar SIDS-risken dramatiskt. Dela aldrig säng med barnet om du rökt, druckit alkohol eller tagit sömntabletter. Samsovning i soffa är extra farligt.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om säker sömn:",
+                consensus: "De flesta föräldrar känner oro för SIDS. Att följa reglerna ger trygghet.",
+                quotes: ["\"Vi köpte en barnrörelsemonitor och den gav oss ro. Kanske inte nödvändig men för vår skull.\" – Petra, 32"],
+                source: "Föräldraforum & Rikshandboken BHV"
+            ),
+            sources: ["AAP Safe Sleep Guidelines 2022", "Rikshandboken Barnhälsovård", "SIDS-forskning Karolinska"]
+        ),
+
+        Article(
+            id: "toddler-sleep-regression",
+            category: .sleep,
+            title: "Sömnregressioner – varför barnet vaknar igen",
+            subtitle: "Orsaker och strategier vid 4, 8, 12, 18 och 24 månader",
+            icon: "moon.zzz.fill",
+            readTimeMinutes: 6,
+            intro: "Sömnregressioner slår till precis när du trodde att ni hittat ett fungerande schema. Det är biologiskt normalt och beror på hjärnans snabba utveckling.",
+            sections: [
+                ArticleSection(heading: "Vad är en sömnregression?", body: "En period när ett barn som sovit bra plötsligt vaknar ofta, har svårt att somna eller vägrar sova. Det beror på neurologiska språng, nya färdigheter eller stora förändringar i barnets liv."),
+                ArticleSection(heading: "Vanliga tider", body: "4 månader: hjärnan mognar, sömncykler förändras permanent. 8–10 månader: separation, rörlighet. 12 månader: gångmognad. 18 månader: språkexplosion. 24 månader: utökat medvetande."),
+                ArticleSection(heading: "Vad du kan göra", body: "Håll rutinerna konsekvent – det är ditt viktigaste verktyg. Svara snabbt för att undvika ökad separation. Öka stödet (mer amning, mer bärande) tillfälligt om det hjälper. Det här är en fas – den går över."),
+                ArticleSection(heading: "4-månadersregressionen är permanent", body: "Vid 4 månader ändras sömnarkitekturen permanent – barnet sover nu i cykler som vuxna. Det är inte en regression utan en mognad. Undervisning i självständig insomnande (sleep training) kan hjälpa vid denna ålder om ni väljer det.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om sömnregressioner:",
+                consensus: "Alla konstaterar att 'det går över'. Tålamod och rutiner är nyckeln.",
+                quotes: ["\"4-månaders-regressionen träffade oss som en truck. 3 veckor av kaos. Sedan somnade hon bättre än någonsin.\" – Sandra, 29"],
+                source: "Föräldraforum & Huckleberry Sleep"
+            ),
+            sources: ["Mindell JA (2015). Sleep training and attachment. Sleep Med Reviews.", "NHS Sleep regression guidelines 2023"]
+        ),
+
+        Article(
+            id: "attachment-theory-parent",
+            category: .development,
+            title: "Anknytningsteori i praktiken",
+            subtitle: "Hur du bygger trygg anknytning de första åren",
+            icon: "heart.fill",
+            readTimeMinutes: 7,
+            intro: "Trygg anknytning är grunden för barnets hela liv – emotionellt, socialt och kognitivt. Den byggs i tusentals små ögonblick varje dag.",
+            sections: [
+                ArticleSection(heading: "Vad är anknytning?", body: "Anknytning är det emotionella bandet mellan barn och omsorgsperson. Det är inte kärlek i sig – det är en biologisk trygghetsstrategi. Barnet söker dig vid stress och utforskar världen ifrån dig som trygg bas."),
+                ArticleSection(heading: "Trygg vs. otrygg anknytning", body: "Trygg anknytning: barnet vet att du finns och svarar. Hen kan utforska tryggt. Otrygg: barnet lär sig antingen att klinga eller att inte lita på dig alls. Trygg anknytning skapar bättre impulskontroll, empati och akademisk framgång."),
+                ArticleSection(heading: "Hur bygger du det?", body: "Svara på gråt konsekvent. Håll ögonkontakt och le. Spegla barnets känslor. Säg vad du gör: 'Nu tar vi på dig kläder.' Var förutsägbar – rutiner bygger trygghet. Reparera misstag – om du förlorar tålamodet, återkoppla med en omfamning."),
+                ArticleSection(heading: "Skärmtid och anknytning", body: "Barnet behöver responsiva vuxna, inte perfekta. En studie visade att 'good enough parenting' räcker. Du behöver inte vara 100% responsiv – bara tillräckligt konsekvent.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om anknytning:",
+                consensus: "Nästan alla föräldrar oroar sig att de 'gör det fel'. Forskning visar att kärlek och konsekvens räcker.",
+                quotes: ["\"Jag läste om anknytningsteori och slutade skämmas för att jag bär honom hela tiden. Det är rätt.\" – Julia, 27"],
+                source: "Föräldraforum"
+            ),
+            sources: ["Bowlby J (1969). Attachment and Loss.", "Ainsworth MDS (1978). Patterns of Attachment."]
+        ),
+
+        Article(
+            id: "breastfeeding-challenges",
+            category: .feeding,
+            title: "Amningsutmaningar – lösningar och hjälp",
+            subtitle: "Mjölkstockning, sprickor och låg produktion",
+            icon: "figure.and.child.holdinghands",
+            readTimeMinutes: 8,
+            intro: "Amning är naturligt men inte alltid enkelt. Här är de vanligaste problemen och hur du löser dem – med stöd från experter och föräldrar.",
+            sections: [
+                ArticleSection(heading: "Sprickor och sår", body: "Vanligaste orsak: felaktigt tag. Bebisen ska ha en stor del av areoln i munnen, inte bara bröstvårtan. Gaping öppnar – vänta på brett gapande. Smörj med bröstmjölk efter amning. Kontakta amningshjälpen om smärtan är svår."),
+                ArticleSection(heading: "Mjölkstockning", body: "Hårt, ömt område i bröstet. Ammning frekvent (bebisen töms bäst). Värme och massage innan amning. Kyla efteråt för svullnad. Kontakta läkare om du får feber – kan vara bröstinflammation (mastit)."),
+                ArticleSection(heading: "Låg mjölkproduktion", body: "Amma ofta – produktion styrs av efterfrågan. Undvik tidiga tillskott av flaska om inte medicinskt nödvändigt. Pumpa mellan amningarna om du vill öka. Drick tillräckligt. Undvik bröstpump de 2 första veckorna om möjligt (förvirrar ettablering)."),
+                ArticleSection(heading: "När sluta amma?", body: "WHO rekommenderar amning till 2 år och längre om båda vill. Socialstyrelsen rekommenderar bröstmjölk som enda föda till 6 månader. Det finns inget 'för länge' – det är ditt och barnets val.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om amning:",
+                consensus: "Amningshjälpen och laktationskonsulter hyllas av så gott som alla föräldrar.",
+                quotes: ["\"Ring amningshjälpen. Ring dem igen. De räddade oss.\" – Emma, 30"],
+                source: "Amningshjälpen & Föräldraforum"
+            ),
+            sources: ["WHO Breastfeeding Guidelines", "Rikshandboken Barnhälsovård", "Amningshjälpen.se"]
+        ),
+
+        Article(
+            id: "vitamin-d-babies",
+            category: .health,
+            title: "D-vitamin och järn till bebisen",
+            subtitle: "Varför, hur mycket och hur länge?",
+            icon: "sun.max.fill",
+            readTimeMinutes: 4,
+            intro: "Alla nyfödda bebisars i Sverige behöver D-vitaminftillskott. Järntillskott kan också behövas. Här är vad du behöver veta.",
+            sections: [
+                ArticleSection(heading: "D-vitamin", body: "I Sverige får bebisen inte tillräckligt med D-vitamin via mat eller sol, särskilt vintertid. BVC rekommenderar D-vitamin-droppar (10 mikrogram/dag) från 2 veckors ålder till 2 år. Fortsätt gärna längre."),
+                ArticleSection(heading: "Järn", body: "Bebisar föds med järndepåer som räcker ca 4–6 månader. Bröstmjölk innehåller lite järn. Barnersättning är järnberikad. Vid tidig uppstart av fast föda, välj järnrika livsmedel: kött, bönor, bröd."),
+                ArticleSection(heading: "Vem behöver extra järn?", body: "Prematurbebisar, tvillingar och barn vars mödrar hade järnbrist kan behöva järntillskott. BVC screenar för detta. Järnbrist kan ge trötthet och påverka kognitiv utveckling."),
+                ArticleSection(heading: "Omega-3", body: "Bröstmjölk innehåller DHA (omega-3) om mamman äter fisk. Barnersättning är berikad. Fet fisk till barnet rekommenderas från 6 månader, 2x/vecka.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om D-vitamin:",
+                consensus: "Alla BVC-sköterskor rekommenderar D-vitamin. De flesta föräldrar ger det regelbundet.",
+                quotes: ["\"Glömde D-vitamin en månad och BVC-sköterskan märkte det direkt. Ge det konsekvent.\" – Kim, 33"],
+                source: "Rikshandboken BHV & Livsmedelsverket"
+            ),
+            sources: ["Rikshandboken Barnhälsovård", "Livsmedelsverket 2023", "SBU D-vitamin rapport"]
+        ),
+
+        Article(
+            id: "potty-training-guide",
+            category: .development,
+            title: "Potträningstips – när och hur",
+            subtitle: "Tecken på mognad och metoderna som fungerar",
+            icon: "drop.circle.fill",
+            readTimeMinutes: 6,
+            intro: "Potträningstid kan vara stressig – men det behöver inte vara det. De flesta barn är klara vid 2–3 år, men mognadstecken är viktigare än ålder.",
+            sections: [
+                ArticleSection(heading: "Tecken på redo", body: "Barnet visar intresse för toaletten. Berättar när blöjan är blöt eller smutsig. Kan sitta still. Förstår enkla instruktioner. Verkar förstå sambandet mellan 'vill kissa' och 'kissar'. Genomsnitt: 18–30 månader."),
+                ArticleSection(heading: "Börja", body: "Starta under en lugn period (inte vid dagisststart eller nytt syskon). Köp potta och låt barnet bekanta sig med den. Sitta på potta fullt klädd några dagar. Sedan byxorna av. Var alltid positiv."),
+                ArticleSection(heading: "Metoder", body: "3-dagarsmetoden: ta bort blöjorna helt under 3 dagar hemma. Intensivt men effektivt för moget barn. Gradvis metod: byt till träningsbyxor, ta pottastunder regelbundet. Tar längre tid men mindre stress."),
+                ArticleSection(heading: "Olyckor är normala", body: "Förvänta dig olyckor i 2–4 veckor. Reagera lugnt: 'Olyckan hände – nästa gång säger du till.' Aldrig skälla eller skämma. Det förlänger processen och skapar toalettoro.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om pottränining:",
+                consensus: "De föräldrar som väntade på barnets mognad hade lättast tid.",
+                quotes: ["\"Vi startade vid 2 år och stoppade. Startade om vid 2,5 – klart på 4 dagar. Värt att vänta.\" – Martin, 36"],
+                source: "Föräldraforum"
+            ),
+            sources: ["AAP Toilet Training Guidelines", "Rikshandboken BHV"]
+        ),
+
+        Article(
+            id: "play-and-learning",
+            category: .development,
+            title: "Lek som lärande – 0 till 5 år",
+            subtitle: "Vad barnet lär sig när hen leker och hur du stöttar det",
+            icon: "gamecontroller.fill",
+            readTimeMinutes: 7,
+            intro: "Lek är inte bara underhållning – det är hjärnans viktigaste inlärningsverktyg. Forskning är tydlig: fri lek utan vuxenstyrning är ovärderlig.",
+            sections: [
+                ArticleSection(heading: "Varför lek är viktigt", body: "Under lek aktiveras prefrontalkortex (beslutsfattande), hippocampus (minne) och cerebellum (motorik) simultaneously. Lek lär barnet problemlösning, empati, kreativitet och impulskontroll bättre än strukturerad undervisning."),
+                ArticleSection(heading: "Lek per ålder", body: "0–6 mån: sensorisk lek – texturer, ljud, ansikten. 6–18 mån: orsak-verkan, kasta saker, tittut. 18–36 mån: fantasilek börjar. 3–5 år: rollekar, spel med regler, konstruktion."),
+                ArticleSection(heading: "Fri lek vs. strukturerad lek", body: "Barn idag har 40% mindre tid för fri lek än 1980-talsbarn (forskning Harvard). Det korrelerar med ökning i ångest och depression. Fri utomhuslek, med andra barn, utan vuxenstyrning är det viktigaste du kan ge."),
+                ArticleSection(heading: "Hur du hjälper", body: "Följ barnets lead. Fråga 'Vad händer nu?' istället för att bestämma. Berömma processen: 'Jag ser att du verkligen tänkte på det!' Tillåt röra och kaos – det är inlärning på gång.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om lek:",
+                consensus: "Föräldrar som minskar skärmtid och ökar utomhuslek rapporterar nöjdare, lugnare barn.",
+                quotes: ["\"Vi slopade alla schemalagda aktiviteter en sommar. Det var den bästa sommaren hittills.\" – Anna, 34"],
+                source: "Föräldraforum & Harvard Center on Developing Child"
+            ),
+            sources: ["Gray P (2013). Free to Learn.", "Harvard Center on Developing Child 2024"]
+        ),
+
+        Article(
+            id: "first-aid-baby",
+            category: .health,
+            title: "Första hjälpen till bebis",
+            subtitle: "Kvävning, feber och olyckor – vad du ska göra",
+            icon: "cross.case.fill",
+            readTimeMinutes: 8,
+            intro: "Att veta vad man ska göra i en akut situation med ett litet barn är ovärderlig kunskap. Läs det, öva det, spara det.",
+            sections: [
+                ArticleSection(heading: "Kvävning (> 12 månader)", body: "Om barnet kan hosta: låt dem hosta, säg lugnande ord. Om barnet inte kan hosta, är blått eller tyst: 5 slag mot ryggen (handen platt, mellan skulderbladen). Sedan 5 bukstötar (Heimlich). Ringa 112 direkt."),
+                ArticleSection(heading: "Kvävning (bebis < 12 månader)", body: "5 rygslag: lägg bebisen på magen längs din arm, huvudet neråt. 5 bröstkomprimer: 2 fingrar i mitten av bröstbenet. Växla ryggslag och brösttryck. Ring 112 omedelbart."),
+                ArticleSection(heading: "Feber", body: "Feber < 3 månader: alltid kontakta 1177 eller sjukhus vid 38+ grader. Feber 3–12 månader: kontakta vid 39+ eller om barnet mår dåligt. Äldre barn: behandla med paracetamol om barnet lider. Feber är inte farlig i sig."),
+                ArticleSection(heading: "Förgiftning", body: "Om barnet svalt något okänt – ring 112 eller Giftinformationen (08-33 12 31). Framkalla INTE kräkning. Ha medicinering och kemikalier utom räckhåll.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om barnolyckor:",
+                consensus: "Alla föräldrar rekommenderar HLR-kurs med barnmodul. Det är 4 timmar som kan rädda liv.",
+                quotes: ["\"Barnet satte en vindruva i halsen. Jag visste exakt vad jag skulle göra. Det gick bra. Gå en kurs.\" – Erik, 39"],
+                source: "Föräldraforum & Röda Korset"
+            ),
+            sources: ["Röda Korset Barnolyckor 2024", "1177 Vårdguiden", "Svenska Rådet för Hjärt-Lungräddning"]
+        ),
+
+        Article(
+            id: "screen-time-children",
+            category: .development,
+            title: "Skärmtid för barn – vad forskningen säger",
+            subtitle: "Rekommendationer och hur du sätter gränser",
+            icon: "ipad.and.iphone",
+            readTimeMinutes: 5,
+            intro: "Skärmtid är en av de hetaste föräldraskapsfrågorna. Här är vad forskningen faktiskt säger – utan moralpredikningar.",
+            sections: [
+                ArticleSection(heading: "Rekommendationer", body: "WHO & AAP: 0–2 år: ingen skärm (undantag videochat med far/morföräldrar). 2–5 år: max 1 timme/dag av kvalitetsinnehåll. 5+: gränser men ingen fast regel – kvalitet och kontext viktigare."),
+                ArticleSection(heading: "Vad skärmar faktiskt gör", body: "Passivt tittande (YouTube) utan interaktion: ingen inlärning hos barn under 2 år – de kan inte överföra 2D-bilder till 3D-förståelse. Interaktivt + med vuxen: viss inlärning möjlig. Videochat: fungerar – det är social interaktion i realtid."),
+                ArticleSection(heading: "Skärmtyp spelar roll", body: "Passivt tittande = sämst. Interaktiva appar med responsiv feedback = bättre. Pedagogiska program (Bolibompa, Sesame Street) = okej i måttlig dos. Snabbklipp och 'autoplay' = undvik."),
+                ArticleSection(heading: "Hur sätter du gränser?", body: "Inga skärmar vid matbordet. Inget 1 timme innan sänggåendet. Skärm som belöning? Undvik – skapar överkonsumtion. Titta TILLSAMMANS och prata om innehållet.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om skärmtid:",
+                consensus: "Föräldrar vet att gränserna är viktiga men kämpar med genomförandet. Konsekvens vinner.",
+                quotes: ["\"Vi har skärmfria middagar och kvällar. Barnen protesterade en vecka. Nu leker de bara.\" – Cecilia, 37"],
+                source: "Föräldraforum"
+            ),
+            sources: ["WHO Screen Time Guidelines 2019", "AAP 2023", "Common Sense Media Research 2023"]
+        ),
+
+        Article(
+            id: "fertility-nutrition",
+            category: .fertility,
+            title: "Kost och fertilitet",
+            subtitle: "Vad du äter påverkar dina chanser att bli gravid",
+            icon: "leaf.fill",
+            readTimeMinutes: 6,
+            intro: "Forskning visar tydligt att kosten påverkar fertilitet – för både kvinnor och män. Här är vad du bör äta mer av och vad du bör undvika.",
+            sections: [
+                ArticleSection(heading: "Medelhavskost ökar fertilitet", body: "Flera studier visar att medelhavsdiet (olivolja, fisk, grönsaker, baljväxter, nötter) ökar chansen till graviditet med 40–65% vid IVF. Det beror troligen på antiinflammatorisk effekt och antioxidanter."),
+                ArticleSection(heading: "Folsyra är kritisk", body: "400 mikrogram folsyra per dag minst 3 månader INNAN graviditet minskar risken för neuralrörsdefekter med 50–70%. Ta ett tillskott och ät gröna bladgrönsaker, linser och bröd."),
+                ArticleSection(heading: "Undvika", body: "Alkohol: minskar äggkvalitet och spermiekvalitet. Rökning: minskar fertilitet med 30%. Transfetter: ökar risk för anovulation. Processad mat: inflammatorisk effekt."),
+                ArticleSection(heading: "För mannen", body: "Zink och selen är viktiga för spermiekvalitet: skaldjur, nötter, fullkorn. Antioxidanter (C och E-vitamin, betakaroten) förbättrar spermiemobilitet. Undvik övervärme: laptops i knäet och bastu minskar spermieproduktion.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar om kost och fertilitet:",
+                consensus: "Kostförändringar kombinerat med livsstilsförbättringar nämns av många som hjälpsamt.",
+                quotes: ["\"Vi lade om kosten båda två. Tre månader senare var vi gravida. Samband? Vet inte. Men det skadar inte.\" – Emma, 31"],
+                source: "Fertilitetsforum"
+            ),
+            sources: ["Chavarro JE, Willett WC (2008). The Fertility Diet.", "Karolinska Institutet Fertilitetsforskning 2023"]
+        ),
+
+        Article(
+            id: "pregnancy-exercise",
+            category: .pregnancy,
+            title: "Träning under graviditet",
+            subtitle: "Vad är säkert och vad gynnar förlossningen?",
+            icon: "figure.run",
+            readTimeMinutes: 6,
+            intro: "Motion under graviditet är inte bara säkert – det är rekommenderat. Det ger bättre förlossning, snabbare återhämtning och bättre mående.",
+            sections: [
+                ArticleSection(heading: "Varför träna?", body: "Regelbunden träning under graviditet: minskar risk för graviditetsdiabetes med 40%, minskar ryggsmärtor, reducerar förstoppning, förbättrar sömn och förlossningsutfall, kortare förlossning och färre kejsarsnitt."),
+                ArticleSection(heading: "Vad är säkert?", body: "Promenader, simning, yoga, pilates, cykling (stillacykel) och lättare styrketräning är säkert hela graviditeten. Undvik kontaktsporter, aktiviteter med fallrisk, och liggande på rygg från vecka 20+."),
+                ArticleSection(heading: "Bäckenbottenövningar", body: "Knip! 3 set x 10 knip, 3 gånger per dag. Det förebygger inkontinens under och efter graviditet. Gör dem nu, gör dem för alltid. Ingen kan se dem. Inga ursäkter."),
+                ArticleSection(heading: "Röda flaggor", body: "Sluta träna och kontakta barnmorska/läkare om du får: blödning, vätskeläcka, svår andfåddhet, bröstsmärta, smärta i vaden, svår huvudvärk.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Gravida om träning:",
+                consensus: "De flesta gravida som tränat mår bättre och säger att de planerar att träna igen nästa gång.",
+                quotes: ["\"Simning tredje trimestern var det bästa. Tyngdlöshet! Kom ihåg det!\" – Maria, 34"],
+                source: "Föräldraforum & Barnmorskegruppen"
+            ),
+            sources: ["ACOG Exercise During Pregnancy 2023", "Rikshandboken Mödrahälsovård", "SBU Graviditet och motion 2022"]
+        ),
+
+        Article(
+            id: "dad-parental-leave",
+            category: .parentHealth,
+            title: "Föräldraledighet – råd till pappan",
+            subtitle: "Varför det är viktigt och hur du tar ut det rätt",
+            icon: "person.2.fill",
+            readTimeMinutes: 5,
+            intro: "Forskning är klar: pappor/partners som tar ut lång föräldraledighet har djupare relation med barnet, bättre parrelation och barnet mår bättre.",
+            sections: [
+                ArticleSection(heading: "Forskning och fakta", body: "Barn vars pappor tog mer än 8 veckors föräldraledighet visar bättre emotionell reglering vid 3 år. Föräldrar som delar lika på föräldraledigheten anger högre relationskvalitet 5 år senare (Uppsala Universitetsstudie 2022)."),
+                ArticleSection(heading: "Praktiska råd", body: "Ta 'pappadagarna' direkt vid födseln – det är ovärderligt. Planera en sammanhängande period hemma (helst 3+ månader). Välj perioden strategiskt: antingen tidigt (0-6 mån) för anknytning eller 10-14 månader för barnets språkutveckling."),
+                ArticleSection(heading: "Ekonomin", body: "Föräldrapenningen ersätter 77,6% av inkomsten upp till taket (ca 46 000 kr/mån). Det lönar sig. Jämföra med hur mycket du faktiskt spenderar på jobb-relaterade kostnader (kläder, lunch, transport) – gapet är ofta litet."),
+                ArticleSection(heading: "Utmaningen", body: "Pappor upplever ofta att de 'inte vet hur'. Lösning: hoppa in direkt från dag 1. Bebisen vet inte att du är ny. Du lär dig göra det barnet accepterar, inte av teori. Mamma vet inte per automatik heller.")
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Pappor om föräldraledighet:",
+                consensus: "Nästan alla pappor säger att de borde tagit ut mer och tidigare.",
+                quotes: ["\"Tog 5 månader. Det var det bästa beslutet jag tagit i hela mitt liv. Ingen deadline, inga möten – bara vi.\" – Thomas, 38"],
+                source: "Föräldraforum & Pappaledighet.se"
+            ),
+            sources: ["Uppsala Universitets familjeforskning 2022", "Försäkringskassan Föräldrapenning 2024"]
+        ),
     ]
 
     static let all: [Article] = _allOriginal

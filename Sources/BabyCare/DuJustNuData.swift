@@ -750,12 +750,12 @@ extension DuJustNuContent {
             )
         ),
 
-        // MARK: 10. 8 månader
+        // MARK: 10. 8–9 månader
         DuJustNuContent(
             id: "8-months",
-            ageLabel: "8 månader",
+            ageLabel: "8–9 månader",
             ageMinDays: 240,
-            ageMaxDays: 269,
+            ageMaxDays: 299,
             headline: "Jag drar mig upp – och vill stå!",
             introduction: """
             Åtta månader – och bebisen drar sig upp till stående vid möbler, soffkanter och dina ben! Det är en spännande men nervkittlande tid. Bebisen vill stå och är stolt som en tupp när hen lyckas, men kan inte alltid sätta sig ner igen – då behövs din hjälp.
@@ -821,6 +821,432 @@ extension DuJustNuContent {
                     "\"Han stod vid soffan och tittade på mig med ett sådant skitigt flin. Han visste precis att han gjort något stort!\" – Anton, 29",
                     "\"Separationsångesten är verklig. Jag kan inte ens gå på toaletten utan att hon skriker. Det går över, säger alla.\" – Julia, 33",
                     "\"Köp öronproppar. Leksakstrumman är det bästa OCH det värsta som hänt oss.\" – Martin, 35"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 11. 10–12 månader
+        DuJustNuContent(
+            id: "10-months",
+            ageLabel: "10–12 månader",
+            ageMinDays: 300,
+            ageMaxDays: 364,
+            headline: "Första stegen – och snart ettåring!",
+            introduction: """
+            Nu är det äventyrshunger som råder! Ditt barn utforskar allt – öppnar skåp, drar ut lådor, välter högar. Det är inte olydnad, det är vetenskap. Hen lär sig orsak och verkan i realtid.
+
+            Första ord och steg kan komma när som helst nu. Varje dag händer något nytt och det är svårt att hålla koll på alla milstolpar. Skriv ner dem! Om ett år undrar du vad som hände och hur snabbt allt gick.
+
+            Kring ett år börjar barnets autonomi synas tydligare. Hen vill göra saker själv – äta med sked, sätta på skorna. Låt hen försöka. Det tar tid men är avgörande för självkänslan.
+            """,
+            whatBabyDoes: [
+                "Tar de första staplande stegen (brukar ske 9–12 mån)",
+                "Säger 1–3 ord med mening ('mamma', 'boll', 'nej')",
+                "Pekar målmedvetet på vad hen vill",
+                "Äter självständigt med fingrarna, försöker med sked",
+                "Förstår enkla uppmaningar: 'Ge mig bollen'",
+                "Leker burk-och-lock, stackar och sorterar"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Första stegen", description: "Benen bär nu! Vissa barn tar sina första självständiga steg kring 10 månader, andra vid 15 månader – båda är normalt.", icon: "figure.walk"),
+                DuJustNuMilestone(title: "Första riktiga orden", description: "Barnet börjar koppla ljud till mening. 'Mamma' och 'pappa' används nu på rätt sätt – inte bara som joller.", icon: "mouth.fill"),
+                DuJustNuMilestone(title: "Pincettgrepp", description: "Barnet kan nu plocka upp väldigt små föremål med tumme och pekfinger. Stor motorisk milstolpe!", icon: "hand.pinch.fill"),
+                DuJustNuMilestone(title: "Visar kärlek", description: "Barnet kramar, pussar och kryper upp i knäet. Den ömsesidiga anknytningen är tydlig och vacker.", icon: "heart.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Läs varje dag", body: "10–15 minuters läsning dagligen ger enormt för språkutvecklingen. Välj böcker med stora bilder och repetition.", icon: "book.fill"),
+                DuJustNuTip(title: "Gå barnsäkert", body: "Nu kryper och går barnet – hela hemmet är en äventyrsbana. Säkra hörn, lås skåp med kemikalier och blocka trappor.", icon: "shield.fill"),
+                DuJustNuTip(title: "Låt hen äta själv", body: "Rörig men viktig – att äta med händerna och försöka med sked stärker motoriken och självkänslan. Ha tålamod.", icon: "fork.knife"),
+                DuJustNuTip(title: "1-årskontrollen på BVC", body: "Vid 12 månader sker ett viktigt BVC-besök med vikt, längd, språk- och motorikbedömning samt vaccination.", icon: "cross.case.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Selektiv matning",
+                    description: "Barnet kan plötsligt vägra mat hen tyckte om förut. Det är normalt – smaklökar och preferenser utvecklas.",
+                    advice: "Fortsätt bjuda på variation utan press. Barn behöver se ett nytt livsmedel 10–15 gånger innan de accepterar det. Ha aldrig kortätarmiddagar."
+                ),
+                DuJustNuChallenge(
+                    title: "Separation och tillbakagång",
+                    description: "Barnet kan bli mer klängigt kring ett år, trots att det gick bra tidigare. Separationsångesten har en ny topp.",
+                    advice: "Säg alltid hejdå tydligt – smygparter är aldrig bra. Korta avsked med tydliga återkomster bygger trygghet över tid."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Gömlek med leksaker", description: "Göm en leksak under ett kläde medan barnet tittar. Låt hen hitta den. Det tränar 'objektpermanens' – föremål finns kvar även när vi inte ser dem.", ageAppropriate: true),
+                DuJustNuActivity(title: "Musik och dans", description: "Dansa tillsammans! Barnet älskar rytm och rörelse. Enkla barnvisor med rörelser som 'Imse Vimse' och 'Byssan lull' är fantastiska.", ageAppropriate: true),
+                DuJustNuActivity(title: "Pusselbitar och stackning", description: "Enkla 2–4-bitarspussel och stapeltorn tränar finmotorik och problemlösning. Barnet kan kanske stapla 2–3 klossar nu.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "12–14 timmar",
+                nightSleep: "10–11 timmar",
+                daySleep: "2–3 timmar",
+                wakeWindow: "3–4 timmar",
+                naps: "2 tupplurer (eller övergång till 1)"
+            ),
+            feedingInfo: "Barnet äter nu tre mål om dagen plus mellanmål. Bröstmjölk/ersättning är fortfarande viktigt men maten är nu primär näring. Introduktion av komjölk vid 12 månader är möjlig. Undvik honung under det första levnadsåret.",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om de första stegen:",
+                consensus: "Nästan alla beskriver en blandning av stolthet och panik när barnet börjar gå – plötsligt är allt i höjd med barnet.",
+                quotes: [
+                    "\"Hon tog tre steg och föll på rumpan. Tittade på mig med ett stort leende. Jag grät.\" – Elin, 30",
+                    "\"Tips: köp skoskydd och sänk ner allt från hyllor. Nu är allt nåbart!\" – Kristoffer, 33",
+                    "\"1-årskalas med en trött ettåring – lärdomen är att fira för er skull, inte barnets.\" – Sofia, 28"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 12. 12–18 månader
+        DuJustNuContent(
+            id: "12-18-months",
+            ageLabel: "12–18 månader",
+            ageMinDays: 365,
+            ageMaxDays: 547,
+            headline: "Språket exploderar!",
+            introduction: """
+            Det andra levnadsåret är ett av de mest omvälvande i ett barns liv. Språket exploderar, personligheten framträder tydligare och självständigheten ökar. Barnet testar gränser – det är inte uppförande, det är neurologisk mognad.
+
+            "Nej!" och "Mej!" (Jag-fasen börjar) är tecken på en sund identitetsutveckling. Barnet lär sig att hen är en separat individ med egna viljor – och det är fantastisk utveckling, även om det är utmanande för dig som förälder.
+
+            Leken blir mer avancerad. Fantasilek börjar framträda – barnet matar nallebjörnen eller pratar i leksaktelefonen. Det är kognitivt avancerat och ska uppmuntras.
+            """,
+            whatBabyDoes: [
+                "Går stabilt och börjar springa",
+                "Säger 5–50+ ord (stor variation är normal)",
+                "Kombinerar 2 ord kring 18 månader ('mer mjölk', 'boll borta')",
+                "Leker enkla fantasilekar",
+                "Visar empati – tröstar när någon gråter",
+                "Kan peka på kroppsdelar vid namn"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Ordexplosion", description: "Kring 18 månader lär sig många barn 1–2 nya ord per dag. Vocabulären växer snabbt från ~5 till 50+ ord.", icon: "text.bubble.fill"),
+                DuJustNuMilestone(title: "Fantasilek", description: "Barnet låtsas – matar dockan, pratar i telefonen, kokar mat i leksaksköket. Enormt kognitivt steg!", icon: "theatermasks.fill"),
+                DuJustNuMilestone(title: "Springer", description: "Barnet springer nu – med varierande framgång. Faller ofta men stiger alltid upp igen. Balansen förbättras snabbt.", icon: "figure.run"),
+                DuJustNuMilestone(title: "Empati", description: "Barnet visar omsorg om andra som verkar ledsna eller skadade. Det är ett tecken på social och emotionell mognad.", icon: "heart.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Prata, prata, prata", body: "Kommentera allt ni gör. 'Nu tar vi på skorna. Röda skor. Vi ska ut.' Varje ord bygger hjärnan.", icon: "text.bubble.fill"),
+                DuJustNuTip(title: "Bekräfta känslorna", body: "'Jag ser att du är arg/ledsen/glad.' Att sätta ord på känslor hjälper barnet förstå och hantera dem.", icon: "heart.text.square.fill"),
+                DuJustNuTip(title: "Rutiner är guld", body: "Tydliga rutiner – vaknar, mat, lek, vila, sova – ger förutsägbarhet som minskar frustration och meltdowns.", icon: "clock.fill"),
+                DuJustNuTip(title: "18-månaderskontroll", body: "Viktigt BVC-besök. Språkscreening ingår – hen ska ha minst 5–10 ord vid 18 månader.", icon: "cross.case.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Tantrum-fasen börjar",
+                    description: "Utbrott utan varning, kastande på golvet, skrikande. Välkommen till toddlertiden!",
+                    advice: "Håll dig lugn (så svårt det än är). Barnet lär sig av din reaktion. Sätt ord på känslan: 'Du är arg för att du inte fick mer kakor.' Sätt gränser med kärlek och konsekvens."
+                ),
+                DuJustNuChallenge(
+                    title: "Nattuppvaknanden ökar",
+                    description: "Sömnregressioner kring 12–18 månader är vanliga, kopplade till hjärnans utveckling.",
+                    advice: "Håll fast vid kvällsrutinen. Minimera stimuli vid uppvaknanden. Det är en fas – den går över."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Sortera och kategorisera", description: "Sortera sockorna efter färg. Lägg frukterna i en skål, grönsakerna i en annan. Enkelt för dig, fantastisk hjärnträning för barnet.", ageAppropriate: true),
+                DuJustNuActivity(title: "Klotterbok och färger", description: "Ge barnet en stor pappersbit och feta kritor. Klotter är skapande! Kommentera vad hen ritar utan att värdera.", ageAppropriate: true),
+                DuJustNuActivity(title: "Öppna förskolan", description: "Socialisering med andra barn i samma ålder är extremt viktig. Öppna förskolan är gratis och fantastisk – gå regelbundet.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "11–14 timmar",
+                nightSleep: "10–12 timmar",
+                daySleep: "1–2 timmar",
+                wakeWindow: "4–6 timmar",
+                naps: "1–2 tupplurer, övergång till 1 nappar"
+            ),
+            feedingInfo: "Barnet äter nu samma mat som familjen (anpassad). Tre mål om dagen plus 1–2 mellanmål. Servera 5 frukt/grönt om dagen. Barnet kan äta med sked och gaffel, om än rörigt. Drick helmjölk (3 dl/dag) om inte amning pågår.",
+            forumSection: DuJustNuForumSection(
+                intro: "Om 12–18-månadersåldern:",
+                consensus: "Fantastisk och frustrerande på samma gång – det är den genomgående känslan. Barnet vill men kan inte, och det leder till utbrott.",
+                quotes: [
+                    "\"Han sa 'kaka' och pekade. Jag var beredd att ge honom hela bageriets produktion.\" – Lars, 34",
+                    "\"Utbrott i mataffären – alla tittade. Nu skrattar jag åt det, då grät jag.\" – Maja, 31",
+                    "\"Öppna förskolan räddade min föräldraledighet. Vuxna! Kaffe! Samtal om annat än sömn!\" – Petra, 29"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 13. 18–24 månader
+        DuJustNuContent(
+            id: "18-24-months",
+            ageLabel: "18–24 månader",
+            ageMinDays: 548,
+            ageMaxDays: 729,
+            headline: "Jag-fasen på allvar!",
+            introduction: """
+            Välkommen till 'Nej'-åldern! Barnet har nu fullt ut förstått att hen är en separat individ med en egen vilja – och testar den flitigt. Det är inte upproriskhet, det är viktig psykologisk utveckling.
+
+            Språket fortsätter explodera. Tvåordssatser och korta meningar dyker upp. Barnet berättar om sin dag, ber om saker och ställer ändlösa 'Vad är det?'-frågor. Det är tröttande och fantastiskt på samma gång.
+
+            Parallelleken är nu typisk – barn leker bredvid varandra, inte med varandra. Det är normalt vid den här åldern. Äkta samlek med tur och utbyte av roller kommer lite senare.
+            """,
+            whatBabyDoes: [
+                "Använder 50+ ord, kombinerar 2–3 ord i fraser",
+                "Kör, hoppar, klättrar – rörelseglädjen är stor",
+                "Hjälper till hemma: bär grejer, plockar upp leksaker",
+                "Leker parallellt med andra barn",
+                "Kan peka på 5+ bilder i bilderbok vid namn",
+                "Visar mer komplext fantasilek (lagar mat åt dockan m.m.)"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Meningsbyggnad", description: "Barnet sätter ihop ord till korta meningar. 'Mamma titta!' och 'Mer juice tack' är kognitiva prestationer.", icon: "text.bubble.fill"),
+                DuJustNuMilestone(title: "Hoppar", description: "Med båda fötterna samtidigt! Det kräver koordination, balans och kroppskontroll. Stor motorisk milstolpe.", icon: "figure.jumprope"),
+                DuJustNuMilestone(title: "Hjälper till", description: "Barnet vill hjälpa till – duka, lägga i diskmaskinen, hämta grejer. Det är inte i vägen, det är lärande. Låt hen!", icon: "hand.raised.fill"),
+                DuJustNuMilestone(title: "Ego-centrisk lek", description: "Allt är 'mitt'. Det är normalt – barnet håller på att förstå ägande och delning. Det lär sig med tid och modellering.", icon: "person.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Ge val, inte ultimatum", body: "'Vill du ha röd eller blå tröja?' ger barnet känsla av kontroll inom dina gränser. Det minskar konflikter dramatiskt.", icon: "arrow.left.arrow.right"),
+                DuJustNuTip(title: "Förbereda övergångar", body: "'Om 5 minuter slutar vi leka och går hem.' Förvarning minskar utbrott vid övergångar.", icon: "clock.fill"),
+                DuJustNuTip(title: "Potträning – när barnet är redo", body: "Tecken på redo: intresse för toaletten, känner när blöjan är blöt, kan sitta still en stund. Tvinga aldrig.", icon: "circle.fill"),
+                DuJustNuTip(title: "2,5-årskontrollen", body: "Vid ca 2,5 år sker ett viktigt BVC-besök med fokus på språk, beteende och socialt samspel.", icon: "cross.case.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Peak tantrum-fas",
+                    description: "1,5–2,5 år är ofta toppet för utbrott. Barnet har stor vilja men liten impulskontroll.",
+                    advice: "Co-regulation: ditt lugn smittar. Sätt dig ner på barnets nivå. Erkänn känslan. Håll gränsen med empati: 'Jag vet att du är arg. Du får ändå inte slå.'"
+                ),
+                DuJustNuChallenge(
+                    title: "Inte vill somna",
+                    description: "Barnet förhandlar, ber om mer, gråter. Sömnmotstånd är vanligt i denna ålder.",
+                    advice: "Konsekvent rutin är nyckeln. Sätt en tydlig 'sista gång'-gräns: en bok, en puss, sedan sover vi. Håll fast vid det."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Lekdeg och lera", description: "Lekdeg är fantastisk för sensorisk stimulering och finmotorik. Rulla bollar, gör ormar, stämpla med händerna.", ageAppropriate: true),
+                DuJustNuActivity(title: "Rollek – affär och kök", description: "Lek affär, kök, dagis. Det bygger fantasin, språket och social förståelse. Var med och spela en roll!", ageAppropriate: true),
+                DuJustNuActivity(title: "Hinderbana ute", description: "Hoppa på stenar, balansera på kantsten, krypa under staket. Frilek ute med motoriska utmaningar är ovärderlig.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "11–14 timmar",
+                nightSleep: "10–12 timmar",
+                daySleep: "1–2 timmar",
+                wakeWindow: "5–6 timmar",
+                naps: "1 tupplur (lunchtupplur)"
+            ),
+            feedingInfo: "Barnet äter nu familjemat med små anpassningar. Servera fisk 2–3 ggr/vecka. Begränsa socker och juice. Barnet kan ha starka maträttsmeningar – det är normalt. Gör alltid ett säkert val på tallriken (något de alltid äter).",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om 18–24-månadersåldern:",
+                consensus: "Alla är trötta. Men de flesta ser tillbaka på den här perioden som magisk i sin intensitet.",
+                quotes: [
+                    "\"Han säger nu 'Tack mamma' och 'Förlåt'. Mitt hjärta exploderar av kärlek.\" – Nina, 32",
+                    "\"Tantrumet på ICA: han lade sig på golvet och viftade med benen. 10/10 performance.\" – David, 36",
+                    "\"Tips: lyssna på barnpsykologen Jonas Granqvist. Förklarar allt logiskt och tar bort skammen.\" – Anna, 27"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 14. 2–3 år
+        DuJustNuContent(
+            id: "2-3-years",
+            ageLabel: "2–3 år",
+            ageMinDays: 730,
+            ageMaxDays: 1094,
+            headline: "Språket flödar och leken fördjupas",
+            introduction: """
+            Tvååringen är ett mirakel av energi, kreativitet och tydlighet. Nu förs riktiga samtal. Barnet berättar om sin dag, ber om saker i meningar och kan förhandla (mycket). Världen öppnar sig via språket.
+
+            Fantasileken når en ny nivå – rollekar med berättelser, karaktärer och regler som barnet hittar på. Det är hjärnan på fullgas. Låt leken vara ostörd och fri.
+
+            Sociala kompetenser är under uppbyggnad. Turtagning, att vänta, att dela – allt detta är svårt och nytt. Det tar tid. Det är inte karaktärsbrist, det är omogen hjärnbark.
+            """,
+            whatBabyDoes: [
+                "Pratar i meningar om 3–6 ord",
+                "Ständiga 'Varför?'-frågor",
+                "Leker rollspel i grupp med andra barn",
+                "Cyklar på trehjuling eller springcykel",
+                "Kan klä på sig med lite hjälp",
+                "Identifierar och namnger färger, former, siffror 1–5"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Meningsfulla samtal", description: "Barnet deltar i riktiga konversationer. Berättar vad som hände, vad hen vill och hur hen mår.", icon: "bubble.left.and.bubble.right.fill"),
+                DuJustNuMilestone(title: "Färg- och formidentifiering", description: "Kan namnge 4–8 färger och grundformer. Matchar och sorterar med glädje.", icon: "square.on.circle.fill"),
+                DuJustNuMilestone(title: "Pottränad", description: "De flesta barn är daginne-pottränade vid 2–3 år. Nätterna tar längre tid.", icon: "drop.circle.fill"),
+                DuJustNuMilestone(title: "Kompisar", description: "Barnet får nu speciella kompisar – pratar om dem, saknar dem. Social intelligens blomstrar.", icon: "person.2.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Svara på 'Varför?'", body: "Även om det aldrig tar slut: svara! Frågorna bygger förståelse av världen. 'Det vet jag faktiskt inte, vi kan leta upp det' är ett perfekt svar.", icon: "questionmark.circle.fill"),
+                DuJustNuTip(title: "Skärm med måtta", body: "Max 1 timme/dag för 2-3-åringar (WHO). Välj kvalitetsinnehåll och titta gärna tillsammans.", icon: "tv.fill"),
+                DuJustNuTip(title: "Prova ny sport", body: "Simning, gymnasik och dans är fantastiska vid den här åldern. Motorik + socialisering + roliga minnen.", icon: "figure.swimming"),
+                DuJustNuTip(title: "Biblioteket", body: "Gratis, socialt, stimulerande. Bibliotekens sagostunder för 2-4-åringar är guld. Låna massor av böcker hem.", icon: "books.vertical.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Dagisbyte eller uppstart",
+                    description: "Inskolning på förskola är en stor övergång som kan ta 2–8 veckor.",
+                    advice: "Var tålmodig. Gråt vid lämning är normalt och upphör vanligen snabbt. Håll korta, tydliga avsked. Hämta i tid."
+                ),
+                DuJustNuChallenge(
+                    title: "Syskonrivalisitet",
+                    description: "Om nytt syskon kommit kan det gamla barnet reagera med tillbakagång (blöjor igen, suttet).",
+                    advice: "Ge extra en-till-en-tid med 'storasyster/storebror'. Bekräfta att det är normalt att vara arg/ledsen. Inkludera i babyomsorgen."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Bakning och matlagning", description: "Rör i bunken, häll mjöl, knåda deg. Barnet älskar att vara med i köket och det lär dem matematik och kemi på köpet.", ageAppropriate: true),
+                DuJustNuActivity(title: "Bygg-lek med klossar", description: "Duplo, kaplastavar och magnetleksaker är fantastiska. Bygg tillsammans och låt barnet leda projektet.", ageAppropriate: true),
+                DuJustNuActivity(title: "Naturens laboratorium", description: "Samla löv, stenar, sniglar, pinnar. Snacka om vad ni hittar. Naturen är det bästa klassrummet.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "10–13 timmar",
+                nightSleep: "10–12 timmar",
+                daySleep: "0–2 timmar",
+                wakeWindow: "5–7 timmar",
+                naps: "Lunchtupplur (börjar försvinna mot 3 år)"
+            ),
+            feedingInfo: "Barnet äter familjemat. Fem frukt/grönt om dagen. Fish 2x/vecka. Minska salt och socker. Barnet kan vara 'picky eater' – det är normalt och övergående. Pressa aldrig till att äta, men gör alltid ett säkert val tillgängligt.",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om 2–3-årsåldern:",
+                consensus: "De flesta ser den här perioden som energikrävande men rolig – barnet är så levande och nyskapande.",
+                quotes: [
+                    "\"Han frågade varför solen var rund. Jag googlade. Vi googlade ihop i 30 minuter.\" – Per, 38",
+                    "\"Inskolningen var jobbigare för mig än för henne. Hon leker glatt sedan dag 3.\" – Kerstin, 30",
+                    "\"Bästa 2-årstipset: ge dem val. 'Röd eller blå?' Konflikter minskar med 80%.\" – Johan, 35"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 15. 3–4 år
+        DuJustNuContent(
+            id: "3-4-years",
+            ageLabel: "3–4 år",
+            ageMinDays: 1095,
+            ageMaxDays: 1459,
+            headline: "Kompisar, fantasi och 'Varför?'",
+            introduction: """
+            3-åringen är en filosof, konstnär och vetenskapsman i ett. Frågorna är oändliga och fantastiskt viktiga. Svara med genuint intresse – du formar ett tänkande sinne.
+
+            Leken med kompisar är nu verklig och ömsesidig. Turtagning, regelspel och gemensamma berättelser. Förskolan spelar en central roll. Barnet kan nu delta i strukturerade aktiviteter som musik, dans och boll.
+
+            Emotionell reglering förbättras, men utbrott förekommer fortfarande. Barnet börjar förstå att andra har egna tankar och känslor – 'Theory of Mind'. Det är kognitivt fantastiskt.
+            """,
+            whatBabyDoes: [
+                "Pratar i långa, komplexa meningar",
+                "Leker regelbaserade spel (Lotto, Minns du?)",
+                "Kan dela med sig och vänta på sin tur (mestadels)",
+                "Ritar människor (huvud med ben, sedan kropp)",
+                "Räknar till 10 och förstår mer/mindre",
+                "Minns och berättar om saker som hänt igår och förra veckan"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Theory of Mind", description: "Barnet förstår att andra kan tänka annorlunda. 'Mamma vet inte att gosedjuret är under soffan!' – dvs. barnet kan hemlighålla.", icon: "brain.fill"),
+                DuJustNuMilestone(title: "Regellekar", description: "Barnet kan nu spela enkla brädspel med regler och förstår att man måste följa dem (om än motvilligt).", icon: "gamecontroller.fill"),
+                DuJustNuMilestone(title: "Rita", description: "Barnet ritar nu erkännbara figurer – solen, huset, familjen. Det är en kommunikationsform och ett kreativt uttryck.", icon: "pencil.and.outline"),
+                DuJustNuMilestone(title: "Självständig av- och påklädning", description: "Kan ta av och på kläder med enkla fästen. Skor med kardborre klaras av med lite hjälp.", icon: "tshirt.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Läslust och kapitelböcker", body: "Börja med korta kapitelböcker utan bilder. Det tränar koncentration och fantasi. Välj böcker barnet älskar.", icon: "book.fill"),
+                DuJustNuTip(title: "Spela brädspel", body: "Lotto, kortspel och Alfapet Junior: matematik, minne, sociala färdigheter. Och mysigt familjenöje!", icon: "square.grid.3x3.fill"),
+                DuJustNuTip(title: "Bygg självtillit", body: "'Du klarade det!' är mer kraftfullt än 'Vad duktig du är!' Fokusera på ansträngning, inte resultat.", icon: "star.fill"),
+                DuJustNuTip(title: "4-årskontrollen", body: "Viktigt BVC-besök med syn- och hörseltest, language assessment och motorikbedömning.", icon: "cross.case.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Rädsla i mörker och monster",
+                    description: "Fantasi och verklighet flyter ihop – barnet kan vara genuint rädd för saker som inte finns.",
+                    advice: "Tag rädslan på allvar. Visa att ni letar och inte hittar några monster. Nattlampa hjälper. Skratta aldrig åt rädslan."
+                ),
+                DuJustNuChallenge(
+                    title: "Kompiskonflikt på förskolan",
+                    description: "Barnet kan berätta om konflikter, uteslutning eller att 'ingen vill leka med mig'.",
+                    advice: "Lyssna utan att lösa allt. Lek 'kompisövningar' hemma: hur frågar man om att få vara med? Prata med förskollärarna om du oroar dig."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Teater och drama", description: "Spela upp sagor med kostymer och rekvisita. Barnet älskar att regissera och spela. Det bygger empati och kreativitet.", ageAppropriate: true),
+                DuJustNuActivity(title: "Odling i kruka", description: "Plantera bönor i bomull. Vattna varje dag. Se det växa. Det ger tålamod, ansvar och naturvetenskap i ett.", ageAppropriate: true),
+                DuJustNuActivity(title: "Laga mat tillsammans", description: "Vispa ägg, smöra bröd, hälla upp dryck. Barnet kan göra mycket i köket och älskar att bidra till familjen.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "10–13 timmar",
+                nightSleep: "10–12 timmar",
+                daySleep: "0–1 timmar",
+                wakeWindow: "Hela dagen (de flesta sover ej tupplur)",
+                naps: "De flesta slutar med tupplur kring 3–4 år"
+            ),
+            feedingInfo: "Barnet äter familjemat. Fem frukt/grönt. Begränsa godis till en dag i veckan (lördagsgodis). Bjud in barnet att hjälpa till i köket – det ökar viljan att äta det man tillrett.",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om 3–4-årsåldern:",
+                consensus: "Riktigt roligt nu! Barnet är ett eget litet sällskap och kommenterar världen på det roligaste sätt.",
+                quotes: [
+                    "\"Hon frågade om hundar drömmer. Vi letade upp forskning tillsammans. Absolut bästa kväll.\" – Sara, 33",
+                    "\"Ritar nu familjeporträtt. Jag har tre ben. Mormor ser ut som en alien. Det hänger på kylskåpet.\" – Tobias, 37",
+                    "\"Lördagsgodis-traditionen har gjort livet så mycket enklare. Inga förhandlingar varje dag.\" – Emma, 28"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 16. 4–5 år
+        DuJustNuContent(
+            id: "4-5-years",
+            ageLabel: "4–5 år",
+            ageMinDays: 1460,
+            ageMaxDays: 1824,
+            headline: "Skolförberedelse och djupa vänskaper",
+            introduction: """
+            4–5-åringen är redo för mer struktur och utmaningar. Koncentrationsförmågan ökar och barnet kan nu sitta med en aktivitet längre stunder. Det är en fantastisk tid att introducera spel, pussel och böcker med mer komplext innehåll.
+
+            Vänskaper och sociala relationer är centrala. Barnet har nu bästa kompisar, kan samarbeta i grupp och förstår sociala regler bättre. Empatin fördjupas.
+
+            Nästa stora steg är förskoleklassen vid 6 år. Börja förbereda barnet mentalt – besök skolans lekplats, prata om vad som händer där. Skapa positiva förväntningar.
+            """,
+            whatBabyDoes: [
+                "Skriver sitt eget namn och kanske fler bokstäver",
+                "Räknar till 20+ och förstår addition",
+                "Berättar sammanhängande historier med start, mitt och slut",
+                "Hoppar på ett ben, klättrar skickligt",
+                "Förstår tid-begrepp: igår, idag, imorgon",
+                "Har bästa kompisar och förstår kompisrelationer"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Tidig läsförståelse", description: "Barnet börjar förstå att bokstäver representerar ljud. Kan kanske läsa eller stava enkla ord.", icon: "textformat.abc"),
+                DuJustNuMilestone(title: "Matematiksinnget", description: "Räknar och jämför antal. Förstår mer/mindre, hälften, dubbelt. Grunderna för matematik är lagda.", icon: "number.circle.fill"),
+                DuJustNuMilestone(title: "Komplex samlek", description: "Avancerade rollspel med regler, roller och narrativ som pågår i dagar. Socialt och kognitivt imponerande.", icon: "person.3.fill"),
+                DuJustNuMilestone(title: "Självständighet", description: "Kan klä på sig, tvätta händerna, borsta tänderna och äta självständigt. Behöver påminnelser men klarar det.", icon: "checkmark.shield.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Förbered inför skolan", body: "Träna på att sitta still, lyssna, vänta på sin tur och be om hjälp. Det är skolans grundfärdigheter. Ingen läsning krävs.", icon: "graduationcap.fill"),
+                DuJustNuTip(title: "Bok varje kväll", body: "Kvällsläsning är en av de bästa saker du kan göra för barnet. Det stärker band, språk, empati och fantasi på en gång.", icon: "book.fill"),
+                DuJustNuTip(title: "Låt barnet misslyckas", body: "Om barnet alltid räddas undan svårigheter lär det sig inte klara dem. Ge stöd, men låt barnet kämpa och lyckas.", icon: "figure.stand"),
+                DuJustNuTip(title: "5-årskontrollen", body: "Sista BVC-kontrollen före skolstart. Syn och hörsel, motorik, socialt och kognitivt – allt gås igenom.", icon: "cross.case.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Skoloro och övergångsångest",
+                    description: "Barnet kan vara oroligt inför att börja förskoleklass eller ny grupp.",
+                    advice: "Prata öppet om det. Besök skolan i förväg. Hitta ett känt ansikte i klassen. Förnimla aldrig oro – ta den på allvar."
+                ),
+                DuJustNuChallenge(
+                    title: "Lögner och fantasihistorier",
+                    description: "Barnet kan säga osanningar. Det är faktiskt ett tecken på kognitivt avancerad hjärna!",
+                    advice: "Skilj på fantasi (uppmuntra!) och medvetna lögner (sätt gräns med empati). 'Jag vet att du önskar att du hade gjort det. Men vad hände egentligen?'"
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Läser enkla böcker", description: "Börja med enkla läseböcker: BOB Books, Alfons Åberg. Läs tillsammans och låt barnet gissa ord. Gör det roligt, inte test.", ageAppropriate: true),
+                DuJustNuActivity(title: "Bygg och konstruera", description: "Lego, magnetleksaker och snickeri (med tillsyn). Bygga saker som fungerar ger enorm stolthet och ingenjörstänk.", ageAppropriate: true),
+                DuJustNuActivity(title: "Idrott och lagsporter", description: "Barngymnastik, fotboll eller simning – lagsporter lär ut tur-tagning, samarbete och att förlora med värdighet.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "10–13 timmar",
+                nightSleep: "10–12 timmar",
+                daySleep: "Sällan",
+                wakeWindow: "Hela dagen",
+                naps: "Tupplur sällsynt, vila kan fortfarande hjälpa"
+            ),
+            feedingInfo: "Barnet äter allt som familjen äter. Fortsätt med mångsidig kost, frukt och grönt. Barnet kan nu vara med och laga mat på riktigt – vispa, mäta, hälla. Bra matvanor grundläggs nu för livet.",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om 4–5-årsåldern:",
+                consensus: "De flesta föräldrar säger att detta är en av de roligaste perioderna – barnet är ett eget person med humor, djup och gemenskap.",
+                quotes: [
+                    "\"Han läste sin första bok. Han tittade upp på mig med sådana ögon. Jag glömmer aldrig den stunden.\" – Marcus, 39",
+                    "\"5-årskontrollen var hjärtevärmande. Sköterskan sa att han var 'en helt fantastisk liten människa'. Ja. Det är han.\" – Ulrika, 34",
+                    "\"Bästa rådet jag fått: lek med ditt barn. Inte bredvid. MED. Bli ett med leken.\" – Fredrik, 41"
                 ],
                 source: "Föräldraforum & BVC-erfarenheter"
             )

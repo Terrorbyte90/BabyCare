@@ -48,7 +48,7 @@ enum PregnancyTab: String, CaseIterable, Identifiable {
 enum ParentTab: String, CaseIterable, Identifiable {
     case home = "Hem"
     case log = "Logga"
-    case dujustnu = "Du just nu"
+    case dujustnu = "Barnet"
     case growth = "Tillväxt"
     case guides = "Guider"
     case profile = "Profil"
@@ -59,7 +59,7 @@ enum ParentTab: String, CaseIterable, Identifiable {
         switch self {
         case .home:     return "house.fill"
         case .log:      return "square.and.pencil"
-        case .dujustnu: return "sparkles"
+        case .dujustnu: return "figure.child"
         case .growth:   return "chart.xyaxis.line"
         case .guides:   return "book.fill"
         case .profile:  return "person.fill"

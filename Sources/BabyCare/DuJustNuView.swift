@@ -6,8 +6,10 @@ import SwiftData
 struct DuJustNuView: View {
     @Query private var userData: [UserData]
     @Query(sort: \AchievedMilestone.achievedDate, order: .reverse) private var milestones: [AchievedMilestone]
+    @Query(sort: \BabyMeasurement.date, order: .reverse) private var measurements: [BabyMeasurement]
 
     private var user: UserData? { userData.first }
+    private var latestMeasurement: BabyMeasurement? { measurements.first }
 
     private var currentContent: DuJustNuContent? {
         guard let days = user?.babyAgeInDays else { return nil }
@@ -65,7 +67,7 @@ struct DuJustNuView: View {
                     )
                 }
             }
-            .navigationTitle("Du, just nu")
+            .navigationTitle("Barnet")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.appBg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
@@ -87,6 +89,15 @@ struct DuJustNuView: View {
                         Text(user.babyAgeString)
                             .font(.system(size: 15, weight: .medium))
                             .foregroundStyle(.white.opacity(0.8))
+
+                        // Senaste mätning
+                        if let m = latestMeasurement {
+                            let weightStr = String(format: "%.1f", m.weight).replacingOccurrences(of: ".", with: ",")
+                            let heightStr = String(format: "%.0f", m.height)
+                            Text("Senaste: \(weightStr) kg · \(heightStr) cm")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.65))
+                        }
                     }
 
                     Spacer()
