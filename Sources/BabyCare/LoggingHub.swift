@@ -9,6 +9,7 @@ struct LoggingHub: View {
     @Query(sort: \SleepLog.startDate, order: .reverse) private var sleepLogs: [SleepLog]
     @Query(sort: \DiaperLog.date, order: .reverse) private var diaperLogs: [DiaperLog]
     @Query(sort: \MedicineLog.date, order: .reverse) private var medicineLogs: [MedicineLog]
+    @Query private var userData: [UserData]
 
     @State private var showFeedingSheet = false
     @State private var showSleepSheet = false
@@ -22,6 +23,8 @@ struct LoggingHub: View {
     @State private var sleepTimerStart: Date?
     @State private var timerTick = Date()
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var user: UserData? { userData.first }
 
     private var todayFeedings: [FeedingLog] {
         feedingLogs.filter { Calendar.current.isDateInToday($0.date) }
@@ -66,11 +69,17 @@ struct LoggingHub: View {
                                 .staggerAppear(index: 1)
                         }
 
+                        // SömnFönster — smart sömnprediktion baserad på barnets ålder
+                        if let _ = user?.babyBirthDate {
+                            somnFonsterSection
+                                .staggerAppear(index: 2)
+                        }
+
                         dailySummarySection
-                            .staggerAppear(index: 2)
+                            .staggerAppear(index: 3)
 
                         timelineSection
-                            .staggerAppear(index: 3)
+                            .staggerAppear(index: 4)
 
                         Color.clear.frame(height: 90)
                     }
@@ -82,6 +91,16 @@ struct LoggingHub: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.appBg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: LogGraphs()) {
+                        Image(systemName: "chart.bar.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(LinearGradient.pinkPurple)
+                    }
+                    .accessibilityLabel("Visa statistik")
+                }
+            }
         }
         .onReceive(timer) { _ in
             timerTick = Date()
@@ -123,7 +142,7 @@ struct LoggingHub: View {
                 }
 
                 logQuickAction(
-                    title: "Somn",
+                    title: "Sömn",
                     icon: "moon.fill",
                     gradient: .blueIndigo
                 ) {
@@ -132,7 +151,7 @@ struct LoggingHub: View {
                 }
 
                 logQuickAction(
-                    title: "Bloja",
+                    title: "Blöja",
                     icon: "circle.lefthalf.filled",
                     gradient: .tealMint
                 ) {
@@ -154,27 +173,51 @@ struct LoggingHub: View {
 
     private func logQuickAction(title: String, icon: String, gradient: LinearGradient, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: DS.s2) {
-                Image(systemName: icon)
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .background(gradient)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            VStack(spacing: DS.s2 + 1) {
+                ZStack {
+                    // Background with gradient tint
+                    RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                        .fill(Color.appSurface2)
+                        .frame(width: 60, height: 60)
+
+                    RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                        .fill(gradient.opacity(0.18))
+                        .frame(width: 60, height: 60)
+
+                    // Top specular highlight
+                    RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.10), Color.clear],
+                                startPoint: .top,
+                                endPoint: .center
+                            )
+                        )
+                        .frame(width: 60, height: 60)
+
+                    RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                        .strokeBorder(gradient.opacity(0.32), lineWidth: 0.75)
+                        .frame(width: 60, height: 60)
+
+                    Image(systemName: icon)
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(gradient)
+                }
+                .shadow(color: Color.black.opacity(0.18), radius: 8, y: 4)
 
                 Text(title)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(Color.appTextSec)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, DS.s3)
-            .background(Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+            .frame(minHeight: DS.minTouchTarget + 12)
+            .contentShape(Rectangle())
         }
         .buttonStyle(ScaleButtonStyle())
+        .accessibilityLabel("Logga \(title)")
+        .accessibilityHint("Dubbeltryck för att öppna loggningsdialog")
     }
 
     // MARK: - Active Timer
@@ -185,7 +228,7 @@ struct LoggingHub: View {
 
             if feedingTimerRunning, let start = feedingTimerStart {
                 activeTimerCard(
-                    title: "Matning pagar",
+                    title: "Matning pågår",
                     icon: "figure.and.child.holdinghands",
                     gradient: .pinkPurple,
                     startTime: start,
@@ -207,7 +250,7 @@ struct LoggingHub: View {
 
             if sleepTimerRunning, let start = sleepTimerStart {
                 activeTimerCard(
-                    title: "Somn pagar",
+                    title: "Sömn pågår",
                     icon: "moon.fill",
                     gradient: .blueIndigo,
                     startTime: start,
@@ -238,31 +281,180 @@ struct LoggingHub: View {
 
         return GlassCard(gradient: gradient) {
             HStack(spacing: DS.s4) {
-                IconBadge(icon: icon, gradient: gradient, size: 44)
+                IconBadge(icon: icon, gradient: gradient, size: 46)
 
-                VStack(alignment: .leading, spacing: DS.s1) {
-                    Text(title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color.appText)
+                VStack(alignment: .leading, spacing: DS.s1 + 1) {
+                    // Live indicator + label
+                    HStack(spacing: DS.s2) {
+                        PulsingDot(color: Color.appGreen, size: 7)
+                        Text(title)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.appTextSec)
+                    }
 
                     Text(timeString)
-                        .font(.system(size: 28, weight: .bold, design: .rounded).monospacedDigit())
-                        .foregroundStyle(gradient)
+                        .font(.system(size: 30, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(Color.appText)
+                        .contentTransition(.numericText())
                 }
 
                 Spacer()
 
+                // Stop button — circular, red
                 Button(action: onStop) {
-                    Image(systemName: "stop.fill")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 44, height: 44)
-                        .background(Color.appRed.gradient)
-                        .clipShape(Circle())
+                    ZStack {
+                        Circle()
+                            .fill(Color.appRed.opacity(0.15))
+                            .frame(width: 48, height: 48)
+
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundStyle(Color.appRed)
+                    }
                 }
                 .buttonStyle(ScaleButtonStyle())
+                .accessibilityLabel("Stoppa timer")
             }
         }
+    }
+
+    // MARK: - SömnFönster (Smart Sleep Window Predictor)
+
+    /// Beräknar nästa lämpliga sömnfönster baserat på:
+    /// 1. Barnets ålder → åldersanpassat vakefönster från WHO/sleep science
+    /// 2. Senaste avslutade sömn → starttid för nästa vakefönster
+    /// Logiken speglar Huckleberry SweetSpot-principen men är helt lokal.
+
+    private var somnFonsterPrediction: (nextNapWindow: Date, wakeWindowMinutes: Int, lastSleepEnd: Date?)? {
+        guard let birth = user?.babyBirthDate else { return nil }
+        let ageMonths = Calendar.current.dateComponents([.month], from: birth, to: Date()).month ?? 0
+
+        // Åldersanpassat vakefönster
+        let wakeWindow = MockFirebaseService.shared.wakeWindowForAge(ageMonths: ageMonths)
+        guard wakeWindow > 0 else { return nil } // barn >18 månader behöver ej napptidsprediktion
+
+        // Hitta senaste avslutade sömnperiod (natt eller tupplur)
+        let lastCompletedSleep = sleepLogs
+            .filter { $0.endDate <= Date() }
+            .sorted { $0.endDate > $1.endDate }
+            .first
+
+        let windowStart: Date
+        if let last = lastCompletedSleep {
+            windowStart = last.endDate
+        } else {
+            // Ingen loggrad sömn — använd midnatt idag som fallback
+            windowStart = Calendar.current.startOfDay(for: Date())
+        }
+
+        let nextNap = windowStart.addingTimeInterval(Double(wakeWindow) * 60)
+        return (nextNapWindow: nextNap, wakeWindowMinutes: wakeWindow, lastSleepEnd: lastCompletedSleep?.endDate)
+    }
+
+    private var somnFonsterSection: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Sömnfönster")
+
+            if let prediction = somnFonsterPrediction {
+                GlassCard(gradient: .blueIndigo) {
+                    VStack(alignment: .leading, spacing: DS.s4) {
+                        // Header
+                        HStack(spacing: DS.s3) {
+                            IconBadge(icon: "moon.stars.fill", gradient: .blueIndigo, size: 40)
+
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Nästa sömnfönster")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(Color.appTextSec)
+                                Text(nextNapTimeString(prediction.nextNapWindow))
+                                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.appText)
+                            }
+
+                            Spacer()
+
+                            // Countdown badge
+                            let minutesUntil = Int(prediction.nextNapWindow.timeIntervalSince(timerTick) / 60)
+                            if minutesUntil > 0 {
+                                VStack(spacing: 2) {
+                                    Text("\(minutesUntil)")
+                                        .font(.system(size: 20, weight: .bold, design: .rounded).monospacedDigit())
+                                        .foregroundStyle(LinearGradient.blueIndigo)
+                                    Text("min")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundStyle(Color.appTextTert)
+                                }
+                                .padding(.horizontal, DS.s3)
+                                .padding(.vertical, DS.s2)
+                                .background(Color.appBlue.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBlue.opacity(0.2), lineWidth: 1))
+                            } else {
+                                VStack(spacing: 2) {
+                                    Image(systemName: "moon.zzz.fill")
+                                        .font(.system(size: 18))
+                                        .foregroundStyle(LinearGradient.blueIndigo)
+                                    Text("Nu!")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundStyle(Color.appBlue)
+                                }
+                                .padding(.horizontal, DS.s3)
+                                .padding(.vertical, DS.s2)
+                                .background(Color.appBlue.opacity(0.15))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                            }
+                        }
+
+                        Rectangle()
+                            .fill(Color.appBorder)
+                            .frame(height: 0.5)
+
+                        // Wake window info
+                        HStack(spacing: DS.s4) {
+                            Label("\(prediction.wakeWindowMinutes) min vakefönster", systemImage: "sun.horizon.fill")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
+
+                            if let lastEnd = prediction.lastSleepEnd {
+                                Label("Vaknade \(lastEnd.formatted(.dateTime.hour().minute()))", systemImage: "alarm")
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                        }
+                        .lineLimit(1)
+
+                        Text("Baserat på barnets ålder och senaste sömn. Varje barn är unikt — anpassa efter barnets signaler.")
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color.appTextTert)
+                            .lineSpacing(3)
+                    }
+                }
+            } else {
+                GlassCard {
+                    HStack(spacing: DS.s3) {
+                        Image(systemName: "moon.zzz")
+                            .font(.system(size: 22))
+                            .foregroundStyle(Color.appTextTert)
+                        Text("Logga sömn för att få sömnfönster-prediktion")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(Color.appTextSec)
+                        Spacer()
+                    }
+                    .padding(.vertical, DS.s2)
+                }
+            }
+        }
+    }
+
+    private func nextNapTimeString(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "sv_SE")
+        let minutesUntil = Int(date.timeIntervalSince(Date()) / 60)
+        if minutesUntil <= 0 {
+            return "Dags att sova nu"
+        }
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
     }
 
     // MARK: - Daily Summary
@@ -280,7 +472,7 @@ struct LoggingHub: View {
                 )
 
                 StatCard(
-                    title: "Somn",
+                    title: "Sömn",
                     value: totalSleepString,
                     icon: "moon.fill",
                     gradient: .blueIndigo
@@ -289,7 +481,7 @@ struct LoggingHub: View {
 
             HStack(spacing: DS.s3) {
                 StatCard(
-                    title: "Blojor",
+                    title: "Blöjor",
                     value: "\(todayDiapers.count)",
                     icon: "circle.lefthalf.filled",
                     gradient: .tealMint
@@ -324,7 +516,7 @@ struct LoggingHub: View {
                             .font(.system(size: 15, weight: .medium))
                             .foregroundStyle(Color.appTextSec)
 
-                        Text("Tryck pa knapparna ovan for att borja logga")
+                        Text("Tryck på knapparna ovan för att börja logga")
                             .font(.system(size: 13))
                             .foregroundStyle(Color.appTextTert)
                             .multilineTextAlignment(.center)
@@ -407,10 +599,10 @@ struct LoggingHub: View {
         }
 
         for log in sleepLogs.filter({ Calendar.current.isDateInToday($0.startDate) }) {
-            let subtitle = log.isNap ? "Tupplur - \(log.durationString)" : "Somn - \(log.durationString)"
+            let subtitle = log.isNap ? "Tupplur - \(log.durationString)" : "Sömn - \(log.durationString)"
             entries.append(TimelineEntry(
                 date: log.startDate,
-                title: "Somn",
+                title: "Sömn",
                 subtitle: subtitle,
                 icon: "moon.fill",
                 gradient: .blueIndigo,
@@ -425,7 +617,7 @@ struct LoggingHub: View {
             }
             entries.append(TimelineEntry(
                 date: log.date,
-                title: "Bloja",
+                title: "Blöja",
                 subtitle: subtitle,
                 icon: log.type.icon,
                 gradient: .tealMint,
@@ -517,7 +709,7 @@ struct FeedingLogSheet: View {
                     breastfeedingFields
 
                 case .bottle, .pumping:
-                    DSTextField(title: "Mangd (ml)", text: $amount, keyboard: .decimalPad)
+                    DSTextField(title: "Mängd (ml)", text: $amount, keyboard: .decimalPad)
 
                 case .solid:
                     VStack(alignment: .leading, spacing: DS.s2) {
@@ -533,8 +725,8 @@ struct FeedingLogSheet: View {
                             .frame(minHeight: 80)
                             .padding(DS.s3)
                             .background(Color.appSurface2)
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                     }
                 }
             }
@@ -567,8 +759,8 @@ struct FeedingLogSheet: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, DS.s2 + 2)
                             .background(side == s ? LinearGradient.pinkPurple : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(side == s ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(side == s ? Color.clear : Color.appBorderMed, lineWidth: 1))
                     }
                     .buttonStyle(ScaleButtonStyle())
                 }
@@ -697,7 +889,7 @@ struct SleepLogSheet: View {
                 HStack(spacing: DS.s3) {
                     IconBadge(icon: "clock.fill", gradient: .blueIndigo, size: 36)
 
-                    Text("Pagar just nu")
+                    Text("Pågår just nu")
                         .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(Color.appText)
 
@@ -710,8 +902,8 @@ struct SleepLogSheet: View {
                 .padding(.horizontal, DS.s4)
                 .padding(.vertical, DS.s3)
                 .background(Color.appSurface)
-                .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appBorder, lineWidth: 1))
                 .onChange(of: isOngoing) { _, newVal in
                     if newVal {
                         sleepTimerRunning = true
@@ -749,8 +941,8 @@ struct SleepLogSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s2 + 2)
                                 .background(quality == q ? q.color.gradient : Color.appSurface2.gradient)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(quality == q ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(quality == q ? Color.clear : Color.appBorderMed, lineWidth: 1))
                             }
                             .buttonStyle(ScaleButtonStyle())
                         }
@@ -774,8 +966,8 @@ struct SleepLogSheet: View {
                 .padding(.horizontal, DS.s4)
                 .padding(.vertical, DS.s3)
                 .background(Color.appSurface)
-                .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appBorder, lineWidth: 1))
             }
         }
     }
@@ -843,8 +1035,8 @@ struct DiaperLogSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s3)
                                 .background(diaperType == type ? type.color.gradient : Color.appSurface2.gradient)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(diaperType == type ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(diaperType == type ? Color.clear : Color.appBorderMed, lineWidth: 1))
                             }
                             .buttonStyle(ScaleButtonStyle())
                         }
@@ -857,7 +1049,7 @@ struct DiaperLogSheet: View {
                 // Stool color picker (only if messy or both)
                 if diaperType == .messy || diaperType == .both {
                     VStack(alignment: .leading, spacing: DS.s2) {
-                        Text("FARG PA AVFORING")
+                        Text("FÄRG PÅ AVFÖRING")
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Color.appTextTert)
                             .tracking(0.6)
@@ -889,9 +1081,9 @@ struct DiaperLogSheet: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, DS.s2 + 2)
                                     .background(stoolColor == color ? color.swiftUIColor.opacity(0.3).gradient : Color.appSurface2.gradient)
-                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: DS.radiusSm)
+                                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                                             .stroke(stoolColor == color ? color.swiftUIColor.opacity(0.5) : Color.appBorderMed, lineWidth: 1)
                                     )
                                 }
@@ -914,8 +1106,8 @@ struct DiaperLogSheet: View {
                             }
                             .padding(DS.s3)
                             .background(Color.appOrange.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appOrange.opacity(0.3), lineWidth: 1))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appOrange.opacity(0.3), lineWidth: 1))
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
                     }
@@ -935,8 +1127,8 @@ struct DiaperLogSheet: View {
                         .frame(minHeight: 60)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                 }
             }
         }
@@ -989,8 +1181,8 @@ struct MedicineLogSheet: View {
                         .frame(minHeight: 60)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                 }
             }
         }
@@ -1025,8 +1217,8 @@ private func datePickerField(label: String, selection: Binding<Date>, components
             .tint(.appPink)
             .padding(DS.s3)
             .background(Color.appSurface2)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

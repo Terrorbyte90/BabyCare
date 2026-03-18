@@ -162,14 +162,9 @@ struct ContractionTimerView: View {
     private var phaseIndicatorCard: some View {
         GlassCard(gradient: phaseStatus.gradient) {
             HStack(spacing: DS.s3) {
-                Circle()
-                    .fill(phaseStatus.color)
-                    .frame(width: 14, height: 14)
-                    .overlay(
-                        Circle()
-                            .stroke(phaseStatus.color.opacity(0.4), lineWidth: 3)
-                            .scaleEffect(phaseStatus == .goTime ? pulseScale : 1.0)
-                    )
+                // Use PulsingDot for live feedback — more refined than a raw Circle
+                PulsingDot(color: phaseStatus.color, size: 10)
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(phaseStatus.title)
@@ -180,20 +175,25 @@ struct ContractionTimerView: View {
                         .font(.system(size: 13))
                         .foregroundStyle(Color.appTextSec)
                         .lineSpacing(3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Spacer()
+                Spacer(minLength: DS.s2)
 
-                Image(systemName: phaseStatus.icon)
-                    .font(.system(size: 24, weight: .medium))
-                    .foregroundStyle(phaseStatus.color)
+                // Phase icon with colored background circle
+                ZStack {
+                    Circle()
+                        .fill(phaseStatus.color.opacity(0.15))
+                        .frame(width: 44, height: 44)
+
+                    Image(systemName: phaseStatus.icon)
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(phaseStatus.color)
+                }
             }
         }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
-                pulseScale = 1.4
-            }
-        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(phaseStatus.title). \(phaseStatus.description)")
     }
 
     // MARK: - Timer Card
@@ -263,27 +263,29 @@ struct ContractionTimerView: View {
                     }
                 }
 
-                // Start/stop button
+                // Start/stop button — large, prominent CTA
                 Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    withAnimation(DS.springSnappy) {
                         toggleContraction()
                     }
                 } label: {
                     HStack(spacing: DS.s2) {
                         Image(systemName: isActive ? "stop.fill" : "play.fill")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 15, weight: .bold))
 
                         Text(isActive ? "Värken slutade" : "Värken startade")
                             .font(.system(size: 17, weight: .bold))
                     }
-                    .foregroundStyle(isActive ? Color.appPink : Color.appBlue)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, DS.s4)
-                    .background(.white.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                    .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(.white.opacity(0.2), lineWidth: 1))
                 }
-                .buttonStyle(ScaleButtonStyle())
+                .buttonStyle(
+                    PrimaryButtonStyle(
+                        gradient: isActive
+                            ? LinearGradient(colors: [.appRed, .appOrange], startPoint: .leading, endPoint: .trailing)
+                            : .blueIndigo,
+                        fullWidth: true
+                    )
+                )
+                .accessibilityLabel(isActive ? "Markera att värken slutade" : "Markera att en ny värk startade")
             }
         }
     }

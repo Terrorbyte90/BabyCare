@@ -21,6 +21,8 @@ struct HomeView: View {
     @State private var showContractions = false
     @State private var showAddPeriod = false
     @State private var showAddJournal = false
+    @State private var showKickCounter = false
+    @State private var showTemperature = false
 
     private var user: UserData? { userData.first }
     private var phase: UserPhase { user?.phase ?? .pregnancy }
@@ -62,7 +64,7 @@ struct HomeView: View {
                 ToolbarItem(placement: .principal) {
                     Image(systemName: phase.icon)
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(phase.gradient)
+                        .foregroundStyle(phase.gradient as LinearGradient)
                 }
             }
         }
@@ -74,41 +76,81 @@ struct HomeView: View {
         .sheet(isPresented: $showAddDiaper)       { AddDiaperSheet() }
         .sheet(isPresented: $showAddMedicine)     { AddMedicineSheet() }
         .sheet(isPresented: $showAddPeriod)       { AddPeriodSheet() }
+        .sheet(isPresented: $showKickCounter)     { KickCounterSheet() }
+        .sheet(isPresented: $showTemperature)     { TemperatureLoggingSheet() }
     }
 
     // MARK: - Greeting Section
 
     @ViewBuilder
     private var greetingSection: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: DS.s1) {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(greetingText)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Color.appTextSec)
 
                 Text(user?.name.isEmpty == false ? user!.name : "BabyCare")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 24, design: .rounded).weight(.bold))
                     .foregroundStyle(Color.appText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
             }
 
             Spacer()
 
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(Date().formatted(.dateTime.weekday(.wide).locale(Locale(identifier: "sv_SE"))))
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(phaseAccentColor)
-                    .textCase(.uppercase)
-                    .tracking(0.6)
+            // Date badge — compact, branded
+            VStack(alignment: .center, spacing: 0) {
+                // Day of week header strip
+                Text(Date().formatted(.dateTime.weekday(.abbreviated).locale(Locale(identifier: "sv_SE"))))
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .tracking(0.8)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 5)
+                    .background(phaseGradient)
+                    .clipShape(
+                        .rect(
+                            topLeadingRadius: DS.radiusSm + 2,
+                            bottomLeadingRadius: 0,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: DS.radiusSm + 2
+                        )
+                    )
 
-                Text(Date().formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: "sv_SE"))))
-                    .font(.system(size: 14, weight: .semibold))
+                // Day number
+                Text(Date().formatted(.dateTime.day().locale(Locale(identifier: "sv_SE"))))
+                    .font(.system(size: 24, weight: .heavy, design: .rounded))
                     .foregroundStyle(Color.appText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DS.s1 + 1)
+
+                // Month
+                Text(Date().formatted(.dateTime.month(.abbreviated).locale(Locale(identifier: "sv_SE"))))
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(Color.appTextSec)
+                    .tracking(0.4)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, DS.s1 + 2)
             }
-            .padding(.horizontal, DS.s3)
-            .padding(.vertical, DS.s2)
+            .frame(width: 54)
             .background(Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm + 2, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: DS.radiusSm + 2, style: .continuous)
+                    .strokeBorder(Color.appBorderMed, lineWidth: 0.75)
+            )
+            .shadow(color: Color.black.opacity(0.15), radius: 6, y: 3)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Date().formatted(.dateTime.weekday().day().month(.wide).locale(Locale(identifier: "sv_SE"))))
+        }
+    }
+
+    private var phaseGradient: LinearGradient {
+        switch phase {
+        case .fertility: return .fertilityGradient
+        case .pregnancy: return .pregnancyGradient
+        case .parent:    return .babyGradient
         }
     }
 
@@ -308,7 +350,7 @@ struct HomeView: View {
                     title: "Temperatur",
                     icon: "thermometer.medium",
                     gradient: .warmGradient
-                ) { showAddJournal = true }
+                ) { showTemperature = true }
 
                 QuickActionButton(
                     title: "Möte",
@@ -336,24 +378,10 @@ struct HomeView: View {
         VStack(spacing: DS.s3) {
             DSSectionHeader(title: "Tips för dig")
 
-            GlassCard(gradient: .warmGradient) {
-                VStack(alignment: .leading, spacing: DS.s3) {
-                    HStack(spacing: DS.s2) {
-                        Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appWarmYellow)
-
-                        Text("Visste du?")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appText)
-                    }
-
-                    Text("Folsyra rekommenderas redan när du planerar att bli gravid. Det minskar risken för neuralrörsdefekter hos fostret. Ta 400 mikrogram dagligen.")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.appTextSec)
-                        .lineSpacing(4)
-                }
-            }
+            DSInfoBanner(
+                text: "Folsyra rekommenderas redan när du planerar att bli gravid. Det minskar risken för neuralrörsdefekter hos fostret. Ta 400 mikrogram dagligen.",
+                style: .tip
+            )
         }
     }
 
@@ -471,7 +499,7 @@ struct HomeView: View {
                             .font(.system(size: 40))
                             .frame(width: 56, height: 56)
                             .background(Color.appLavender.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
 
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: DS.s1) {
@@ -508,20 +536,7 @@ struct HomeView: View {
             VStack(spacing: DS.s3) {
                 DSSectionHeader(title: "Dagens tips")
 
-                GlassCard(gradient: .warmGradient) {
-                    HStack(alignment: .top, spacing: DS.s3) {
-                        Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appWarmYellow)
-                            .padding(.top, 2)
-
-                        Text(content.tip)
-                            .font(.system(size: 14, weight: .regular))
-                            .foregroundStyle(Color.appTextSec)
-                            .lineSpacing(4)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
+                DSInfoBanner(text: content.tip, style: .tip)
             }
         }
     }
@@ -536,7 +551,7 @@ struct HomeView: View {
                     title: "Sparkar",
                     icon: "figure.child",
                     gradient: .pregnancyGradient
-                ) { /* Navigate to kick counter */ }
+                ) { showKickCounter = true }
 
                 QuickActionButton(
                     title: "Värkar",
@@ -719,30 +734,33 @@ struct HomeView: View {
         if let user, let months = user.babyAgeInMonths {
             let tip = duJustNuTip(months: months)
 
-            GlassCard(gradient: .babyGradient) {
+            GradientCard(gradient: .babyGradient) {
                 VStack(alignment: .leading, spacing: DS.s3) {
                     HStack(spacing: DS.s2) {
                         Image(systemName: "sparkles")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appBabyBlue)
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.9))
 
-                        Text("Du just nu")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appText)
+                        Text("Du just nu".uppercased())
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.65))
+                            .tracking(1.0)
 
                         Spacer()
 
-                        if let months = user.babyAgeInMonths {
-                            Text("\(months) mån")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(Color.appTextTert)
-                        }
+                        Text("\(months) mån")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.55))
+                            .padding(.horizontal, DS.s2 + 2)
+                            .padding(.vertical, 3)
+                            .background(Color.white.opacity(0.12))
+                            .clipShape(Capsule())
                     }
 
                     Text(tip)
                         .font(.system(size: 14))
-                        .foregroundStyle(Color.appTextSec)
-                        .lineSpacing(4)
+                        .foregroundStyle(.white.opacity(0.88))
+                        .lineSpacing(4.5)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -989,9 +1007,9 @@ struct AddSleepSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s2)
                                 .background(quality == q ? q.color.opacity(0.15) : Color.appSurface2)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: DS.radiusSm)
+                                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                                         .stroke(quality == q ? q.color.opacity(0.5) : Color.appBorder, lineWidth: 1)
                                 )
                             }
@@ -1015,9 +1033,9 @@ struct AddSleepSheet: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.s3)
             .background(isSelected ? LinearGradient.blueIndigo : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
-            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: DS.radiusSm)
+                RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                     .stroke(isSelected ? Color.clear : Color.appBorderMed, lineWidth: 1)
             )
         }
@@ -1037,8 +1055,8 @@ struct AddSleepSheet: View {
                 .tint(.appBlue)
                 .padding(DS.s3)
                 .background(Color.appSurface2)
-                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -1091,9 +1109,9 @@ struct AddDiaperSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s3)
                                 .background(diaperType == type ? type.color.opacity(0.2) : Color.appSurface2)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: DS.radiusSm)
+                                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                                         .stroke(diaperType == type ? type.color.opacity(0.5) : Color.appBorder, lineWidth: 1)
                                 )
                             }
@@ -1115,8 +1133,8 @@ struct AddDiaperSheet: View {
                         .tint(.appTeal)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
@@ -1150,7 +1168,7 @@ struct AddDiaperSheet: View {
                                         .padding(.vertical, DS.s2)
                                         .padding(.horizontal, DS.s3)
                                         .background(stoolColor == color ? Color.appSurface3 : Color.appSurface2)
-                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                     }
                                     .buttonStyle(ScaleButtonStyle())
                                 }
@@ -1170,7 +1188,7 @@ struct AddDiaperSheet: View {
                             }
                             .padding(DS.s3)
                             .background(Color.appOrange.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                         }
                     }
                 }
@@ -1218,8 +1236,8 @@ struct AddMedicineSheet: View {
                         .tint(.appPurple)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
@@ -1261,8 +1279,8 @@ struct AddPeriodSheet: View {
                         .tint(.appCoral)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
@@ -1292,9 +1310,9 @@ struct AddPeriodSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s3)
                                 .background(flow == f ? f.color.opacity(0.15) : Color.appSurface2)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: DS.radiusSm)
+                                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                                         .stroke(flow == f ? f.color.opacity(0.5) : Color.appBorder, lineWidth: 1)
                                 )
                             }
@@ -1350,8 +1368,8 @@ struct QuickActionTile: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.s3)
             .background(Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-            .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appBorder, lineWidth: 1))
         }
         .buttonStyle(ScaleButtonStyle())
     }
@@ -1364,7 +1382,7 @@ struct AppointmentRow: View {
 
     private var typeGradient: LinearGradient {
         switch appointment.type {
-        case .prenatal:        return .pinkPurple
+        case .prenatal:        return .pregnancyGradient
         case .ultrasound:      return .blueIndigo
         case .diabetesTest:    return LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .groupBStrep:     return .orangePink
@@ -1372,7 +1390,28 @@ struct AppointmentRow: View {
         case .vaccination:     return .tealMint
         case .bvc:             return LinearGradient(colors: [.appIndigo, .appBlue], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .fertilityClinic: return .fertilityGradient
-        case .other:           return LinearGradient(colors: [.appTextSec, .appTextTert], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .other:           return LinearGradient(colors: [Color.appTextSec, Color.appTextTert], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    private var daysUntil: Int {
+        max(0, Calendar.current.dateComponents([.day], from: Date(), to: appointment.date).day ?? 0)
+    }
+
+    private var daysUntilText: String {
+        switch daysUntil {
+        case 0: return "Idag"
+        case 1: return "Imorgon"
+        default: return "Om \(daysUntil) d"
+        }
+    }
+
+    private var daysUntilColor: Color {
+        switch daysUntil {
+        case 0: return .appRed
+        case 1: return .appOrange
+        case 2...7: return .appWarmYellow
+        default: return .appTextTert
         }
     }
 
@@ -1397,16 +1436,19 @@ struct AppointmentRow: View {
 
                 Spacer()
 
-                Text(appointment.type.rawValue)
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(appointment.type.color)
-                    .padding(.horizontal, DS.s2)
+                // Days-until badge
+                Text(daysUntilText)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(daysUntilColor)
+                    .padding(.horizontal, DS.s2 + 1)
                     .padding(.vertical, 4)
-                    .background(appointment.type.color.opacity(0.12))
+                    .background(daysUntilColor.opacity(0.12))
                     .clipShape(Capsule())
                     .lineLimit(1)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(appointment.title), \(daysUntilText), \(appointment.date.formatted(.dateTime.day().month(.wide).hour().minute().locale(Locale(identifier: "sv_SE"))))")
     }
 }
 
@@ -1467,8 +1509,8 @@ func datePickerRow(label: String, selection: Binding<Date>, components: DatePick
             .tint(.appPink)
             .padding(DS.s3)
             .background(Color.appSurface2)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -1535,7 +1577,7 @@ struct AddFeedingSheet: View {
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, DS.s2)
                                         .background(side == s ? LinearGradient.orangePink : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
-                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                 }
                                 .buttonStyle(ScaleButtonStyle())
                             }
@@ -1604,9 +1646,9 @@ struct AddJournalSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s2)
                                 .background(selectedMood == mood ? mood.color.opacity(0.15) : Color.appSurface2)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: DS.radiusSm)
+                                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                                         .stroke(selectedMood == mood ? mood.color.opacity(0.5) : Color.appBorder, lineWidth: 1)
                                 )
                             }
@@ -1628,8 +1670,8 @@ struct AddJournalSheet: View {
                         .frame(minHeight: 120)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                 }
             }
         }
@@ -1704,8 +1746,8 @@ struct AddAppointmentSheet: View {
                         .frame(minHeight: 80)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                 }
             }
         }

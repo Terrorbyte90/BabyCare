@@ -103,14 +103,26 @@ struct ForumCard: View {
 
     private func forumQuote(_ quote: String) -> some View {
         HStack(alignment: .top, spacing: DS.s3) {
-            LinearGradient.greenTeal
+            // Accent left-border
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(LinearGradient.greenTeal)
                 .frame(width: 3)
-                .clipShape(Capsule())
+                .padding(.vertical, 2)
 
-            Text(quote)
-                .font(.system(size: 13).italic())
-                .foregroundStyle(Color.appTextSec)
-                .lineSpacing(4)
+            VStack(alignment: .leading, spacing: 0) {
+                // Large opening quote mark for visual weight
+                Text("\u{201C}")
+                    .font(.system(size: 28, weight: .heavy, design: .serif))
+                    .foregroundStyle(Color.appGreen.opacity(0.4))
+                    .offset(y: 6)
+                    .accessibilityHidden(true)
+
+                Text(quote)
+                    .font(.system(size: 13, design: .default).italic())
+                    .foregroundStyle(Color.appTextSec)
+                    .lineSpacing(4)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 }
@@ -124,33 +136,43 @@ struct CompactForumCard: View {
     var body: some View {
         GlassCard(gradient: .greenTeal) {
             VStack(alignment: .leading, spacing: DS.s3) {
+                // Header
                 HStack(spacing: DS.s2) {
-                    Image(systemName: "bubble.left.and.bubble.right.fill")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.appGreen)
+                    Image(systemName: "quote.bubble.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(LinearGradient.greenTeal)
+                        .accessibilityHidden(true)
 
                     Text("Föräldrar i forum")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundStyle(Color.appText)
+
+                    Spacer()
                 }
 
-                HStack(alignment: .top, spacing: DS.s2) {
-                    LinearGradient.greenTeal
-                        .frame(width: 2)
-                        .clipShape(Capsule())
+                // Quote with accent bar
+                HStack(alignment: .top, spacing: DS.s2 + 1) {
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(LinearGradient.greenTeal)
+                        .frame(width: 3)
+                        .padding(.vertical, 2)
 
                     Text(quote)
-                        .font(.system(size: 12).italic())
+                        .font(.system(size: 13, design: .default).italic())
                         .foregroundStyle(Color.appTextSec)
-                        .lineSpacing(3)
-                        .lineLimit(3)
+                        .lineSpacing(3.5)
+                        .lineLimit(4)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Text(source)
-                    .font(.system(size: 10))
+                    .font(.system(size: 10, weight: .medium))
                     .foregroundStyle(Color.appTextTert)
+                    .padding(.leading, DS.s2 + 3 + DS.s2 + 1)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Citat från föräldraforum: \(quote)")
     }
 }
 

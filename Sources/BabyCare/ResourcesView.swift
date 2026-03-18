@@ -53,7 +53,7 @@ struct ResourcesView: View {
             VStack(spacing: DS.s2) {
                 ResourceContactCard(
                     title: "SOS Alarm",
-                    subtitle: "Livshotande nod -- ring omedelbart",
+                    subtitle: "Livshotande nöd — ring omedelbart",
                     phone: "112",
                     icon: "phone.fill",
                     gradient: LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing),
@@ -61,8 +61,8 @@ struct ResourcesView: View {
                 )
 
                 ResourceContactCard(
-                    title: "1177 Vardguiden",
-                    subtitle: "Sjukvardsradgivning dygnet runt",
+                    title: "1177 Vårdguiden",
+                    subtitle: "Sjukvårdsrådgivning dygnet runt",
                     phone: "1177",
                     icon: "cross.case.fill",
                     gradient: .blueIndigo,
@@ -71,7 +71,7 @@ struct ResourcesView: View {
 
                 ResourceContactCard(
                     title: "Giftinformationscentralen",
-                    subtitle: "Vid misstankt forgiftning",
+                    subtitle: "Vid misstänkt förgiftning",
                     phone: "010-456 67 00",
                     icon: "exclamationmark.triangle.fill",
                     gradient: .orangePink
@@ -84,12 +84,12 @@ struct ResourcesView: View {
 
     private var supportSection: some View {
         VStack(spacing: DS.s3) {
-            DSSectionHeader(title: "Stod")
+            DSSectionHeader(title: "Stöd")
 
             VStack(spacing: DS.s2) {
                 ResourceContactCard(
                     title: "BRIS",
-                    subtitle: "Barnens ratt i samhallet -- stod for barn och foraldrar",
+                    subtitle: "Barnens rätt i samhället — stöd för barn och föräldrar",
                     phone: "116 111",
                     icon: "heart.fill",
                     gradient: .pinkPurple,
@@ -98,15 +98,15 @@ struct ResourcesView: View {
 
                 ResourceContactCard(
                     title: "Kvinnofridslinjen",
-                    subtitle: "Stod vid vald i nara relationer",
+                    subtitle: "Stöd vid våld i nära relationer",
                     phone: "020-50 50 50",
                     icon: "shield.fill",
                     gradient: .pregnancyGradient
                 )
 
                 ResourceContactCard(
-                    title: "Mind Sjalvmordslinjen",
-                    subtitle: "Stod vid sjalvmordstankar -- oppet dygnet runt",
+                    title: "Mind Självmordslinjen",
+                    subtitle: "Stöd vid självmordstankar — öppet dygnet runt",
                     phone: "90101",
                     icon: "hand.raised.fill",
                     gradient: .tealMint
@@ -119,20 +119,20 @@ struct ResourcesView: View {
 
     private var healthcareSection: some View {
         VStack(spacing: DS.s3) {
-            DSSectionHeader(title: "Vard")
+            DSSectionHeader(title: "Vård")
 
             VStack(spacing: DS.s2) {
                 ResourceInfoCard(
-                    title: "BVC -- Barnavardscentralen",
-                    subtitle: "Gratis halsokontroller och vaccinationer for barn 0-6 ar. Kontakta din lokala vardcentral for att registrera ditt barn.",
+                    title: "BVC – Barnavårdscentralen",
+                    subtitle: "Gratis hälsokontroller och vaccinationer för barn 0–6 år. Kontakta din lokala vårdcentral för att registrera ditt barn.",
                     icon: "figure.child",
                     gradient: .greenTeal,
                     url: "https://www.1177.se/barn--gravid/att-skota-ett-nyfott-barn/bvc/"
                 )
 
                 ResourceInfoCard(
-                    title: "Modravardscentralen",
-                    subtitle: "Kostnadsfri vard under graviditeten. Barnmorskemottagningar erbjuder kontroller, ultraljud och forlossningsforberande kurser.",
+                    title: "Mödravårdscentralen",
+                    subtitle: "Kostnadsfri vård under graviditeten. Barnmorskemottagningar erbjuder kontroller, ultraljud och förlossningsförberedande kurser.",
                     icon: "figure.pregnant",
                     gradient: .pinkPurple,
                     url: "https://www.1177.se/barn--gravid/graviditet/"
@@ -149,16 +149,16 @@ struct ResourcesView: View {
 
             VStack(spacing: DS.s2) {
                 ResourceInfoCard(
-                    title: "Forsakringskassan -- Foraldrapenning",
-                    subtitle: "480 dagar per barn att dela pa. Ansok i god tid och planera uttaget av dagar. Bada foraldrarna har ratt till foraldrapenning.",
+                    title: "Försäkringskassan — Föräldrapenning",
+                    subtitle: "480 dagar per barn att dela på. Ansök i god tid och planera uttaget av dagar. Båda föräldrarna har rätt till föräldrapenning.",
                     icon: "creditcard.fill",
                     gradient: .warmGradient,
                     url: "https://www.forsakringskassan.se/privatperson/foralder"
                 )
 
                 ResourceInfoCard(
-                    title: "Dagis / Forskola",
-                    subtitle: "Barn fran 1 ars alder har ratt till forskoleplats. Ansok hos din kommun, vantetiderna varierar. Alla barn har ratt till 15 timmar i veckan fran 3 ars alder.",
+                    title: "Dagis / Förskola",
+                    subtitle: "Barn från 1 års ålder har rätt till förskolleplats. Ansök hos din kommun, väntetiderna varierar. Alla barn har rätt till 15 timmar i veckan från 3 års ålder.",
                     icon: "building.fill",
                     gradient: .softGreen,
                     url: nil
@@ -193,7 +193,7 @@ struct ResourcesView: View {
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
 
-                            Text("Alla besok, vaccinationer och kontroller 0-5 ar")
+                            Text("Alla besök, vaccinationer och kontroller 0–5 år")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.7))
                         }
@@ -332,7 +332,7 @@ private struct ResourceInfoCard: View {
                             Image(systemName: "globe")
                                 .font(.system(size: 12, weight: .semibold))
 
-                            Text("Las mer pa 1177.se")
+                            Text("Läs mer på 1177.se")
                                 .font(.system(size: 13, weight: .semibold))
 
                             Image(systemName: "arrow.up.right")
@@ -353,108 +353,108 @@ struct BVCScheduleView: View {
     private let scheduleItems: [BVCScheduleItem] = [
         BVCScheduleItem(
             age: "1-2 veckor",
-            title: "Hembesok",
-            description: "Barnmorska/BVC-skoterska besoker hemma. Vikt, langd, huvudomfang. Amningstod.",
+            title: "Hembesök",
+            description: "Barnmorska/BVC-sköterska besöker hemma. Vikt, längd, huvudomfång. Amningsstöd.",
             isVaccination: false,
-            checklist: ["Vikt och langd", "Huvudomfang", "Amningstod och radgivning", "Navelkontroll"]
+            checklist: ["Vikt och längd", "Huvudomfång", "Amningsstöd och rådgivning", "Navelkontroll"]
         ),
         BVCScheduleItem(
             age: "2-4 veckor",
-            title: "Forsta besoket pa BVC",
-            description: "PKU-prov om ej tagit. Horselscreening.",
+            title: "Första besöket på BVC",
+            description: "PKU-prov om ej tagit. Hörselscreening.",
             isVaccination: false,
-            checklist: ["PKU-prov (om ej taget)", "Horselscreening (OAE)", "Tillvaxtkontroll", "Foraldrars maende"]
+            checklist: ["PKU-prov (om ej taget)", "Hörselscreening (OAE)", "Tillväxtkontroll", "Föräldrars mående"]
         ),
         BVCScheduleItem(
             age: "6-8 veckor",
-            title: "Lakarundersokning",
-            description: "Lakarundersokning. Tillvaxtkontroll. Fragor om amning.",
+            title: "Läkarundersökning",
+            description: "Läkarundersökning. Tillväxtkontroll. Frågor om amning.",
             isVaccination: false,
-            checklist: ["Fullstandig lakarundersokning", "Tillvaxtkontroll", "Amningstod", "Hojtreflex och motorik"]
+            checklist: ["Fullständig läkarundersökning", "Tillväxtkontroll", "Amningsstöd", "Höftreflex och motorik"]
         ),
         BVCScheduleItem(
-            age: "3 manader",
+            age: "3 månader",
             title: "Vaccination 1",
-            description: "Vaccination (DTP-polio-Hib-HepB + Pneumokock). Tillvaxt.",
+            description: "Vaccination (DTP-polio-Hib-HepB + Pneumokock). Tillväxt.",
             isVaccination: true,
-            checklist: ["DTP-polio-Hib-HepB dos 1", "Pneumokock dos 1", "Tillvaxtkontroll", "Utvecklingsbedomning"]
+            checklist: ["DTP-polio-Hib-HepB dos 1", "Pneumokock dos 1", "Tillväxtkontroll", "Utvecklingsbedömning"]
         ),
         BVCScheduleItem(
-            age: "4 manader",
-            title: "Tillvaxtkontroll",
-            description: "Tillvaxtkontroll. Utvecklingsbedomning.",
+            age: "4 månader",
+            title: "Tillväxtkontroll",
+            description: "Tillväxtkontroll. Utvecklingsbedömning.",
             isVaccination: false,
-            checklist: ["Vikt, langd, huvudomfang", "Utvecklingsbedomning", "Kommunikation och kontakt"]
+            checklist: ["Vikt, längd, huvudomfång", "Utvecklingsbedömning", "Kommunikation och kontakt"]
         ),
         BVCScheduleItem(
-            age: "5 manader",
+            age: "5 månader",
             title: "Vaccination 2",
-            description: "Vaccination (DTP-polio-Hib-HepB + Pneumokock). Tillvaxt.",
+            description: "Vaccination (DTP-polio-Hib-HepB + Pneumokock). Tillväxt.",
             isVaccination: true,
-            checklist: ["DTP-polio-Hib-HepB dos 2", "Pneumokock dos 2", "Tillvaxtkontroll"]
+            checklist: ["DTP-polio-Hib-HepB dos 2", "Pneumokock dos 2", "Tillväxtkontroll"]
         ),
         BVCScheduleItem(
-            age: "6 manader",
-            title: "Tillvaxt & matintroduktion",
-            description: "Tillvaxt. Matintroduktion diskussion.",
+            age: "6 månader",
+            title: "Tillväxt & matintroduktion",
+            description: "Tillväxt. Diskussion om matintroduktion.",
             isVaccination: false,
-            checklist: ["Tillvaxtkontroll", "Matintroduktion -- radgivning", "Motorisk utveckling", "Tandborja -- tips"]
+            checklist: ["Tillväxtkontroll", "Matintroduktion – rådgivning", "Motorisk utveckling", "Tandborstning – tips"]
         ),
         BVCScheduleItem(
-            age: "8 manader",
-            title: "Tillvaxt & EPDS",
-            description: "Tillvaxt. EPDS-screening (postpartum depression). Utveckling.",
+            age: "8 månader",
+            title: "Tillväxt & EPDS",
+            description: "Tillväxt. EPDS-screening (postpartum depression). Utveckling.",
             isVaccination: false,
-            checklist: ["Tillvaxtkontroll", "EPDS-screening (postpartum)", "Utvecklingsbedomning", "Sosande och mat"]
+            checklist: ["Tillväxtkontroll", "EPDS-screening (postpartum)", "Utvecklingsbedömning", "Sösande och mat"]
         ),
         BVCScheduleItem(
-            age: "10 manader",
-            title: "Utvecklingsbedomning",
-            description: "Tillvaxt. Utvecklingsbedomning.",
+            age: "10 månader",
+            title: "Utvecklingsbedömning",
+            description: "Tillväxt. Utvecklingsbedömning.",
             isVaccination: false,
-            checklist: ["Tillvaxtkontroll", "Motorisk utveckling", "Spraklig utveckling", "Kontakt och samspel"]
+            checklist: ["Tillväxtkontroll", "Motorisk utveckling", "Språklig utveckling", "Kontakt och samspel"]
         ),
         BVCScheduleItem(
-            age: "12 manader",
-            title: "Vaccination 3 & lakarundersokning",
-            description: "Vaccination (MPR + Pneumokock). Tillvaxt. Lakarundersokning.",
+            age: "12 månader",
+            title: "Vaccination 3 & läkarundersökning",
+            description: "Vaccination (MPR + Pneumokock). Tillväxt. Läkarundersökning.",
             isVaccination: true,
-            checklist: ["MPR (massling-passjuka-roda hund) dos 1", "Pneumokock dos 3", "Lakarundersokning", "Tillvaxtkontroll"]
+            checklist: ["MPR (mässling-påssjuka-röda hund) dos 1", "Pneumokock dos 3", "Läkarundersökning", "Tillväxtkontroll"]
         ),
         BVCScheduleItem(
-            age: "18 manader",
-            title: "Vaccination 4 & sprakscreening",
-            description: "Vaccination (DTP-polio-Hib-HepB). Sprakscreening. Tillvaxt.",
+            age: "18 månader",
+            title: "Vaccination 4 & språkscreening",
+            description: "Vaccination (DTP-polio-Hib-HepB). Språkscreening. Tillväxt.",
             isVaccination: true,
-            checklist: ["DTP-polio-Hib-HepB dos 3", "Sprakscreening", "Tillvaxtkontroll", "Utvecklingsbedomning"]
+            checklist: ["DTP-polio-Hib-HepB dos 3", "Språkscreening", "Tillväxtkontroll", "Utvecklingsbedömning"]
         ),
         BVCScheduleItem(
-            age: "2.5 ar",
-            title: "Tillvaxt & utveckling",
-            description: "Tillvaxt. Utvecklingsbedomning.",
+            age: "2.5 år",
+            title: "Tillväxt & utveckling",
+            description: "Tillväxt. Utvecklingsbedömning.",
             isVaccination: false,
-            checklist: ["Tillvaxtkontroll", "Sprakutveckling", "Motorisk utveckling", "Social utveckling"]
+            checklist: ["Tillväxtkontroll", "Språkutveckling", "Motorisk utveckling", "Social utveckling"]
         ),
         BVCScheduleItem(
-            age: "3 ar",
-            title: "Tillvaxt & synundersokning",
-            description: "Tillvaxt. Synundersokning.",
+            age: "3 år",
+            title: "Tillväxt & synundersökning",
+            description: "Tillväxt. Synundersökning.",
             isVaccination: false,
-            checklist: ["Tillvaxtkontroll", "Synundersokning", "Horselkontroll", "Utvecklingsbedomning"]
+            checklist: ["Tillväxtkontroll", "Synundersökning", "Hörselkontroll", "Utvecklingsbedömning"]
         ),
         BVCScheduleItem(
-            age: "4 ar",
-            title: "Utvecklingsbedomning",
-            description: "Tillvaxt. Utvecklingsbedomning.",
+            age: "4 år",
+            title: "Utvecklingsbedömning",
+            description: "Tillväxt. Utvecklingsbedömning.",
             isVaccination: false,
-            checklist: ["Tillvaxtkontroll", "Sprakundersokning", "Motorisk bedomning", "Social och emotionell utveckling"]
+            checklist: ["Tillväxtkontroll", "Språkundersökning", "Motorisk bedömning", "Social och emotionell utveckling"]
         ),
         BVCScheduleItem(
-            age: "5 ar",
-            title: "Vaccination 5 & skolmognadsbedomning",
-            description: "Vaccination (DTP-polio). Skolmognadsbedomning. Tillvaxt.",
+            age: "5 år",
+            title: "Vaccination 5 & skolmognadssbedömning",
+            description: "Vaccination (DTP-polio). Skolmognadsbedömning. Tillväxt.",
             isVaccination: true,
-            checklist: ["DTP-polio dos 4", "Skolmognadsbedomning", "Tillvaxtkontroll", "Syn- och horselkontroll"]
+            checklist: ["DTP-polio dos 4", "Skolmognadsbedömning", "Tillväxtkontroll", "Syn- och hörselkontroll"]
         ),
     ]
 

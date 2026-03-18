@@ -145,6 +145,8 @@ struct DuJustNuView: View {
 
     // MARK: - Milestones
 
+    @Environment(\.modelContext) private var modelContext
+
     private func milestonesSection(content: DuJustNuContent) -> some View {
         VStack(alignment: .leading, spacing: DS.s3) {
             DSSectionHeader(title: "Utvecklingsmilstolpar")
@@ -153,39 +155,84 @@ struct DuJustNuView: View {
                 ForEach(Array(content.milestones.enumerated()), id: \.offset) { _, milestone in
                     let isAchieved = milestones.contains(where: { $0.milestoneKey == milestone.title })
 
-                    GlassCard(gradient: isAchieved ? .greenTeal : nil) {
-                        HStack(spacing: DS.s3) {
-                            Image(systemName: milestone.icon)
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundStyle(isAchieved ? LinearGradient.greenTeal : LinearGradient(colors: [Color.appTextSec], startPoint: .top, endPoint: .bottom))
-                                .frame(width: 36, height: 36)
-                                .background(isAchieved ? Color.appGreen.opacity(0.15) : Color.appSurface3)
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack {
-                                    Text(milestone.title)
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(Color.appText)
+                    Button {
+                        toggleMilestone(milestone.title, isAchieved: isAchieved)
+                    } label: {
+                        GlassCard(gradient: isAchieved ? .greenTeal : nil) {
+                            HStack(spacing: DS.s3) {
+                                // Icon badge — fills with green when achieved
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                        .fill(isAchieved ? Color.appGreen.opacity(0.18) : Color.appSurface3)
+                                        .frame(width: 38, height: 38)
 
                                     if isAchieved {
-                                        Image(systemName: "checkmark.seal.fill")
-                                            .font(.system(size: 12))
-                                            .foregroundStyle(Color.appGreen)
+                                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                            .strokeBorder(Color.appGreen.opacity(0.35), lineWidth: 0.75)
+                                            .frame(width: 38, height: 38)
                                     }
+
+                                    Image(systemName: milestone.icon)
+                                        .font(.system(size: 17, weight: .semibold))
+                                        .foregroundStyle(
+                                            isAchieved
+                                                ? AnyShapeStyle(LinearGradient.greenTeal)
+                                                : AnyShapeStyle(Color.appTextSec)
+                                        )
                                 }
 
-                                Text(milestone.description)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color.appTextSec)
-                                    .lineSpacing(2)
-                            }
+                                VStack(alignment: .leading, spacing: 3) {
+                                    HStack(spacing: DS.s1 + 1) {
+                                        Text(milestone.title)
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundStyle(Color.appText)
 
-                            Spacer(minLength: 0)
+                                        if isAchieved {
+                                            Image(systemName: "checkmark.seal.fill")
+                                                .font(.system(size: 12))
+                                                .foregroundStyle(Color.appGreen)
+                                                .transition(.scale.combined(with: .opacity))
+                                        }
+                                    }
+                                    .animation(DS.springBouncy, value: isAchieved)
+
+                                    Text(milestone.description)
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(Color.appTextSec)
+                                        .lineSpacing(2.5)
+                                }
+
+                                Spacer(minLength: 0)
+
+                                // Checkmark toggle indicator
+                                Image(systemName: isAchieved ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(isAchieved ? Color.appGreen : Color.appTextTert)
+                                    .animation(DS.springBouncy, value: isAchieved)
+                            }
                         }
                     }
+                    .buttonStyle(ScaleButtonStyle())
+                    .accessibilityLabel(milestone.title)
+                    .accessibilityValue(isAchieved ? "Uppnådd" : "Inte uppnådd")
+                    .accessibilityHint("Dubbeltryck för att \(isAchieved ? "ta bort" : "markera som uppnådd")")
                 }
             }
+        }
+    }
+
+    private func toggleMilestone(_ key: String, isAchieved: Bool) {
+        if isAchieved {
+            if let existing = milestones.first(where: { $0.milestoneKey == key }) {
+                modelContext.delete(existing)
+                try? modelContext.save()
+                HapticFeedback.light()
+            }
+        } else {
+            let milestone = AchievedMilestone(milestoneKey: key, achievedDate: Date())
+            modelContext.insert(milestone)
+            try? modelContext.save()
+            HapticFeedback.success()
         }
     }
 

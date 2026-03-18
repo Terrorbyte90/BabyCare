@@ -12,11 +12,15 @@ struct BabyCareApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if onboardingComplete {
-                ContentView()
-            } else {
-                OnboardingView()
+            Group {
+                if onboardingComplete {
+                    ContentView()
+                } else {
+                    OnboardingView()
+                }
             }
+            .preferredColorScheme(.dark)
+            .tint(.appPink)
         }
         .modelContainer(for: [
             UserData.self,

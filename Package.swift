@@ -1,5 +1,13 @@
 // swift-tools-version: 5.9
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// Obs: detta paket byggs via Xcode-projektet (BabyCare.xcodeproj), inte via `swift build`.
+// `swift build` på macOS väljer macOS-SDK:n och kan inte kompilera iOS-specifika ramverk
+// som SwiftUI, SwiftData och UIKit. Använd xcodebuild med en iOS-simulator-destination.
+//
+// Rätt sätt att bygga och testa:
+//   xcodebuild -scheme BabyCare \
+//     -project BabyCare.xcodeproj \
+//     -destination "platform=iOS Simulator,name=iPhone 16" \
+//     test
 
 import PackageDescription
 
@@ -13,16 +21,16 @@ let package = Package(
             name: "BabyCare",
             targets: ["BabyCare"]),
     ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // None needed; we use SwiftUI and SwiftData which are part of iOS SDK.
-    ],
+    dependencies: [],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "BabyCare",
-            dependencies: []),
+            dependencies: [],
+            swiftSettings: [
+                // Säkerställ att Swift känner till iOS-plattformsvillkor
+                .define("IOS_PLATFORM")
+            ]
+        ),
         .testTarget(
             name: "BabyCareTests",
             dependencies: ["BabyCare"],

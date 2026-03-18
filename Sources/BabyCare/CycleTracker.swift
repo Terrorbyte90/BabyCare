@@ -568,7 +568,7 @@ struct CycleTracker: View {
 
         var description: String {
             switch self {
-            case .period: return "Menstruation pagar"
+            case .period: return "Menstruation pågår"
             case .fertile: return "Fertilt fönster — ökad chans till befruktning"
             case .ovulation: return "Beräknad ägglossningsdag"
             case .normal: return "Ingen speciell cykeldag"

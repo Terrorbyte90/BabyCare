@@ -61,32 +61,46 @@ struct JournalView: View {
 
     private func journalCard(_ entry: JournalEntry) -> some View {
         GlassCard {
-            VStack(alignment: .leading, spacing: DS.s3) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(entry.title)
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Color.appText)
-                            .lineLimit(1)
+            HStack(spacing: DS.s3) {
+                // Left accent strip (mood-colored or gradient)
+                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                    .fill(entry.mood.map { LinearGradient(colors: [$0.color, $0.color.opacity(0.4)], startPoint: .top, endPoint: .bottom) }
+                          ?? LinearGradient.pinkPurple)
+                    .frame(width: 3)
+                    .padding(.vertical, 2)
 
-                        Text(formatDate(entry.date))
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(Color.appTextTert)
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.title)
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+                                .lineLimit(1)
+
+                            Text(formatDate(entry.date))
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(Color.appTextTert)
+                        }
+
+                        Spacer()
+
+                        if let mood = entry.mood {
+                            VStack(spacing: 2) {
+                                Text(mood.emoji)
+                                    .font(.system(size: 22))
+                                Text(mood.rawValue)
+                                    .font(.system(size: 9, weight: .medium))
+                                    .foregroundStyle(mood.color)
+                            }
+                        }
                     }
 
-                    Spacer()
-
-                    if let mood = entry.mood {
-                        Text(mood.emoji)
-                            .font(.system(size: 24))
-                    }
+                    Text(entry.content)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.appTextSec)
+                        .lineSpacing(4)
+                        .lineLimit(3)
                 }
-
-                Text(entry.content)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.appTextSec)
-                    .lineSpacing(4)
-                    .lineLimit(3)
             }
         }
         .contextMenu {
@@ -96,6 +110,8 @@ struct JournalView: View {
                 Label("Ta bort", systemImage: "trash")
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(entry.title), \(formatDate(entry.date))\(entry.mood.map { ", humör: \($0.rawValue)" } ?? "")")
     }
 
     private func formatDate(_ date: Date) -> String {

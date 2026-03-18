@@ -148,15 +148,15 @@ struct FertilityDashboard: View {
             VStack(spacing: DS.s5) {
                 // Phase label
                 HStack(spacing: DS.s2) {
-                    Circle()
-                        .fill(cyclePhase.color)
-                        .frame(width: 8, height: 8)
+                    PulsingDot(color: cyclePhase.color, size: 7)
                     Text(cyclePhase.displayName)
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.8))
                         .textCase(.uppercase)
                         .tracking(0.6)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Fas: \(cyclePhase.displayName)")
 
                 // Circular day indicator
                 ZStack {
@@ -176,6 +176,7 @@ struct FertilityDashboard: View {
                             Text("\(day)")
                                 .font(.system(size: 36, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
+                                .contentTransition(.numericText())
                             Text("av \(cycleLength)")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.5))
@@ -188,6 +189,8 @@ struct FertilityDashboard: View {
                                 .foregroundStyle(.white.opacity(0.5))
                         }
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(currentCycleDay.map { "Cykeldag \($0) av \(cycleLength)" } ?? "Ingen cykeldata")
 
                     // Ovulation star indicator
                     if currentCycleDay != nil {
@@ -271,12 +274,17 @@ struct FertilityDashboard: View {
     private var phaseInfoCard: some View {
         GlassCard(gradient: .fertilityGradient) {
             HStack(spacing: DS.s3) {
-                Image(systemName: cyclePhase.icon)
-                    .font(.system(size: 24, weight: .medium))
-                    .foregroundStyle(cyclePhase.color)
-                    .frame(width: 48, height: 48)
-                    .background(cyclePhase.color.opacity(0.15))
-                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                ZStack {
+                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                        .fill(cyclePhase.color.opacity(0.15))
+                        .frame(width: 50, height: 50)
+                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                        .strokeBorder(cyclePhase.color.opacity(0.3), lineWidth: 1)
+                        .frame(width: 50, height: 50)
+                    Image(systemName: cyclePhase.icon)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(cyclePhase.color)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(cyclePhase.displayName)
@@ -288,8 +296,12 @@ struct FertilityDashboard: View {
                         .foregroundStyle(Color.appTextSec)
                         .lineSpacing(3)
                 }
+
+                Spacer(minLength: 0)
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(cyclePhase.displayName): \(cyclePhase.description)")
     }
 
     // MARK: - Predictions
@@ -408,9 +420,9 @@ struct FertilityDashboard: View {
 
     private func recentLogRow(_ log: PeriodLog) -> some View {
         HStack(spacing: DS.s3) {
-            Circle()
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
                 .fill(log.flow.color)
-                .frame(width: 8, height: 8)
+                .frame(width: 4, height: 36)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(log.startDate.formatted(.dateTime.day().month(.abbreviated)))
@@ -419,8 +431,12 @@ struct FertilityDashboard: View {
 
                 HStack(spacing: DS.s2) {
                     Text(log.flow.displayName)
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color.appTextSec)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(log.flow.color)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(log.flow.color.opacity(0.12))
+                        .clipShape(Capsule())
 
                     if let dur = log.durationDays {
                         Text("\(dur) dagar")
@@ -433,9 +449,14 @@ struct FertilityDashboard: View {
             Spacer()
 
             if let temp = log.temperature {
-                Text(String(format: "%.1f\u{00B0}C", temp))
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color.appOrange)
+                VStack(spacing: 1) {
+                    Text(String(format: "%.1f", temp))
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.appOrange)
+                    Text("\u{00B0}C")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(Color.appOrange.opacity(0.7))
+                }
             }
         }
     }
@@ -877,7 +898,7 @@ struct TemperatureLoggingSheet: View {
                             .foregroundStyle(Color.appBlue)
                             .padding(.top, 1)
 
-                        Text("Mät din basaltemperatur direkt när du vaknar, innan du stiger upp. En stigning pa 0.2-0.5\u{00B0}C bekräftar ägglossning.")
+                        Text("Mät din basaltemperatur direkt när du vaknar, innan du stiger upp. En stigning på 0.2–0.5\u{00B0}C bekräftar ägglossning.")
                             .font(.system(size: 13))
                             .foregroundStyle(Color.appTextSec)
                             .lineSpacing(3)

@@ -66,37 +66,49 @@ struct WeekByWeekView: View {
                         let trimester = week <= 12 ? 1 : (week <= 27 ? 2 : 3)
 
                         Button {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                            withAnimation(.spring(response: 0.28, dampingFraction: 0.72)) {
                                 selectedWeek = week
                             }
                             HapticFeedback.selection()
                         } label: {
-                            VStack(spacing: 2) {
+                            VStack(spacing: 3) {
                                 Text("\(week)")
-                                    .font(.system(size: 16, weight: isSelected ? .bold : .medium, design: .rounded))
+                                    .font(.system(size: 15, weight: isSelected ? .bold : .regular, design: .rounded))
                                     .foregroundStyle(isSelected ? .white : isCurrent ? Color.appLavender : Color.appTextSec)
 
-                                Text("v")
-                                    .font(.system(size: 9, weight: .medium))
-                                    .foregroundStyle(isSelected ? .white.opacity(0.7) : Color.appTextTert)
+                                if isCurrent && !isSelected {
+                                    // "Nu" indicator dot
+                                    Circle()
+                                        .fill(Color.appLavender)
+                                        .frame(width: 4, height: 4)
+                                } else {
+                                    Circle()
+                                        .fill(Color.clear)
+                                        .frame(width: 4, height: 4)
+                                }
                             }
                             .frame(width: 44, height: 52)
                             .background(
                                 isSelected ? trimesterGradient(trimester) :
-                                isCurrent ? LinearGradient(colors: [Color.appLavender.opacity(0.2)], startPoint: .top, endPoint: .bottom) :
+                                isCurrent ? LinearGradient(colors: [Color.appLavender.opacity(0.12)], startPoint: .top, endPoint: .bottom) :
                                 LinearGradient(colors: [Color.appSurface], startPoint: .top, endPoint: .bottom)
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                             .overlay(
-                                RoundedRectangle(cornerRadius: DS.radiusSm)
-                                    .stroke(isSelected ? Color.clear : isCurrent ? Color.appLavender.opacity(0.3) : Color.appBorderMed, lineWidth: 1)
+                                RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                    .strokeBorder(
+                                        isSelected ? Color.clear : isCurrent ? Color.appLavender.opacity(0.35) : Color.appBorderMed,
+                                        lineWidth: 0.75
+                                    )
                             )
                         }
                         .buttonStyle(.plain)
                         .id(week)
+                        .accessibilityLabel("Vecka \(week)\(isCurrent ? ", nuvarande vecka" : "")\(isSelected ? ", vald" : "")")
                     }
                 }
                 .padding(.vertical, DS.s2)
+                .padding(.horizontal, DS.s4)
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -172,56 +184,96 @@ struct WeekByWeekView: View {
     private func fetalHeroCard(_ data: PregnancyWeekContent) -> some View {
         GradientCard(gradient: .pregnancyGradient) {
             VStack(spacing: DS.s4) {
-                HStack {
+                HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: DS.s2) {
+                        // Trimester pill
+                        Text("Trimester \(data.trimester)".uppercased())
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.65))
+                            .tracking(1.2)
+
                         Text("Vecka \(data.week)")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .font(.system(size: 34, weight: .heavy, design: .rounded))
                             .foregroundStyle(.white)
 
-                        Text("Trimester \(data.trimester)")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.7))
+                        // Emoji size comparison as a pill
+                        HStack(spacing: DS.s1) {
+                            Text(data.sizeEmoji)
+                                .font(.system(size: 14))
+                            Text("Som en \(data.fetalSizeComparison.lowercased())")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.8))
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.white.opacity(0.12))
+                        .clipShape(Capsule())
                     }
 
                     Spacer()
 
-                    // Animated fetal visualization
+                    // Animated SF symbol in a glass circle
                     ZStack {
-                        BreathingCircle(gradient: .pregnancyGradient, size: 70)
+                        BreathingCircle(gradient: .pregnancyGradient, size: 72)
+
+                        Circle()
+                            .fill(Color.white.opacity(0.12))
+                            .frame(width: 72, height: 72)
+
+                        Circle()
+                            .strokeBorder(Color.white.opacity(0.20), lineWidth: 1)
+                            .frame(width: 72, height: 72)
 
                         Image(systemName: data.sfSymbol)
-                            .font(.system(size: 30, weight: .medium))
+                            .font(.system(size: 28, weight: .medium))
                             .foregroundStyle(.white)
                     }
                 }
 
-                // Size comparison
-                HStack(spacing: DS.s4) {
+                // Separator
+                Rectangle()
+                    .fill(Color.white.opacity(0.10))
+                    .frame(height: 0.5)
+
+                // Stats row
+                HStack(spacing: 0) {
                     infoBox(title: "Storlek", value: data.fetalSizeComparison, icon: "ruler")
+                    infoBoxDivider()
                     infoBox(title: "Vikt", value: data.fetalWeightGrams, icon: "scalemass")
+                    infoBoxDivider()
                     infoBox(title: "Längd", value: data.fetalLengthCM, icon: "arrow.up.and.down")
                 }
             }
         }
     }
 
+    private func infoBoxDivider() -> some View {
+        Rectangle()
+            .fill(Color.white.opacity(0.10))
+            .frame(width: 0.5, height: 36)
+    }
+
     private func infoBox(title: String, value: String, icon: String) -> some View {
-        VStack(spacing: DS.s1) {
+        VStack(spacing: DS.s1 + 1) {
             Image(systemName: icon)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.55))
+                .accessibilityHidden(true)
 
             Text(value)
-                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.65)
 
-            Text(title)
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.white.opacity(0.5))
+            Text(title.uppercased())
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.45))
+                .tracking(0.6)
         }
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(value)")
     }
 
     // MARK: - Sense Spotlight Card (Preggers-style)
@@ -229,77 +281,90 @@ struct WeekByWeekView: View {
     private func senseSpotlightCard(_ sense: FetalSense) -> some View {
         let accentColor = Color(hex: sense.colorHex)
         let gradient = LinearGradient(
-            colors: [accentColor.opacity(0.85), accentColor.opacity(0.55)],
+            colors: [accentColor.opacity(0.9), accentColor.opacity(0.6)],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
 
         return ZStack {
-            // Background with warm gradient
-            RoundedRectangle(cornerRadius: DS.radiusLg)
+            RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
                 .fill(gradient)
 
-            // Subtle pattern overlay
-            RoundedRectangle(cornerRadius: DS.radiusLg)
+            // Top-left highlight — mimics real glass refraction
+            RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
                 .fill(
                     RadialGradient(
-                        colors: [Color.white.opacity(0.15), Color.clear],
+                        colors: [Color.white.opacity(0.18), Color.clear],
                         center: .topLeading,
-                        startRadius: 10,
-                        endRadius: 200
+                        startRadius: 0,
+                        endRadius: 180
                     )
                 )
 
-            HStack(spacing: DS.s4) {
-                // Left: Icon in circle
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.2))
-                        .frame(width: 72, height: 72)
+            // Bottom-right shadow for depth
+            RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [Color.clear, Color.black.opacity(0.15)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
 
-                    Circle()
-                        .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
-                        .frame(width: 72, height: 72)
+            VStack(alignment: .leading, spacing: DS.s3) {
+                // Category label
+                HStack(spacing: DS.s2) {
+                    Rectangle()
+                        .fill(Color.white.opacity(0.6))
+                        .frame(width: 20, height: 1)
 
-                    Image(systemName: sense.icon)
-                        .font(.system(size: 28, weight: .medium))
-                        .foregroundStyle(.white)
+                    Text(sense.name.uppercased())
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .tracking(2.0)
                 }
 
-                // Right: Text content
-                VStack(alignment: .leading, spacing: DS.s2) {
-                    // Category label like Preggers
-                    HStack(spacing: DS.s2) {
-                        Rectangle()
-                            .fill(Color.white.opacity(0.5))
-                            .frame(width: 24, height: 1)
+                HStack(alignment: .top, spacing: DS.s4) {
+                    // Icon circle
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.18))
+                            .frame(width: 68, height: 68)
 
-                        Text(sense.name)
-                            .font(.system(size: 11, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.9))
-                            .tracking(2)
+                        Circle()
+                            .strokeBorder(Color.white.opacity(0.25), lineWidth: 1)
+                            .frame(width: 68, height: 68)
+
+                        Image(systemName: sense.icon)
+                            .font(.system(size: 26, weight: .medium))
+                            .foregroundStyle(.white)
                     }
 
-                    // Main headline
-                    Text(sense.headline)
-                        .font(.system(size: 17, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .lineSpacing(2)
+                    // Text
+                    VStack(alignment: .leading, spacing: DS.s2) {
+                        Text(sense.headline)
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                            .lineSpacing(2)
+                            .fixedSize(horizontal: false, vertical: true)
 
-                    // Detail text
-                    Text(sense.detail)
-                        .font(.system(size: 12, weight: .regular))
-                        .foregroundStyle(.white.opacity(0.82))
-                        .lineSpacing(3)
-                        .lineLimit(4)
+                        Text(sense.detail)
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundStyle(.white.opacity(0.85))
+                            .lineSpacing(3.5)
+                            .lineLimit(5)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
-
-                Spacer(minLength: 0)
             }
             .padding(DS.s4)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity)
-        .shadow(color: accentColor.opacity(0.35), radius: 12, x: 0, y: 6)
+        .shadow(color: accentColor.opacity(0.4), radius: 16, x: 0, y: 8)
+        .shadow(color: accentColor.opacity(0.15), radius: 4, x: 0, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(sense.name): \(sense.headline). \(sense.detail)")
     }
 
     // MARK: - Development Section
@@ -364,20 +429,33 @@ struct WeekByWeekView: View {
         VStack(alignment: .leading, spacing: DS.s3) {
             DSSectionHeader(title: "Vanliga symptom")
 
+            // Wrap-layout chips — more visual, easier to scan
             GlassCard {
-                VStack(alignment: .leading, spacing: DS.s2) {
+                LazyVGrid(
+                    columns: [GridItem(.flexible()), GridItem(.flexible())],
+                    alignment: .leading,
+                    spacing: DS.s2
+                ) {
                     ForEach(Array(data.commonSymptoms.enumerated()), id: \.offset) { _, symptom in
-                        HStack(spacing: DS.s2) {
-                            Circle()
-                                .fill(Color.appOrange)
-                                .frame(width: 6, height: 6)
+                        HStack(spacing: DS.s1 + 1) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 5))
+                                .foregroundStyle(Color.appOrange)
+                                .accessibilityHidden(true)
 
                             Text(symptom)
-                                .font(.system(size: 14))
+                                .font(.system(size: 13, weight: .medium))
                                 .foregroundStyle(Color.appTextSec)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.85)
                         }
+                        .padding(.horizontal, DS.s3)
+                        .padding(.vertical, DS.s2)
+                        .background(Color.appOrange.opacity(0.07))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm - 2, style: .continuous))
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }

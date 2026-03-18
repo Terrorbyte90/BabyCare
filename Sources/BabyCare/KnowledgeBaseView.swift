@@ -77,6 +77,20 @@ struct KnowledgeBaseView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.appBg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: StoriesView()) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "book.closed.fill")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("Sagor")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(LinearGradient.pinkPurple)
+                    }
+                    .accessibilityLabel("Visa sagor")
+                }
+            }
         }
         .preferredColorScheme(.dark)
     }
@@ -120,12 +134,60 @@ struct KnowledgeBaseView: View {
     private var articleList: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: DS.s3) {
+                // Kurssektion — alltid synlig ovanför artiklarna
+                NavigationLink(destination: CoursesView()) {
+                    GlassCard(gradient: LinearGradient(colors: [Color(hex: "5E5CE6"), Color(hex: "BF5AF2")], startPoint: .topLeading, endPoint: .bottomTrailing)) {
+                        HStack(spacing: DS.s3) {
+                            IconBadge(icon: "graduationcap.fill", gradient: LinearGradient(colors: [Color(hex: "5E5CE6"), Color(hex: "BF5AF2")], startPoint: .topLeading, endPoint: .bottomTrailing), size: 52)
+
+                            VStack(alignment: .leading, spacing: DS.s1 + 2) {
+                                Text("Föräldrakurser")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(Color.appText)
+
+                                Text("Evidensbaserade kurser om anknytning, sömn, mat och mer")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color.appTextSec)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+
+                                HStack(spacing: DS.s2) {
+                                    Text("5 kurser")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundStyle(Color.appIndigo)
+                                        .padding(.horizontal, DS.s2)
+                                        .padding(.vertical, 4)
+                                        .background(Color.appIndigo.opacity(0.15))
+                                        .clipShape(Capsule())
+
+                                    Text("Interaktiv")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundStyle(Color.appPurple)
+                                        .padding(.horizontal, DS.s2)
+                                        .padding(.vertical, 4)
+                                        .background(Color.appPurple.opacity(0.15))
+                                        .clipShape(Capsule())
+                                }
+                            }
+
+                            Spacer(minLength: 0)
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(Color.appTextTert)
+                        }
+                    }
+                }
+                .buttonStyle(ScaleButtonStyle())
+                .staggerAppear(index: 0)
+                .accessibilityLabel("Föräldrakurser. Evidensbaserade kurser om anknytning, sömn, mat och mer.")
+
                 ForEach(Array(filteredArticles.enumerated()), id: \.element.id) { index, article in
                     NavigationLink(destination: ArticleDetailView(article: article)) {
                         ArticleCard(article: article)
                     }
                     .buttonStyle(ScaleButtonStyle())
-                    .staggerAppear(index: index)
+                    .staggerAppear(index: index + 1)
                 }
                 Color.clear.frame(height: 80)
             }
@@ -188,11 +250,13 @@ struct ArticleCard: View {
         .padding(DS.s4)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.appSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: DS.radius)
-                .stroke(Color.appBorder, lineWidth: 1)
+            RoundedRectangle(cornerRadius: DS.radius, style: .continuous)
+                .stroke(Color.appBorderMed, lineWidth: 0.75)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(article.title). \(article.subtitle). \(article.readTimeMinutes) minuters läsning, kategori \(article.category.rawValue)")
     }
 }
 

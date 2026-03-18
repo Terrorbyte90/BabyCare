@@ -26,21 +26,21 @@ enum FertilityTab: String, CaseIterable, Identifiable {
 enum PregnancyTab: String, CaseIterable, Identifiable {
     case home = "Hem"
     case week = "Vecka"
+    case dashboard = "Du & bebis"
     case log = "Logg"
     case guides = "Guider"
-    case stories = "Sagor"
     case profile = "Profil"
 
     var id: String { rawValue }
 
     var icon: String {
         switch self {
-        case .home:     return "house.fill"
-        case .week:     return "calendar.badge.clock"
-        case .log:      return "square.and.pencil"
-        case .guides:   return "book.fill"
-        case .stories:  return "book.closed.fill"
-        case .profile:  return "person.fill"
+        case .home:      return "house.fill"
+        case .week:      return "calendar.badge.clock"
+        case .dashboard: return "figure.stand.dress"
+        case .log:       return "square.and.pencil"
+        case .guides:    return "book.fill"
+        case .profile:   return "person.fill"
         }
     }
 }
@@ -48,9 +48,9 @@ enum PregnancyTab: String, CaseIterable, Identifiable {
 enum ParentTab: String, CaseIterable, Identifiable {
     case home = "Hem"
     case log = "Logga"
+    case dujustnu = "Du just nu"
     case growth = "Tillväxt"
     case guides = "Guider"
-    case stories = "Sagor"
     case profile = "Profil"
 
     var id: String { rawValue }
@@ -59,9 +59,9 @@ enum ParentTab: String, CaseIterable, Identifiable {
         switch self {
         case .home:     return "house.fill"
         case .log:      return "square.and.pencil"
+        case .dujustnu: return "sparkles"
         case .growth:   return "chart.xyaxis.line"
         case .guides:   return "book.fill"
-        case .stories:  return "book.closed.fill"
         case .profile:  return "person.fill"
         }
     }
@@ -72,6 +72,7 @@ enum ParentTab: String, CaseIterable, Identifiable {
 struct ContentView: View {
     @Query private var users: [UserData]
     @Environment(\.modelContext) private var modelContext
+    @AppStorage("nightModeEnabled") private var nightModeEnabled = false
 
     private var user: UserData? { users.first }
     private var phase: UserPhase { user?.phase ?? .pregnancy }
@@ -87,7 +88,10 @@ struct ContentView: View {
                 ParentTabView()
             }
         }
-        .preferredColorScheme(.dark)
+        // Always dark unless the user has explicitly chosen system/light mode.
+        // nightModeEnabled = true  → force dark (OLED-friendly, battery saving at night)
+        // nightModeEnabled = false → follow system setting (default: dark from .dark below)
+        .preferredColorScheme(nightModeEnabled ? .dark : nil)
     }
 }
 
@@ -102,8 +106,8 @@ struct FertilityTabView: View {
             Group {
                 switch selectedTab {
                 case .home:     HomeView()
-                case .calendar: CalendarView()
-                case .insights: CycleTracker()
+                case .calendar: CycleTracker()
+                case .insights: FertilityDashboard()
                 case .guides:   KnowledgeBaseView()
                 case .profile:  ProfileView()
                 }
@@ -133,12 +137,12 @@ struct PregnancyTabView: View {
         ZStack(alignment: .bottom) {
             Group {
                 switch selectedTab {
-                case .home:     HomeView()
-                case .week:     WeekByWeekView()
-                case .log:      LoggingHub()
-                case .guides:   KnowledgeBaseView()
-                case .stories:  StoriesView()
-                case .profile:  ProfileView()
+                case .home:      HomeView()
+                case .week:      WeekByWeekView()
+                case .dashboard: PregnancyDashboard()
+                case .log:       LoggingHub()
+                case .guides:    KnowledgeBaseView()
+                case .profile:   ProfileView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -168,9 +172,9 @@ struct ParentTabView: View {
                 switch selectedTab {
                 case .home:     HomeView()
                 case .log:      LoggingHub()
+                case .dujustnu: DuJustNuView()
                 case .growth:   GrowthCharts()
                 case .guides:   KnowledgeBaseView()
-                case .stories:  StoriesView()
                 case .profile:  ProfileView()
                 }
             }
@@ -199,57 +203,113 @@ struct AppTabBar<Tab: Hashable & Identifiable>: View {
     let label: (Tab) -> String
     let icon: (Tab) -> String
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         HStack(spacing: 0) {
             ForEach(tabs) { tab in
                 let isSelected = selected == tab
 
                 Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.72)) {
-                        selected = tab
+                    if selected != tab {
+                        withAnimation(
+                            reduceMotion
+                                ? .linear(duration: 0.1)
+                                : DS.springSnappy
+                        ) {
+                            selected = tab
+                        }
+                        HapticFeedback.selection()
                     }
-                    HapticFeedback.selection()
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: icon(tab))
-                            .font(.system(size: isSelected ? 18 : 17, weight: isSelected ? .bold : .medium))
-                            .symbolEffect(.bounce, value: isSelected)
+                        ZStack {
+                            // Pill background — matched geometry for fluid slide
+                            if isSelected {
+                                Capsule()
+                                    .fill(gradient.opacity(0.28))
+                                    .frame(width: 48, height: 30)
+                                    .matchedGeometryEffect(id: "tabPill", in: namespace)
+                                    // Thin top stroke on the pill itself
+                                    .overlay(
+                                        Capsule()
+                                            .strokeBorder(
+                                                LinearGradient(
+                                                    colors: [Color.white.opacity(0.25), Color.clear],
+                                                    startPoint: .top,
+                                                    endPoint: .bottom
+                                                ),
+                                                lineWidth: 0.5
+                                            )
+                                    )
+                            }
+
+                            Image(systemName: icon(tab))
+                                .font(.system(size: 17, weight: isSelected ? .semibold : .regular))
+                                // symbolEffect only on iOS 17+
+                                .symbolEffect(.bounce.up.byLayer, value: isSelected && !reduceMotion)
+                                .foregroundStyle(
+                                    isSelected
+                                        ? AnyShapeStyle(.white)
+                                        : AnyShapeStyle(Color.appTextTert)
+                                )
+                                .frame(width: 48, height: 30)
+                                .contentShape(Rectangle())
+                        }
 
                         Text(label(tab))
                             .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+                            .foregroundStyle(isSelected ? Color.appText : Color.appTextTert)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                     }
-                    .foregroundStyle(isSelected ? .white : Color.appTextTert)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, DS.s2)
-                    .background {
-                        if isSelected {
-                            Capsule()
-                                .fill(gradient.opacity(0.25))
-                                .matchedGeometryEffect(id: "tabHighlight", in: namespace)
-                        }
-                    }
+                    .frame(minHeight: DS.minTouchTarget)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(label(tab))
+                .accessibilityAddTraits(isSelected ? [.isSelected] : [])
             }
         }
         .padding(.horizontal, DS.s3)
-        .padding(.top, DS.s2)
-        .padding(.bottom, DS.s2 + 4)
+        .padding(.top, DS.s2 + 1)
+        .padding(.bottom, DS.s1 + 1)
         .background {
-            RoundedRectangle(cornerRadius: DS.radiusXl)
+            RoundedRectangle(cornerRadius: DS.radiusXl, style: .continuous)
                 .fill(.ultraThinMaterial)
                 .overlay {
-                    RoundedRectangle(cornerRadius: DS.radiusXl)
-                        .fill(Color.appSurface.opacity(0.85))
+                    RoundedRectangle(cornerRadius: DS.radiusXl, style: .continuous)
+                        .fill(Color.appSurface.opacity(0.82))
+                }
+                // Specular top highlight — key to premium glass appearance
+                .overlay(alignment: .top) {
+                    RoundedRectangle(cornerRadius: DS.radiusXl, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.09), Color.clear],
+                                startPoint: .top,
+                                endPoint: .init(x: 0.5, y: 0.35)
+                            )
+                        )
+                        .allowsHitTesting(false)
                 }
                 .overlay {
-                    RoundedRectangle(cornerRadius: DS.radiusXl)
-                        .stroke(Color.appBorderMed, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: DS.radiusXl, style: .continuous)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.14), Color.white.opacity(0.04)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.75
+                        )
                 }
-                .shadow(color: Color.black.opacity(0.35), radius: 20, y: 5)
+                .shadow(color: Color.black.opacity(0.45), radius: 28, y: 10)
+                .shadow(color: Color.black.opacity(0.12), radius: 6, y: 2)
         }
         .padding(.horizontal, DS.s4)
-        .padding(.bottom, DS.s1)
+        .padding(.bottom, DS.s2)
     }
 }
 

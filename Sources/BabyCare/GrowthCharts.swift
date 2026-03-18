@@ -27,7 +27,7 @@ struct GrowthCharts: View {
 
     enum GrowthTab: String, CaseIterable {
         case weight = "Vikt"
-        case length = "Langd"
+        case length = "Längd"
         case head = "Huvud"
 
         var icon: String {
@@ -99,10 +99,20 @@ struct GrowthCharts: View {
                     }
                 }
             }
-            .navigationTitle("Tillvaxtdiagram")
+            .navigationTitle("Tillväxtdiagram")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.appBg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: CompareView()) {
+                        Image(systemName: "person.2.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(LinearGradient.babyGradient)
+                    }
+                    .accessibilityLabel("Jämför med andra barn")
+                }
+            }
         }
         .sheet(isPresented: $showAddMeasurement) {
             AddMeasurementSheet()
@@ -120,7 +130,7 @@ struct GrowthCharts: View {
                     isSelected: selectedTab == tab,
                     gradient: tab.gradient
                 ) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    withAnimation(DS.springSnappy) {
                         selectedTab = tab
                         selectedPoint = nil
                     }
@@ -139,7 +149,7 @@ struct GrowthCharts: View {
             GradientCard(gradient: selectedTab.gradient) {
                 HStack(spacing: DS.s5) {
                     VStack(alignment: .leading, spacing: DS.s2) {
-                        Text("Senaste matning")
+                        Text("Senaste mätning")
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.6))
                             .textCase(.uppercase)
@@ -150,17 +160,20 @@ struct GrowthCharts: View {
                             Text(String(format: "%.2f kg", latest.weight))
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
+                                .contentTransition(.numericText())
                         case .length:
                             Text(String(format: "%.1f cm", latest.height))
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
+                                .contentTransition(.numericText())
                         case .head:
                             if let hc = latest.headCircumference {
                                 Text(String(format: "%.1f cm", hc))
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
                                     .foregroundStyle(.white)
+                                    .contentTransition(.numericText())
                             } else {
-                                Text("Ej matt")
+                                Text("Ej mätt")
                                     .font(.system(size: 22, weight: .bold, design: .rounded))
                                     .foregroundStyle(.white.opacity(0.6))
                             }
@@ -185,11 +198,11 @@ struct GrowthCharts: View {
                         .font(.system(size: 28, weight: .medium))
                         .foregroundStyle(selectedTab.gradient)
 
-                    Text("Inga matningar an")
+                    Text("Inga mätningar än")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color.appText)
 
-                    Text("Tryck pa + for att lagga till en matning")
+                    Text("Tryck på + för att lägga till en mätning")
                         .font(.system(size: 13))
                         .foregroundStyle(Color.appTextSec)
                 }
@@ -209,7 +222,7 @@ struct GrowthCharts: View {
                     Image(systemName: "chart.xyaxis.line")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(selectedTab.gradient)
-                    Text("Tillvaxtkurva")
+                    Text("Tillväxtkurva")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color.appText)
 
@@ -228,11 +241,13 @@ struct GrowthCharts: View {
                 let maxMonth = max(Double(babyAgeMonths + 2), 12)
 
                 Chart {
-                    // 3rd percentile
+                    // 3rd percentile — series identifier prevents Apple Charts
+                    // from merging lines that share the same x-values
                     ForEach(percentileData.p3.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
                         LineMark(
-                            x: .value("Manad", p.ageMonths),
-                            y: .value("Varde", valueForPercentile(p, percentile: .p3))
+                            x: .value("Månad", p.ageMonths),
+                            y: .value("Värde", valueForPercentile(p, percentile: .p3)),
+                            series: .value("Serie", "p3")
                         )
                         .foregroundStyle(Color.appTextTert.opacity(0.4))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
@@ -242,8 +257,9 @@ struct GrowthCharts: View {
                     // 15th percentile
                     ForEach(percentileData.p15.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
                         LineMark(
-                            x: .value("Manad", p.ageMonths),
-                            y: .value("Varde", valueForPercentile(p, percentile: .p15))
+                            x: .value("Månad", p.ageMonths),
+                            y: .value("Värde", valueForPercentile(p, percentile: .p15)),
+                            series: .value("Serie", "p15")
                         )
                         .foregroundStyle(Color.appTextTert.opacity(0.5))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
@@ -253,8 +269,9 @@ struct GrowthCharts: View {
                     // 50th percentile
                     ForEach(percentileData.p50.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
                         LineMark(
-                            x: .value("Manad", p.ageMonths),
-                            y: .value("Varde", valueForPercentile(p, percentile: .p50))
+                            x: .value("Månad", p.ageMonths),
+                            y: .value("Värde", valueForPercentile(p, percentile: .p50)),
+                            series: .value("Serie", "p50")
                         )
                         .foregroundStyle(Color.appTextSec)
                         .lineStyle(StrokeStyle(lineWidth: 2))
@@ -264,8 +281,9 @@ struct GrowthCharts: View {
                     // 85th percentile
                     ForEach(percentileData.p85.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
                         LineMark(
-                            x: .value("Manad", p.ageMonths),
-                            y: .value("Varde", valueForPercentile(p, percentile: .p85))
+                            x: .value("Månad", p.ageMonths),
+                            y: .value("Värde", valueForPercentile(p, percentile: .p85)),
+                            series: .value("Serie", "p85")
                         )
                         .foregroundStyle(Color.appTextTert.opacity(0.5))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
@@ -275,8 +293,9 @@ struct GrowthCharts: View {
                     // 97th percentile
                     ForEach(percentileData.p97.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
                         LineMark(
-                            x: .value("Manad", p.ageMonths),
-                            y: .value("Varde", valueForPercentile(p, percentile: .p97))
+                            x: .value("Månad", p.ageMonths),
+                            y: .value("Värde", valueForPercentile(p, percentile: .p97)),
+                            series: .value("Serie", "p97")
                         )
                         .foregroundStyle(Color.appTextTert.opacity(0.4))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
@@ -329,7 +348,7 @@ struct GrowthCharts: View {
                             .foregroundStyle(Color.appBorder)
                         AxisValueLabel {
                             if let v = value.as(Int.self) {
-                                Text("\(v) man")
+                                Text("\(v) mån")
                                     .font(.system(size: 10))
                                     .foregroundStyle(Color.appTextTert)
                             }
@@ -416,14 +435,17 @@ struct GrowthCharts: View {
                                     Text(String(format: "%.0f", percentile))
                                         .font(.system(size: 22, weight: .bold, design: .rounded))
                                         .foregroundStyle(Color.appText)
+                                        .contentTransition(.numericText())
+                                        .animation(DS.springSmooth, value: percentile)
                                     Text(":e")
                                         .font(.system(size: 11, weight: .semibold))
                                         .foregroundStyle(Color.appTextSec)
                                 }
                             }
+                            .accessibilityLabel("Percentil: \(Int(percentile))")
 
                             VStack(alignment: .leading, spacing: DS.s2) {
-                                Text("Ditt barn ligger pa \(ordinalString(percentile)):e percentilen")
+                                Text("Ditt barn ligger på \(ordinalString(percentile)):e percentilen")
                                     .font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(Color.appText)
                                     .lineSpacing(3)
@@ -451,7 +473,7 @@ struct GrowthCharts: View {
                         Image(systemName: "person.3.fill")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color.appGreen)
-                        Text("Jamforelse med andra barn")
+                        Text("Jämförelse med andra barn")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color.appText)
                     }
@@ -498,14 +520,14 @@ struct GrowthCharts: View {
 
                             let diff = babyVal - avgVal
                             let diffSign = diff >= 0 ? "+" : ""
-                            Text("\(diffSign)\(String(format: "%.1f", diff)) \(selectedTab.unit) jamfort med genomsnittet")
+                            Text("\(diffSign)\(String(format: "%.1f", diff)) \(selectedTab.unit) jämfört med genomsnittet")
                                 .font(.system(size: 13))
                                 .foregroundStyle(Color.appTextSec)
                                 .lineSpacing(3)
                         }
                     }
 
-                    Text(MockFirebaseService.shared.simulatedComparisonText(for: selectedTab.rawValue, ageMonths: babyAgeMonths))
+                    Text("Referensvärden baserade på WHO:s tillväxtstandarder (WHO Child Growth Standards, 2006)")
                         .font(.system(size: 11))
                         .foregroundStyle(Color.appTextTert)
                 }
@@ -591,15 +613,15 @@ struct GrowthCharts: View {
 
     private func percentileDescription(_ percentile: Double) -> String {
         if percentile < 5 {
-            return "Under 5:e percentilen. Diskutera med BVC vid nasta besok."
+            return "Under 5:e percentilen. Diskutera med BVC vid nästa besök."
         } else if percentile < 15 {
-            return "I det lagre normalomradet. De flesta barn vaxer i sin egen takt."
+            return "I det lägre normalområdet. De flesta barn växer i sin egen takt."
         } else if percentile <= 85 {
-            return "Inom normalomradet. Ditt barn vaxer som forvantat."
+            return "Inom normalområdet. Ditt barn växer som förväntat."
         } else if percentile <= 95 {
-            return "I det hogre normalomradet. De flesta barn vaxer i sin egen takt."
+            return "I det högre normalområdet. De flesta barn växer i sin egen takt."
         } else {
-            return "Over 95:e percentilen. Diskutera med BVC vid nasta besok."
+            return "Över 95:e percentilen. Diskutera med BVC vid nästa besök."
         }
     }
 
@@ -687,7 +709,7 @@ struct AddMeasurementSheet: View {
     }
 
     var body: some View {
-        DSSheet(title: "Ny matning", onSave: save, canSave: canSave) {
+        DSSheet(title: "Ny mätning", onSave: save, canSave: canSave) {
             VStack(spacing: DS.s5) {
                 // Date
                 VStack(alignment: .leading, spacing: DS.s2) {
@@ -718,7 +740,7 @@ struct AddMeasurementSheet: View {
 
                 // Length
                 measurementField(
-                    title: "Langd (cm)",
+                    title: "Längd (cm)",
                     text: $length,
                     icon: "ruler.fill",
                     gradient: .blueIndigo,
@@ -727,7 +749,7 @@ struct AddMeasurementSheet: View {
 
                 // Head circumference
                 measurementField(
-                    title: "Huvudomfang (cm) - Valfritt",
+                    title: "Huvudomfång (cm) – Valfritt",
                     text: $headCircumference,
                     icon: "circle.dotted",
                     gradient: .tealMint,

@@ -67,38 +67,46 @@ struct CalendarView: View {
     private var monthHeader: some View {
         HStack {
             Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                withAnimation(DS.springSmooth) {
                     currentMonth = Calendar.current.date(byAdding: .month, value: -1, to: currentMonth) ?? currentMonth
                 }
+                HapticFeedback.selection()
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(Color.appTextSec)
-                    .frame(width: 40, height: 40)
+                    .frame(width: DS.minTouchTarget, height: DS.minTouchTarget)
                     .background(Color.appSurface)
                     .clipShape(Circle())
             }
+            .buttonStyle(ScaleButtonStyle())
+            .accessibilityLabel("Föregående månad")
 
             Spacer()
 
             Text(monthYearString)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(Color.appText)
+                .contentTransition(.numericText())
+                .animation(DS.springSmooth, value: monthYearString)
 
             Spacer()
 
             Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                withAnimation(DS.springSmooth) {
                     currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth) ?? currentMonth
                 }
+                HapticFeedback.selection()
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(Color.appTextSec)
-                    .frame(width: 40, height: 40)
+                    .frame(width: DS.minTouchTarget, height: DS.minTouchTarget)
                     .background(Color.appSurface)
                     .clipShape(Circle())
             }
+            .buttonStyle(ScaleButtonStyle())
+            .accessibilityLabel("Nästa månad")
         }
     }
 
@@ -135,7 +143,7 @@ struct CalendarView: View {
                 let isDueDate = user?.dueDate.flatMap { Calendar.current.isDate(date, inSameDayAs: $0) } ?? false
 
                 Button {
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) {
+                    withAnimation(DS.springSnappy) {
                         selectedDate = date
                     }
                     HapticFeedback.selection()
@@ -216,12 +224,17 @@ struct CalendarView: View {
     private func appointmentCard(_ appointment: Appointment) -> some View {
         GlassCard {
             HStack(spacing: DS.s3) {
-                Image(systemName: appointment.type.icon)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(appointment.type.color)
-                    .frame(width: 40, height: 40)
-                    .background(appointment.type.color.opacity(0.15))
-                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                ZStack {
+                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                        .fill(appointment.type.color.opacity(0.15))
+                        .frame(width: 44, height: 44)
+                    RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                        .strokeBorder(appointment.type.color.opacity(0.25), lineWidth: 0.75)
+                        .frame(width: 44, height: 44)
+                    Image(systemName: appointment.type.icon)
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(appointment.type.color)
+                }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(appointment.title)
@@ -247,10 +260,13 @@ struct CalendarView: View {
                     .foregroundStyle(appointment.type.color)
                     .padding(.horizontal, DS.s2)
                     .padding(.vertical, 4)
-                    .background(appointment.type.color.opacity(0.15))
+                    .background(appointment.type.color.opacity(0.12))
                     .clipShape(Capsule())
+                    .overlay(Capsule().stroke(appointment.type.color.opacity(0.2), lineWidth: 0.5))
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(appointment.title), \(appointment.type.rawValue), kl. \(timeString(appointment.date))\(appointment.notes.isEmpty ? "" : ", \(appointment.notes)")")
     }
 
     // MARK: - Upcoming Section

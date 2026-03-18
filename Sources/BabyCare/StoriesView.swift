@@ -67,7 +67,7 @@ struct StoriesView: View {
                     DSEmptyState(
                         icon: "book.closed.fill",
                         gradient: .pinkPurple,
-                        title: "Inga sagor tillgangliga",
+                        title: "Inga sagor tillgängliga",
                         subtitle: "Sagor laddas snart. Kom tillbaka senare!"
                     )
                 } else {
@@ -95,7 +95,7 @@ struct StoriesView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color.appTextTert)
 
-                TextField("Sok sagor...", text: $searchText)
+                TextField("Sök sagor...", text: $searchText)
                     .font(.system(size: 15))
                     .foregroundStyle(Color.appText)
 
@@ -196,7 +196,7 @@ struct StoriesView: View {
                         icon: "magnifyingglass",
                         gradient: .blueIndigo,
                         title: "Inga sagor hittades",
-                        subtitle: "Prova att andra dina filter eller sok efter nagot annat."
+                        subtitle: "Prova att ändra dina filter eller sök efter något annat."
                     )
                     .frame(minHeight: 300)
                 } else {
@@ -205,16 +205,16 @@ struct StoriesView: View {
                         storySection(title: "Favoriter", stories: favoritedStories, index: 0)
                     }
 
-                    // Senast lasta
+                    // Senast lästa
                     if !recentlyReadStories.isEmpty {
-                        storySection(title: "Senast lasta", stories: recentlyReadStories, index: 1)
+                        storySection(title: "Senast lästa", stories: recentlyReadStories, index: 1)
                     }
 
-                    // Alla / Ovriga sagor
+                    // Alla / Övriga sagor
                     let remaining = otherStories
                     if !remaining.isEmpty {
                         storySection(
-                            title: favoritedStories.isEmpty && recentlyReadStories.isEmpty ? "Alla sagor" : "Upptack fler",
+                            title: favoritedStories.isEmpty && recentlyReadStories.isEmpty ? "Alla sagor" : "Upptäck fler",
                             stories: remaining,
                             index: 2
                         )
@@ -274,15 +274,7 @@ private struct StoryCard: View {
         GlassCard(gradient: story.category.gradient) {
             HStack(spacing: DS.s3) {
                 // Icon
-                ZStack {
-                    RoundedRectangle(cornerRadius: DS.radiusSm)
-                        .fill(story.category.gradient.opacity(0.2))
-                        .frame(width: 56, height: 56)
-
-                    Image(systemName: story.category.icon)
-                        .font(.system(size: 24, weight: .medium))
-                        .foregroundStyle(story.category.gradient)
-                }
+                IconBadge(icon: story.category.icon, gradient: story.category.gradient, size: 52)
 
                 VStack(alignment: .leading, spacing: DS.s1) {
                     Text(story.title)
@@ -311,9 +303,9 @@ private struct StoryCard: View {
                     }
 
                     if let p = progress, p.timesRead > 0 {
-                        Text("Last \(p.timesRead) \(p.timesRead == 1 ? "gang" : "ganger")")
+                        Label("\(p.timesRead) \(p.timesRead == 1 ? "gång" : "gånger") läst", systemImage: "checkmark.circle.fill")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(Color.appTextTert)
+                            .foregroundStyle(Color.appGreen)
                     }
                 }
 
@@ -321,13 +313,16 @@ private struct StoryCard: View {
 
                 // Favorite button
                 Button {
-                    onToggleFavorite()
+                    withAnimation(DS.springBouncy) { onToggleFavorite() }
                 } label: {
                     Image(systemName: progress?.isFavorite == true ? "star.fill" : "star")
                         .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(progress?.isFavorite == true ? Color.appWarmYellow : Color.appTextTert)
+                        .contentTransition(.symbolEffect(.replace))
+                        .frame(width: DS.minTouchTarget, height: DS.minTouchTarget)
                 }
                 .buttonStyle(ScaleButtonStyle())
+                .accessibilityLabel(progress?.isFavorite == true ? "Ta bort från favoriter" : "Lägg till i favoriter")
             }
         }
     }
@@ -530,15 +525,17 @@ struct StoryReaderView: View {
 
             // Favorite toggle
             Button {
-                toggleFavorite()
+                withAnimation(DS.springBouncy) { toggleFavorite() }
             } label: {
                 Image(systemName: isFavorite ? "star.fill" : "star")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(isFavorite ? Color.appWarmYellow : Color.appTextSec)
-                    .frame(width: 36, height: 36)
+                    .contentTransition(.symbolEffect(.replace))
+                    .frame(width: DS.minTouchTarget, height: DS.minTouchTarget)
                     .background(isFavorite ? Color.appWarmYellow.opacity(0.15) : Color.appSurface2)
                     .clipShape(Circle())
             }
+            .accessibilityLabel(isFavorite ? "Ta bort från favoriter" : "Lägg till i favoriter")
         }
         .padding(.horizontal, DS.s4)
         .padding(.vertical, DS.s2)

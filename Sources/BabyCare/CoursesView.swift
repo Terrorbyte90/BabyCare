@@ -25,7 +25,7 @@ struct CoursesView: View {
                         icon: "book.closed.fill",
                         gradient: .blueIndigo,
                         title: "Kurser kommer snart",
-                        subtitle: "Vi forbereder spannande foraldrakurser at dig. Haller pa att ladda innehall!"
+                        subtitle: "Vi förbereder spännande föräldrakurser åt dig. Håller på att ladda innehåll!"
                     )
                 } else {
                     ScrollView(showsIndicators: false) {
@@ -135,13 +135,14 @@ private struct CourseCardView: View {
 
                         Spacer()
 
-                        Text(isStarted ? "Fortsatt" : "Borja")
+                        Text(isStarted ? "Fortsätt" : "Börja")
                             .font(.system(size: 13, weight: .bold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, DS.s4)
                             .padding(.vertical, DS.s1 + 2)
-                            .background(Color.white.opacity(0.2))
+                            .background(Color.white.opacity(0.25))
                             .clipShape(Capsule())
+                            .overlay(Capsule().stroke(Color.white.opacity(0.3), lineWidth: 0.5))
                     }
                 }
             }
@@ -436,7 +437,7 @@ struct CoursePlayerView: View {
                 }
 
                 HStack(spacing: DS.s3) {
-                    Label("\(module.readingTimeMinutes) min lasning", systemImage: "clock")
+                    Label("\(module.readingTimeMinutes) min läsning", systemImage: "clock")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(.white.opacity(0.6))
 
@@ -566,7 +567,7 @@ struct CoursePlayerView: View {
 
                     // Right approach
                     approachCard(
-                        title: "Bra satt",
+                        title: "Bra sätt",
                         icon: "checkmark.circle.fill",
                         color: .appGreen,
                         text: example.rightApproach
@@ -580,7 +581,7 @@ struct CoursePlayerView: View {
                                     .font(.system(size: 12, weight: .semibold))
                                     .foregroundStyle(Color.appWarmYellow)
 
-                                Text("Forklaring")
+                                Text("Förklaring")
                                     .font(.system(size: 12, weight: .semibold))
                                     .foregroundStyle(Color.appTextSec)
                                     .textCase(.uppercase)
@@ -633,7 +634,7 @@ struct CoursePlayerView: View {
 
     private var exerciseSection: some View {
         VStack(spacing: DS.s3) {
-            DSSectionHeader(title: "Ovning")
+            DSSectionHeader(title: "Övning")
 
             GlassCard(gradient: .orangePink) {
                 VStack(alignment: .leading, spacing: DS.s4) {
@@ -684,7 +685,7 @@ struct CoursePlayerView: View {
 
     private var reflectionSection: some View {
         VStack(spacing: DS.s3) {
-            DSSectionHeader(title: "Reflektionsfragor")
+            DSSectionHeader(title: "Reflektionsfrågor")
 
             VStack(spacing: DS.s2) {
                 ForEach(Array(module.reflectionQuestions.enumerated()), id: \.offset) { idx, question in
@@ -731,7 +732,7 @@ struct CoursePlayerView: View {
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(Color.appText)
 
-                            Text("Bra jobbat! Du har slutfort den har modulen.")
+                            Text("Bra jobbat! Du har slutfört den här modulen.")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundStyle(Color.appTextSec)
                         }
@@ -750,13 +751,9 @@ struct CoursePlayerView: View {
                         Text("Markera som avklarad")
                             .font(.system(size: 16, weight: .semibold))
                     }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, DS.s3 + 2)
-                    .background(LinearGradient.greenTeal)
-                    .clipShape(Capsule())
                 }
-                .buttonStyle(ScaleButtonStyle())
+                .buttonStyle(PrimaryButtonStyle(gradient: .greenTeal))
+                .accessibilityLabel("Markera modul som avklarad")
             }
 
             // Next module navigation
@@ -766,7 +763,7 @@ struct CoursePlayerView: View {
                 } label: {
                     HStack(spacing: DS.s3) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Nasta modul")
+                            Text("Nästa modul")
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(Color.appTextTert)
                                 .textCase(.uppercase)

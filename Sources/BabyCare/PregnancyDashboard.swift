@@ -113,87 +113,106 @@ struct PregnancyDashboard: View {
 
     private var heroCard: some View {
         GradientCard(gradient: .pregnancyGradient) {
-            VStack(spacing: DS.s5) {
-                // Week + day display
-                VStack(spacing: DS.s2) {
-                    Text("GRAVIDITET")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.6))
-                        .textCase(.uppercase)
-                        .tracking(0.8)
+            VStack(spacing: DS.s4) {
+                // Top row: label + week
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: DS.s1) {
+                        Text("GRAVIDITET")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.55))
+                            .tracking(1.0)
 
-                    Text("Vecka \(weeksPregnant)+\(daysIntoWeek)")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text("Vecka")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.7))
 
-                    Text(trimesterString)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.7))
+                            Text("\(weeksPregnant)")
+                                .font(.system(size: 48, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                                .contentTransition(.numericText())
+
+                            Text("+\(daysIntoWeek)d")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.55))
+                                .padding(.leading, 2)
+                        }
+
+                        Text(trimesterString)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.65))
+                            .padding(.horizontal, DS.s2 + 2)
+                            .padding(.vertical, 3)
+                            .background(Color.white.opacity(0.12))
+                            .clipShape(Capsule())
+                    }
+
+                    Spacer()
+
+                    // Fetal emoji with pulse
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.08))
+                            .frame(width: 70, height: 70)
+
+                        Text(weekContent.sizeEmoji)
+                            .font(.system(size: 36))
+                    }
                 }
 
-                // Progress bar
-                VStack(spacing: DS.s2) {
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(Color.white.opacity(0.1))
-                                .frame(height: 10)
-
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(LinearGradient.pregnancyGradient)
-                                .frame(width: max(0, geo.size.width * min(1, progress)), height: 10)
-                                .animation(.spring(response: 1.0, dampingFraction: 0.8), value: progress)
-                        }
-                    }
-                    .frame(height: 10)
+                // Progress bar — using shared DSProgressBar
+                VStack(spacing: DS.s1) {
+                    DSProgressBar(
+                        progress: progress,
+                        gradient: LinearGradient(
+                            colors: [Color.white.opacity(0.85), Color.white.opacity(0.55)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ),
+                        height: 7,
+                        trackColor: Color.white.opacity(0.08)
+                    )
 
                     HStack {
-                        Text("Vecka 0")
+                        Text("V. 4")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(.white.opacity(0.35))
                         Spacer()
-                        Text("Vecka 40")
+                        Text("\(Int(progress * 100))%")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.55))
+                        Spacer()
+                        Text("V. 40")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(.white.opacity(0.35))
                     }
                 }
 
-                // Days until due + fetal size
-                HStack(spacing: DS.s5) {
-                    VStack(spacing: 2) {
-                        Text("\(daysUntilDue)")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                        Text("dagar kvar")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.6))
-                    }
+                // Bottom stats row
+                HStack(spacing: 0) {
+                    heroStatItem(
+                        value: "\(daysUntilDue)",
+                        label: "dagar kvar"
+                    )
 
-                    Rectangle()
-                        .fill(Color.white.opacity(0.15))
-                        .frame(width: 1, height: 40)
+                    Divider()
+                        .frame(height: 36)
+                        .overlay(Color.white.opacity(0.15))
 
-                    VStack(spacing: 2) {
-                        Text(weekContent.sizeEmoji)
-                            .font(.system(size: 28))
-                        Text(weekContent.sizeComparison)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.6))
-                    }
+                    heroStatItem(
+                        value: weekContent.sizeComparison,
+                        label: "storleksjämförelse"
+                    )
 
                     if let due = dueDate {
-                        Rectangle()
-                            .fill(Color.white.opacity(0.15))
-                            .frame(width: 1, height: 40)
+                        Divider()
+                            .frame(height: 36)
+                            .overlay(Color.white.opacity(0.15))
 
-                        VStack(spacing: 2) {
-                            Image(systemName: "calendar")
-                                .font(.system(size: 18))
-                                .foregroundStyle(.white.opacity(0.8))
-                            Text(due.formatted(.dateTime.day().month(.abbreviated)))
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(.white.opacity(0.6))
-                        }
+                        heroStatItem(
+                            value: due.formatted(.dateTime.day().month(.abbreviated).locale(Locale(identifier: "sv_SE"))),
+                            label: "beräknat datum"
+                        )
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -201,24 +220,59 @@ struct PregnancyDashboard: View {
         }
     }
 
+    private func heroStatItem(value: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.white.opacity(0.5))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     // MARK: - Trimester Indicator
 
     private var trimesterIndicator: some View {
-        HStack(spacing: DS.s2) {
+        let labels = ["T1 · v.1–12", "T2 · v.13–27", "T3 · v.28–40"]
+
+        return HStack(spacing: DS.s2) {
             ForEach(1...3, id: \.self) { t in
                 let isActive = t == trimester
                 let isPast = t < trimester
 
-                VStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(isActive ? LinearGradient.pregnancyGradient : (isPast ? LinearGradient(colors: [Color.appLavender.opacity(0.5)], startPoint: .leading, endPoint: .trailing) : LinearGradient(colors: [Color.appSurface3], startPoint: .leading, endPoint: .trailing)))
-                        .frame(height: 4)
+                VStack(spacing: DS.s1 + 1) {
+                    // Progress bar segment
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .fill(Color.appSurface3)
+                            .frame(height: 4)
 
-                    Text("T\(t)")
-                        .font(.system(size: 11, weight: isActive ? .bold : .medium))
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .fill(
+                                isPast
+                                    ? AnyShapeStyle(LinearGradient(
+                                        colors: [Color.appLavender.opacity(0.5)],
+                                        startPoint: .leading, endPoint: .trailing
+                                      ))
+                                    : isActive
+                                        ? AnyShapeStyle(LinearGradient.pregnancyGradient)
+                                        : AnyShapeStyle(Color.clear)
+                            )
+                            .frame(height: 4)
+                    }
+
+                    Text(labels[t - 1])
+                        .font(.system(size: 10, weight: isActive ? .bold : .medium))
                         .foregroundStyle(isActive ? Color.appLavender : Color.appTextTert)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
                 }
                 .frame(maxWidth: .infinity)
+                .accessibilityLabel("Trimester \(t)\(isActive ? ", aktiv" : isPast ? ", avklarad" : "")")
             }
         }
     }
@@ -238,20 +292,32 @@ struct PregnancyDashboard: View {
             GlassCard(gradient: .pregnancyGradient) {
                 VStack(alignment: .leading, spacing: DS.s4) {
                     HStack(spacing: DS.s3) {
-                        Text(weekContent.sizeEmoji)
-                            .font(.system(size: 32))
-                            .frame(width: 48, height: 48)
-                            .background(Color.appLavender.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        // Emoji in a glass circle
+                        ZStack {
+                            RoundedRectangle(cornerRadius: DS.radiusSm + 2, style: .continuous)
+                                .fill(Color.appLavender.opacity(0.14))
+                                .frame(width: 52, height: 52)
 
-                        VStack(alignment: .leading, spacing: 3) {
+                            RoundedRectangle(cornerRadius: DS.radiusSm + 2, style: .continuous)
+                                .strokeBorder(Color.appLavender.opacity(0.20), lineWidth: 0.75)
+                                .frame(width: 52, height: 52)
+
+                            Text(weekContent.sizeEmoji)
+                                .font(.system(size: 28))
+                        }
+                        .accessibilityHidden(true)
+
+                        VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: DS.s1) {
                                 Text("Vecka \(clampedWeek)")
                                     .font(.system(size: 13, weight: .bold))
                                     .foregroundStyle(Color.appLavender)
+
                                 Text("·")
                                     .foregroundStyle(Color.appTextTert)
-                                Text("Stor som en \(weekContent.sizeComparison.lowercased())")
+                                    .accessibilityHidden(true)
+
+                                Text("~\(weekContent.sizeComparison.lowercased())")
                                     .font(.system(size: 13, weight: .medium))
                                     .foregroundStyle(Color.appTextSec)
                             }
@@ -259,7 +325,8 @@ struct PregnancyDashboard: View {
                             Text(weekContent.highlight)
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(Color.appText)
-                                .lineSpacing(2)
+                                .lineSpacing(2.5)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
 
@@ -267,17 +334,8 @@ struct PregnancyDashboard: View {
                         .fill(Color.appBorder)
                         .frame(height: 0.5)
 
-                    HStack(alignment: .top, spacing: DS.s2) {
-                        Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 12))
-                            .foregroundStyle(Color.appOrange)
-                            .padding(.top, 1)
-                        Text(weekContent.tip)
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color.appTextSec)
-                            .lineSpacing(3)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                    // Tip banner
+                    DSInfoBanner(text: weekContent.tip, style: .tip)
                 }
             }
         }
@@ -365,64 +423,74 @@ private struct FetalVisualizationView: View {
     let week: Int
     @State private var pulse = false
     @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var scaleFactor: CGFloat {
-        let base: CGFloat = 0.4
-        let growth = CGFloat(min(week, 40)) / 40.0 * 0.6
+        let base: CGFloat = 0.35
+        let growth = CGFloat(min(week, 40)) / 40.0 * 0.65
         return base + growth
+    }
+
+    private var weekEmoji: String {
+        PregnancyWeekContent.forWeek(max(4, min(week, 40))).sizeEmoji
     }
 
     var body: some View {
         GlassCard(gradient: .pregnancyGradient) {
             VStack(spacing: DS.s3) {
                 ZStack {
-                    // Outer pulse ring
-                    Circle()
-                        .fill(Color.appLilac.opacity(0.08))
-                        .frame(width: 160, height: 160)
-                        .scaleEffect(pulse ? 1.15 : 1.0)
-                        .opacity(pulse ? 0.3 : 0.6)
-
-                    // Middle ring
-                    Circle()
-                        .fill(Color.appLavender.opacity(0.12))
-                        .frame(width: 120, height: 120)
-                        .scaleEffect(pulse ? 1.08 : 1.0)
-
-                    // Inner ring
-                    Circle()
-                        .fill(Color.appLilac.opacity(0.2))
-                        .frame(width: 80, height: 80)
-                        .scaleEffect(pulse ? 1.05 : 1.0)
-
-                    // Fetal icon
-                    Image(systemName: "figure.child")
-                        .font(.system(size: 36, weight: .light))
-                        .foregroundStyle(LinearGradient.pregnancyGradient)
-                        .scaleEffect(appeared ? scaleFactor : 0.1)
-                }
-                .frame(height: 170)
-                .onAppear {
-                    withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
-                        pulse = true
+                    // Concentric pulse rings — reduced motion friendly
+                    ForEach([1.0, 1.2, 1.4] as [CGFloat], id: \.self) { scale in
+                        Circle()
+                            .fill(Color.appLavender.opacity(0.06))
+                            .frame(width: 140, height: 140)
+                            .scaleEffect((pulse && !reduceMotion) ? scale * 1.1 : scale)
+                            .opacity((pulse && !reduceMotion) ? 0.4 : 0.7)
                     }
-                    withAnimation(.spring(response: 1.0, dampingFraction: 0.7).delay(0.3)) {
+
+                    // Heartbeat ring
+                    Circle()
+                        .strokeBorder(Color.appLilac.opacity(0.2), lineWidth: 1)
+                        .frame(width: 100, height: 100)
+
+                    // Fetal emoji + icon layered
+                    VStack(spacing: 4) {
+                        Text(weekEmoji)
+                            .font(.system(size: 44))
+                            .scaleEffect(appeared ? max(0.6, scaleFactor) : 0.1)
+                            .opacity(appeared ? 1 : 0)
+                    }
+                }
+                .frame(height: 160)
+                .onAppear {
+                    if !reduceMotion {
+                        withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) {
+                            pulse = true
+                        }
+                    }
+                    withAnimation(.spring(response: 0.9, dampingFraction: 0.7).delay(0.2)) {
                         appeared = true
                     }
                 }
 
-                Text("Bebisen just nu — vecka \(week)")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.appTextSec)
+                VStack(spacing: 3) {
+                    Text("Bebisen just nu")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.appTextSec)
+                    Text("Vecka \(week)")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Color.appTextTert)
+                }
             }
             .frame(maxWidth: .infinity)
         }
+        .accessibilityLabel("Foster-visualisering, vecka \(week)")
     }
 }
 
 // MARK: - Kick Counter Sheet
 
-private struct KickCounterSheet: View {
+struct KickCounterSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \KickSession.startTime, order: .reverse) private var sessions: [KickSession]
@@ -490,8 +558,8 @@ private struct KickCounterSheet: View {
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, DS.s4)
                                         .background(.white.opacity(0.15))
-                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(.white.opacity(0.3), lineWidth: 1))
+                                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(.white.opacity(0.3), lineWidth: 1))
                                     }
                                     .buttonStyle(ScaleButtonStyle())
 
@@ -526,8 +594,8 @@ private struct KickCounterSheet: View {
                                             .frame(maxWidth: .infinity)
                                             .padding(.vertical, DS.s4)
                                             .background(.white.opacity(0.15))
-                                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(.white.opacity(0.3), lineWidth: 1))
+                                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(.white.opacity(0.3), lineWidth: 1))
                                     }
                                     .buttonStyle(ScaleButtonStyle())
                                 }
@@ -684,18 +752,15 @@ private struct HospitalBagSheet: View {
                                         .foregroundStyle(.white.opacity(0.8))
                                 }
 
-                                GeometryReader { geo in
-                                    ZStack(alignment: .leading) {
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .fill(Color.white.opacity(0.15))
-                                            .frame(height: 8)
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .fill(Color.white.opacity(0.9))
-                                            .frame(width: max(0, geo.size.width * packedProgress), height: 8)
-                                            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: packedProgress)
-                                    }
-                                }
-                                .frame(height: 8)
+                                DSProgressBar(
+                                    progress: packedProgress,
+                                    gradient: LinearGradient(
+                                        colors: [Color.white.opacity(0.9), Color.white.opacity(0.7)],
+                                        startPoint: .leading, endPoint: .trailing
+                                    ),
+                                    height: 7,
+                                    trackColor: Color.white.opacity(0.15)
+                                )
                             }
                         }
 
@@ -728,8 +793,8 @@ private struct HospitalBagSheet: View {
                                             .padding(.horizontal, DS.s4)
                                             .padding(.vertical, DS.s3)
                                             .background(Color.appSurface)
-                                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorder, lineWidth: 1))
+                                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorder, lineWidth: 1))
                                         }
                                         .buttonStyle(ScaleButtonStyle())
                                     }

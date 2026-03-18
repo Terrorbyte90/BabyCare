@@ -12,8 +12,8 @@ struct ProfileView: View {
     @State private var showResetConfirmation = false
     @State private var showBVCConfirm = false
     @State private var bvcScheduleAdded = false
-    @State private var notificationsEnabled = true
-    @State private var nightModeEnabled = false
+    @AppStorage("notificationsEnabled") private var notificationsEnabled = true
+    @AppStorage("nightModeEnabled") private var nightModeEnabled = false
 
     private var user: UserData? { userData.first }
 
@@ -76,65 +76,96 @@ struct ProfileView: View {
         .sheet(isPresented: $showPhaseChange) {
             PhaseChangeSheet(user: user)
         }
-        .alert("Aterstall data", isPresented: $showResetConfirmation) {
+        .alert("Återställ data", isPresented: $showResetConfirmation) {
             Button("Avbryt", role: .cancel) {}
-            Button("Aterstall", role: .destructive) {
+            Button("Återställ", role: .destructive) {
                 resetAllData()
             }
         } message: {
-            Text("Detta tar bort alla loggade data (matning, somn, blojor, dagbok m.m.) men behaller din profil. Denna atgard kan inte angras.")
+            Text("Detta tar bort alla loggade data (matning, sömn, blöjor, dagbok m.m.) men behåller din profil. Denna åtgärd kan inte ångras.")
         }
     }
 
     // MARK: - Profile Header
 
     private func profileHeader(user: UserData) -> some View {
-        VStack(spacing: DS.s3) {
-            ZStack {
-                Circle()
-                    .fill(user.phase.gradient)
-                    .frame(width: 88, height: 88)
-                    .opacity(0.2)
+        GradientCard(gradient: user.phase.gradient) {
+            VStack(spacing: DS.s4) {
+                // Avatar with double-ring treatment
+                ZStack {
+                    // Outer glow
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [phaseColor(user: user).opacity(0.20), Color.clear],
+                                center: .center,
+                                startRadius: 40,
+                                endRadius: 72
+                            )
+                        )
+                        .frame(width: 110, height: 110)
 
-                Circle()
-                    .stroke(user.phase.gradient, lineWidth: 2)
-                    .frame(width: 88, height: 88)
+                    // Thick gradient ring
+                    Circle()
+                        .stroke(user.phase.gradient, lineWidth: 3)
+                        .frame(width: 96, height: 96)
 
-                Image(systemName: user.phase.icon)
-                    .font(.system(size: 40, weight: .medium))
-                    .foregroundStyle(user.phase.gradient)
-            }
+                    // Inner glass fill
+                    Circle()
+                        .fill(Color.appSurface2)
+                        .frame(width: 88, height: 88)
 
-            VStack(spacing: DS.s1) {
-                if !user.name.isEmpty {
-                    Text(user.name)
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.appText)
+                    Circle()
+                        .fill(user.phase.gradient.opacity(0.18))
+                        .frame(width: 88, height: 88)
+
+                    // Initial or icon
+                    if !user.name.isEmpty, let initial = user.name.first {
+                        Text(String(initial).uppercased())
+                            .font(.system(size: 36, weight: .heavy, design: .rounded))
+                            .foregroundStyle(user.phase.gradient)
+                    } else {
+                        Image(systemName: user.phase.icon)
+                            .font(.system(size: 34, weight: .medium))
+                            .foregroundStyle(user.phase.gradient)
+                    }
                 }
+                .accessibilityHidden(true)
 
-                // Phase indicator
-                HStack(spacing: DS.s2) {
-                    Image(systemName: user.phase.icon)
-                        .font(.system(size: 11, weight: .semibold))
+                VStack(spacing: DS.s2 + 1) {
+                    if !user.name.isEmpty {
+                        Text(user.name)
+                            .font(.system(size: 22, design: .rounded).weight(.bold))
+                            .foregroundStyle(.white)
+                    }
 
-                    Text(phaseDisplayName(user: user))
-                        .font(.system(size: 13, weight: .semibold))
+                    // Phase pill
+                    HStack(spacing: DS.s1 + 2) {
+                        Image(systemName: user.phase.icon)
+                            .font(.system(size: 11, weight: .semibold))
+
+                        Text(phaseDisplayName(user: user))
+                            .font(.system(size: 13, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, DS.s3 + 2)
+                    .padding(.vertical, 6)
+                    .background(Color.white.opacity(0.15))
+                    .clipShape(Capsule())
+                    .overlay(Capsule().strokeBorder(Color.white.opacity(0.25), lineWidth: 0.75))
                 }
-                .foregroundStyle(phaseColor(user: user))
-                .padding(.horizontal, DS.s3)
-                .padding(.vertical, 4)
-                .background(phaseColor(user: user).opacity(0.1))
-                .clipShape(Capsule())
             }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(user.name.isEmpty ? "Profil" : user.name), \(phaseDisplayName(user: user))")
     }
 
     private func phaseDisplayName(user: UserData) -> String {
         switch user.phase {
         case .fertility: return "Fertilitet"
         case .pregnancy: return "Gravid"
-        case .parent: return "Foralder"
+        case .parent: return "Förälder"
         }
     }
 
@@ -162,7 +193,7 @@ struct ProfileView: View {
                             profileRow(
                                 icon: "heart.circle.fill",
                                 gradient: .fertilityGradient,
-                                label: "Cykellangd",
+                                label: "Cykellängd",
                                 value: "\(cycleLength) dagar"
                             )
                         }
@@ -171,7 +202,7 @@ struct ProfileView: View {
                             profileRow(
                                 icon: "target",
                                 gradient: .fertilityGradient,
-                                label: "Mal",
+                                label: "Mål",
                                 value: goal.displayName
                             )
                         }
@@ -181,7 +212,7 @@ struct ProfileView: View {
                             profileRow(
                                 icon: "calendar.heart.fill",
                                 gradient: .pinkPurple,
-                                label: "Beraknat datum",
+                                label: "Beräknat datum",
                                 value: dueDate.formatted(.dateTime.day().month(.wide).year())
                             )
                             DSRowDivider()
@@ -201,7 +232,7 @@ struct ProfileView: View {
                             profileRow(
                                 icon: "gift.fill",
                                 gradient: .blueIndigo,
-                                label: "Fodelsedag",
+                                label: "Födelsedag",
                                 value: birthDate.formatted(.dateTime.day().month(.wide).year())
                             )
                             DSRowDivider()
@@ -209,7 +240,7 @@ struct ProfileView: View {
                             profileRow(
                                 icon: "figure.child",
                                 gradient: .babyGradient,
-                                label: "Alder",
+                                label: "Ålder",
                                 value: user.babyAgeString.isEmpty ? "--" : user.babyAgeString
                             )
                         }
@@ -233,7 +264,7 @@ struct ProfileView: View {
 
     private func quickActionsSection(user: UserData) -> some View {
         VStack(spacing: DS.s3) {
-            DSSectionHeader(title: "Snabbatgarder")
+            DSSectionHeader(title: "Snabbåtgärder")
 
             HStack(spacing: DS.s3) {
                 // Byta fas
@@ -282,15 +313,15 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, DS.s3)
         .background(Color.appSurface)
-        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appBorder, lineWidth: 1))
     }
 
     // MARK: - Settings Section
 
     private func settingsSection(user: UserData) -> some View {
         VStack(spacing: 0) {
-            DSSectionHeader(title: "Installningar")
+            DSSectionHeader(title: "Inställningar")
                 .padding(.bottom, DS.s2)
 
             GlassCard(padding: 0) {
@@ -310,16 +341,27 @@ struct ProfileView: View {
                         icon: "bell.fill",
                         gradient: .orangePink,
                         label: "Notifikationer",
-                        isOn: $notificationsEnabled
+                        isOn: $notificationsEnabled,
+                        onChange: { enabled in
+                            if enabled {
+                                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+                                    DispatchQueue.main.async {
+                                        notificationsEnabled = granted
+                                    }
+                                }
+                            } else {
+                                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                            }
+                        }
                     )
 
                     DSRowDivider()
 
-                    // Nattlage
+                    // Nattläge
                     settingsToggleRow(
                         icon: "moon.fill",
                         gradient: .nightGradient,
-                        label: "Nattlage",
+                        label: "Nattläge",
                         isOn: $nightModeEnabled
                     )
                 }
@@ -346,7 +388,13 @@ struct ProfileView: View {
         .padding(.vertical, DS.s3 + 2)
     }
 
-    private func settingsToggleRow(icon: String, gradient: LinearGradient, label: String, isOn: Binding<Bool>) -> some View {
+    private func settingsToggleRow(
+        icon: String,
+        gradient: LinearGradient,
+        label: String,
+        isOn: Binding<Bool>,
+        onChange: ((Bool) -> Void)? = nil
+    ) -> some View {
         HStack(spacing: DS.s3) {
             IconBadge(icon: icon, gradient: gradient, size: 36)
 
@@ -359,6 +407,9 @@ struct ProfileView: View {
             Toggle("", isOn: isOn)
                 .tint(.appPink)
                 .labelsHidden()
+                .onChange(of: isOn.wrappedValue) { _, newValue in
+                    onChange?(newValue)
+                }
         }
         .padding(.horizontal, DS.s4)
         .padding(.vertical, DS.s3 + 2)
@@ -378,10 +429,10 @@ struct ProfileView: View {
                             .font(.system(size: 22))
                             .foregroundStyle(Color.appGreen)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("BVC-besok tillagda")
+                            Text("BVC-besök tillagda")
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(Color.appText)
-                            Text("Se kalenderfliken for alla besok")
+                            Text("Se kalenderfliken för alla besök")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.appTextSec)
                         }
@@ -399,7 +450,7 @@ struct ProfileView: View {
                             Text("Generera BVC-schema")
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundStyle(Color.appText)
-                            Text("Skapa alla standard-BVC-besok automatiskt")
+                            Text("Skapa alla standard-BVC-besök automatiskt")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.appTextSec)
                         }
@@ -412,19 +463,19 @@ struct ProfileView: View {
                     }
                     .padding(DS.s4)
                     .background(Color.appSurface)
-                    .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                    .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+                    .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appBorder, lineWidth: 1))
                 }
                 .buttonStyle(ScaleButtonStyle())
                 .confirmationDialog("Generera BVC-schema", isPresented: $showBVCConfirm, titleVisibility: .visible) {
-                    Button("Lagg till BVC-besok i kalender") {
+                    Button("Lägg till BVC-besök i kalender") {
                         if let user = userData.first, let birthDate = user.babyBirthDate {
                             generateBVCSchedule(from: birthDate)
                         }
                     }
                     Button("Avbryt", role: .cancel) {}
                 } message: {
-                    Text("Detta lagger till alla standard-BVC-besok i din kalender baserat pa bebisens fodelsedag.")
+                    Text("Detta lägger till alla standard-BVC-besök i din kalender baserat på bebisens födelsedag.")
                 }
             }
         }
@@ -439,6 +490,24 @@ struct ProfileView: View {
 
             GlassCard(padding: 0) {
                 VStack(spacing: 0) {
+                    NavigationLink(destination: ResourcesView()) {
+                        HStack(spacing: DS.s3) {
+                            IconBadge(icon: "cross.case.fill", gradient: LinearGradient(colors: [.appRed, .appOrange], startPoint: .topLeading, endPoint: .bottomTrailing), size: 36)
+                            Text("Resurser & nödkontakter")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(Color.appText)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextTert)
+                        }
+                        .padding(.horizontal, DS.s4)
+                        .padding(.vertical, DS.s3 + 2)
+                    }
+                    .buttonStyle(.plain)
+
+                    DSRowDivider()
+
                     aboutRow(
                         icon: "info.circle.fill",
                         gradient: .blueIndigo,
@@ -461,7 +530,7 @@ struct ProfileView: View {
                         icon: "shield.checkered",
                         gradient: .greenTeal,
                         label: "Integritet",
-                        value: "All data pa din enhet"
+                        value: "All data på din enhet"
                     )
                 }
             }
@@ -497,15 +566,15 @@ struct ProfileView: View {
                 HStack(spacing: DS.s2) {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.system(size: 14, weight: .semibold))
-                    Text("Aterstall data")
+                    Text("Återställ data")
                         .font(.system(size: 15, weight: .semibold))
                 }
                 .foregroundStyle(Color.appOrange)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.s4)
                 .background(Color.appOrange.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appOrange.opacity(0.2), lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appOrange.opacity(0.2), lineWidth: 1))
             }
             .buttonStyle(ScaleButtonStyle())
 
@@ -525,8 +594,8 @@ struct ProfileView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.s4)
                 .background(Color.appRed.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: DS.radius))
-                .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appRed.opacity(0.2), lineWidth: 1))
+                .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: DS.radius, style: .continuous).stroke(Color.appRed.opacity(0.2), lineWidth: 1))
             }
             .buttonStyle(ScaleButtonStyle())
         }
@@ -574,14 +643,14 @@ struct ProfileView: View {
                     .font(.system(size: 22, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.appText)
 
-                Text("Beratta lite om dig sa kan BabyCare\nanpassa din upplevelse.")
+                Text("Berätta lite om dig så kan BabyCare\nanpassa din upplevelse.")
                     .font(.system(size: 15))
                     .foregroundStyle(Color.appTextSec)
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
             }
 
-            Button("Kom igang") { showEditProfile = true }
+            Button("Kom igång") { showEditProfile = true }
                 .buttonStyle(PrimaryButtonStyle())
 
             Spacer()
@@ -596,19 +665,19 @@ struct ProfileView: View {
     private func generateBVCSchedule(from birthDate: Date) {
         let cal = Calendar.current
         let visits: [(title: String, component: Calendar.Component, value: Int)] = [
-            ("BVC -- Hembesok",      .day,   5),
-            ("BVC -- 1 vecka",       .day,   7),
-            ("BVC -- 3 veckor",      .day,   21),
-            ("BVC -- 6 veckor",      .day,   42),
-            ("BVC -- 3 manader",     .month, 3),
-            ("BVC -- 4 manader",     .month, 4),
-            ("BVC -- 5 manader",     .month, 5),
-            ("BVC -- 6 manader",     .month, 6),
-            ("BVC -- 8 manader",     .month, 8),
-            ("BVC -- 10 manader",    .month, 10),
-            ("BVC -- 12 manader",    .month, 12),
-            ("BVC -- 15 manader",    .month, 15),
-            ("BVC -- 18 manader",    .month, 18),
+            ("BVC – Hembesök",      .day,   5),
+            ("BVC – 1 vecka",       .day,   7),
+            ("BVC – 3 veckor",      .day,   21),
+            ("BVC – 6 veckor",      .day,   42),
+            ("BVC – 3 månader",     .month, 3),
+            ("BVC – 4 månader",     .month, 4),
+            ("BVC – 5 månader",     .month, 5),
+            ("BVC – 6 månader",     .month, 6),
+            ("BVC – 8 månader",     .month, 8),
+            ("BVC – 10 månader",    .month, 10),
+            ("BVC – 12 månader",    .month, 12),
+            ("BVC – 15 månader",    .month, 15),
+            ("BVC – 18 månader",    .month, 18),
         ]
 
         for visit in visits {
@@ -617,7 +686,7 @@ struct ProfileView: View {
                 let appt = Appointment(
                     date: visitDate,
                     title: visit.title,
-                    notes: "BVC-besok pa barnavardscentral",
+                    notes: "BVC-besök på barnavårdscentral",
                     type: .bvc
                 )
                 modelContext.insert(appt)
@@ -634,8 +703,6 @@ struct ProfileView: View {
 
     private func resetAllData() {
         // Delete all logs but keep profile
-        let feedTypes: [any PersistentModel.Type] = []
-        // Fetch and delete each type
         do {
             let feedLogs = try modelContext.fetch(FetchDescriptor<FeedingLog>())
             feedLogs.forEach { modelContext.delete($0) }
@@ -702,12 +769,12 @@ struct PhaseChangeSheet: View {
 
                 VStack(spacing: DS.s5) {
                     VStack(spacing: DS.s3) {
-                        Text("Vilken fas ar du i?")
+                        Text("Vilken fas är du i?")
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundStyle(Color.appText)
                             .multilineTextAlignment(.center)
 
-                        Text("Valj den fas som bast beskriver var du ar just nu. Du kan alltid byta igen senare.")
+                        Text("Välj den fas som bäst beskriver var du är just nu. Du kan alltid byta igen senare.")
                             .font(.system(size: 14, weight: .regular))
                             .foregroundStyle(Color.appTextSec)
                             .multilineTextAlignment(.center)
@@ -782,9 +849,9 @@ struct PhaseChangeSheet: View {
             }
             .padding(DS.s4)
             .background(isCurrentPhase ? Color.appSurface2 : Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radiusLg))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: DS.radiusLg)
+                RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
                     .stroke(isCurrentPhase ? AnyShapeStyle(phase.gradient.opacity(0.5)) : AnyShapeStyle(Color.appBorder), lineWidth: isCurrentPhase ? 1.5 : 1)
             )
         }
@@ -794,11 +861,11 @@ struct PhaseChangeSheet: View {
     private func phaseDescription(_ phase: UserPhase) -> String {
         switch phase {
         case .fertility:
-            return "Spara menscykler, temperatur och fertilitetssymptom"
+            return "Spåra menscykler, temperatur och fertilitetssymtom"
         case .pregnancy:
-            return "Folj graviditeten vecka for vecka med tips och kontroller"
+            return "Följ graviditeten vecka för vecka med tips och kontroller"
         case .parent:
-            return "Logga matning, somn, blojor och folj bebisens utveckling"
+            return "Logga matning, sömn, blöjor och följ bebisens utveckling"
         }
     }
 }
@@ -884,15 +951,15 @@ struct ProfileSetupSheet: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.s2 + 2)
                                 .background(units == u ? LinearGradient.tealMint : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
-                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                         }
                         .buttonStyle(ScaleButtonStyle())
                     }
                 }
             }
 
-            DSTextField(title: "Vikt (\(units == .metric ? "kg" : "lb")) -- Valfritt", text: $weightString, keyboard: .decimalPad)
-            DSTextField(title: "Langd (\(units == .metric ? "cm" : "in")) -- Valfritt", text: $heightString, keyboard: .decimalPad)
+            DSTextField(title: "Vikt (\(units == .metric ? "kg" : "lb")) – Valfritt", text: $weightString, keyboard: .decimalPad)
+            DSTextField(title: "Längd (\(units == .metric ? "cm" : "in")) – Valfritt", text: $heightString, keyboard: .decimalPad)
         }
     }
 
@@ -937,9 +1004,9 @@ struct ProfileSetupSheet: View {
                                 ? phase.gradient
                                 : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom)
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: DS.radiusSm)
+                            RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
                                 .stroke(selectedPhase == phase ? Color.clear : Color.appBorderMed, lineWidth: 1)
                         )
                     }
@@ -957,7 +1024,7 @@ struct ProfileSetupSheet: View {
                 DSSectionHeader(title: "Graviditet")
 
                 VStack(alignment: .leading, spacing: DS.s2) {
-                    Text("BERAKNAT DATUM")
+                    Text("BERÄKNAT DATUM")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(Color.appTextTert)
                         .tracking(0.6)
@@ -968,8 +1035,8 @@ struct ProfileSetupSheet: View {
                         .tint(.appPink)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -978,7 +1045,7 @@ struct ProfileSetupSheet: View {
                 DSSectionHeader(title: "Bebis")
 
                 VStack(alignment: .leading, spacing: DS.s2) {
-                    Text("FODELSEDAG")
+                    Text("FÖDELSEDAG")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(Color.appTextTert)
                         .tracking(0.6)
@@ -989,8 +1056,8 @@ struct ProfileSetupSheet: View {
                         .tint(.appBlue)
                         .padding(DS.s3)
                         .background(Color.appSurface2)
-                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
-                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appBorderMed, lineWidth: 1))
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 

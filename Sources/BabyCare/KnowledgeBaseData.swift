@@ -261,7 +261,7 @@ Fertilitetskliniker och barnmorskor i Sverige rekommenderar ofta att patienter b
             ]
         ),
 
-        // MARK: Article 3 – Tips for att bli gravid
+        // MARK: Article 3 – Tips för att bli gravid
         Article(
             id: "fertility_tips",
             category: .fertility,

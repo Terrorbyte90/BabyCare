@@ -88,15 +88,32 @@ struct OnboardingView: View {
     // MARK: - Page Indicator
 
     private var pageIndicator: some View {
-        HStack(spacing: DS.s2) {
+        HStack(spacing: 6) {
             ForEach(0..<totalPages, id: \.self) { i in
                 Capsule()
-                    .fill(i == page
-                          ? selectedPhase.gradient
-                          : LinearGradient(colors: [Color.appSurface3], startPoint: .leading, endPoint: .trailing))
-                    .frame(width: i == page ? 24 : 8, height: 4)
-                    .animation(.spring(response: 0.4, dampingFraction: 0.8), value: page)
+                    .fill(
+                        i == page
+                            ? AnyShapeStyle(selectedPhase.gradient)
+                            : i < page
+                                ? AnyShapeStyle(Color.appTextTert.opacity(0.5))
+                                : AnyShapeStyle(Color.appSurface3)
+                    )
+                    .frame(width: i == page ? 32 : 8, height: 5)
+                    .animation(DS.springSnappy, value: page)
+                    .animation(DS.springSnappy, value: selectedPhase)
             }
+        }
+        .accessibilityLabel("Steg \(page + 1) av \(totalPages)")
+        .accessibilityValue(pageAccessibilityDescription)
+    }
+
+    private var pageAccessibilityDescription: String {
+        switch page {
+        case 0: return "Välkommen"
+        case 1: return "Välj livsfas"
+        case 2: return "Fyll i dina uppgifter"
+        case 3: return "Klar att börja"
+        default: return ""
         }
     }
 
@@ -105,27 +122,52 @@ struct OnboardingView: View {
     private var navigationButtons: some View {
         HStack(spacing: DS.s3) {
             if page > 0 {
-                Button("Tillbaka") {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        page -= 1
+                Button {
+                    withAnimation(DS.springSmooth) { page -= 1 }
+                    HapticFeedback.light()
+                } label: {
+                    HStack(spacing: DS.s1 + 2) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 13, weight: .semibold))
+                        Text("Tillbaka")
+                            .font(.system(size: 15, weight: .medium))
                     }
+                    .foregroundStyle(Color.appTextSec)
+                    .frame(height: DS.minTouchTarget)
+                    .padding(.horizontal, DS.s3)
+                    .contentShape(Rectangle())
                 }
-                .buttonStyle(GhostButtonStyle())
-                .frame(width: 90)
+                .buttonStyle(ScaleButtonStyle())
+                .transition(.asymmetric(
+                    insertion: .move(edge: .leading).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
             }
 
-            Button(page == totalPages - 1 ? "Kom igång" : "Fortsätt") {
+            Button {
                 if page == totalPages - 1 {
                     finish()
                 } else {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        page += 1
-                    }
+                    withAnimation(DS.springSmooth) { page += 1 }
                     HapticFeedback.light()
+                }
+            } label: {
+                HStack(spacing: DS.s2) {
+                    Text(page == totalPages - 1 ? "Kom igång!" : "Fortsätt")
+                        .font(.system(size: 16, weight: .semibold))
+                    if page < totalPages - 1 {
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 14, weight: .bold))
+                    } else {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                    }
                 }
             }
             .buttonStyle(PrimaryButtonStyle(gradient: selectedPhase.gradient, fullWidth: true))
+            .accessibilityLabel(page == totalPages - 1 ? "Kom igång och starta appen" : "Fortsätt till nästa steg")
         }
+        .animation(DS.springSmooth, value: page)
     }
 
     // MARK: - Page 0: Welcome
@@ -134,15 +176,30 @@ struct OnboardingView: View {
         VStack(spacing: DS.s6) {
             Spacer()
 
+            // Hero icon with concentric breathing rings
             ZStack {
-                BreathingCircle(gradient: .pinkPurple, size: 120)
+                BreathingCircle(gradient: .pinkPurple, size: 150)
+
+                // Subtle grid pattern circle for depth
+                Circle()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.08), Color.clear],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+                    .frame(width: 108, height: 108)
 
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 56, weight: .medium))
+                    .font(.system(size: 60, weight: .medium))
                     .foregroundStyle(LinearGradient.pinkPurple)
+                    .shadow(color: Color.appPink.opacity(0.6), radius: 24, y: 10)
+                    .shadow(color: Color.appPink.opacity(0.2), radius: 6, y: 3)
             }
 
-            VStack(spacing: DS.s3) {
+            VStack(spacing: DS.s2 + 2) {
                 Text("Välkommen till")
                     .font(.system(size: 17, weight: .medium))
                     .foregroundStyle(Color.appTextSec)
@@ -150,19 +207,68 @@ struct OnboardingView: View {
                 GradientText(
                     text: "BabyCare",
                     gradient: .pinkPurple,
-                    font: .system(size: 42, weight: .bold, design: .rounded)
+                    font: .system(size: 40, weight: .heavy, design: .rounded)
                 )
+                .shadow(color: Color.appPink.opacity(0.35), radius: 16, y: 6)
 
-                Text("Din personliga följeslagare genom\nfertilitet, graviditet och föräldraskap.")
-                    .font(.system(size: 16))
+                Text("Din personliga följeslagare\ngenom hela resan.")
+                    .font(.system(size: 16, weight: .regular))
                     .foregroundStyle(Color.appTextSec)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(4)
+                    .lineSpacing(5)
+                    .padding(.top, DS.s1)
             }
+
+            // Three value propositions — staggered entrance
+            VStack(spacing: DS.s2 + 2) {
+                welcomeFeatureRow(icon: "heart.circle.fill", color: .appCoral, text: "Fertilitetsspårning & cykelanalys")
+                    .staggerAppear(index: 1)
+                welcomeFeatureRow(icon: "figure.stand.dress", color: .appLavender, text: "Graviditet vecka för vecka")
+                    .staggerAppear(index: 2)
+                welcomeFeatureRow(icon: "figure.and.child.holdinghands", color: .appBabyBlue, text: "Babylogg & tillväxtkurvor")
+                    .staggerAppear(index: 3)
+            }
+            .padding(.horizontal, DS.s2)
 
             Spacer()
         }
         .padding(.horizontal, DS.s5)
+    }
+
+    private func welcomeFeatureRow(icon: String, color: Color, text: String) -> some View {
+        HStack(spacing: DS.s3 + 2) {
+            // Icon with colored halo
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.14))
+                    .frame(width: 40, height: 40)
+
+                Image(systemName: icon)
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundStyle(color)
+            }
+            .accessibilityHidden(true)
+
+            Text(text)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(Color.appText)
+
+            Spacer()
+
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 16))
+                .foregroundStyle(Color.appGreen)
+                .accessibilityHidden(true)
+        }
+        .padding(.horizontal, DS.s4)
+        .padding(.vertical, DS.s3 + 1)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm + 2, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.radiusSm + 2, style: .continuous)
+                .strokeBorder(Color.appBorderMed, lineWidth: 0.75)
+        )
+        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Page 1: Phase Selection
@@ -173,13 +279,15 @@ struct OnboardingView: View {
 
             VStack(spacing: DS.s3) {
                 Text("Var befinner du dig?")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.appText)
                     .multilineTextAlignment(.center)
 
-                Text("Vi anpassar appen efter din situation")
+                Text("Vi anpassar appen helt efter\ndin situation")
                     .font(.system(size: 15))
                     .foregroundStyle(Color.appTextSec)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
             }
             .padding(.bottom, DS.s4)
 
@@ -215,13 +323,14 @@ struct OnboardingView: View {
         let isSelected = selectedPhase == phase
 
         return Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.72)) {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.7)) {
                 selectedPhase = phase
             }
             HapticFeedback.light()
         } label: {
             HStack(spacing: DS.s4) {
                 IconBadge(icon: icon, gradient: phase.gradient, size: 52)
+                    .shadow(color: isSelected ? Color.appPink.opacity(0.3) : .clear, radius: 8, y: 4)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
@@ -231,28 +340,53 @@ struct OnboardingView: View {
                     Text(subtitle)
                         .font(.system(size: 13))
                         .foregroundStyle(Color.appTextSec)
+                        .lineSpacing(2)
                 }
 
                 Spacer()
 
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 24))
-                    .foregroundStyle(isSelected
-                                    ? AnyShapeStyle(phase.gradient)
-                                    : AnyShapeStyle(Color.appTextTert))
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.clear : Color.appSurface3)
+                        .frame(width: 26, height: 26)
+
+                    if isSelected {
+                        Circle()
+                            .fill(phase.gradient)
+                            .frame(width: 26, height: 26)
+
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.white)
+                            .transition(.scale.combined(with: .opacity))
+                    } else {
+                        Circle()
+                            .strokeBorder(Color.appTextTert, lineWidth: 1.5)
+                            .frame(width: 26, height: 26)
+                    }
+                }
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
             }
             .padding(DS.s4)
-            .background(isSelected ? Color.appSurface2 : Color.appSurface)
-            .clipShape(RoundedRectangle(cornerRadius: DS.radiusLg))
+            .frame(minHeight: 80)
+            .background(
+                RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
+                    .fill(isSelected ? Color.appSurface2 : Color.appSurface)
+            )
             .overlay(
-                RoundedRectangle(cornerRadius: DS.radiusLg)
-                    .stroke(isSelected
-                            ? AnyShapeStyle(phase.gradient.opacity(0.5))
+                RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
+                    .strokeBorder(
+                        isSelected
+                            ? AnyShapeStyle(phase.gradient.opacity(0.45))
                             : AnyShapeStyle(Color.appBorder),
-                            lineWidth: isSelected ? 1.5 : 1)
+                        lineWidth: isSelected ? 1.5 : 0.75
+                    )
             )
         }
         .buttonStyle(ScaleButtonStyle())
+        .accessibilityLabel(title)
+        .accessibilityHint(subtitle)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
     // MARK: - Page 2: Details
@@ -522,18 +656,37 @@ struct OnboardingView: View {
 
     private func featureRow(icon: String, gradient: LinearGradient, text: String) -> some View {
         HStack(spacing: DS.s3) {
-            Image(systemName: icon)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(gradient)
-                .frame(width: 36)
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(gradient.opacity(0.15))
+                    .frame(width: 40, height: 40)
+
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(gradient)
+            }
+            .accessibilityHidden(true)
 
             Text(text)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(Color.appText)
                 .lineSpacing(2)
+                .fixedSize(horizontal: false, vertical: true)
 
             Spacer()
+
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 18))
+                .foregroundStyle(Color.appGreen)
+                .accessibilityHidden(true)
         }
+        .padding(DS.s3)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.radius, style: .continuous)
+                .strokeBorder(Color.appBorderMed, lineWidth: 0.75)
+        )
     }
 
     // MARK: - Finish

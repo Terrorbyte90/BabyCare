@@ -23,7 +23,7 @@ struct LogGraphs: View {
     enum TimePeriod: String, CaseIterable {
         case day = "Dag"
         case week = "Vecka"
-        case month = "Manad"
+        case month = "Månad"
 
         var days: Int {
             switch self {
@@ -36,8 +36,8 @@ struct LogGraphs: View {
 
     enum LogTab: String, CaseIterable {
         case feeding = "Matning"
-        case sleep = "Somn"
-        case diaper = "Bloja"
+        case sleep = "Sömn"
+        case diaper = "Blöja"
 
         var icon: String {
             switch self {
@@ -251,7 +251,7 @@ struct LogGraphs: View {
                         Image(systemName: "chart.bar.fill")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(LinearGradient.orangePink)
-                        Text("Jamforelse med genomsnitt")
+                        Text("Jämförelse med genomsnitt")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color.appText)
                     }
@@ -302,7 +302,7 @@ struct LogGraphs: View {
             if selectedPeriod == .day {
                 GlassCard(gradient: .blueIndigo) {
                     VStack(alignment: .leading, spacing: DS.s3) {
-                        Text("Somnmonstret idag")
+                        Text("Sömnmönstret idag")
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundStyle(Color.appText)
 
@@ -312,7 +312,7 @@ struct LogGraphs: View {
                             ForEach(todayLogs, id: \.id) { log in
                                 let startHour = hourDecimal(from: log.startDate)
                                 let endHour = hourDecimal(from: log.endDate)
-                                let label = log.isNap ? "Tupplur" : "Nattsomn"
+                                let label = log.isNap ? "Tupplur" : "Nattsömn"
 
                                 BarMark(
                                     xStart: .value("Start", startHour),
@@ -351,7 +351,7 @@ struct LogGraphs: View {
             // Bar chart: total sleep per day
             GlassCard(gradient: .blueIndigo) {
                 VStack(alignment: .leading, spacing: DS.s3) {
-                    Text("Total somn per dag")
+                    Text("Total sömn per dag")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color.appText)
 
@@ -447,7 +447,7 @@ struct LogGraphs: View {
 
             HStack(spacing: DS.s3) {
                 StatCard(
-                    title: "Vakenfonstret",
+                    title: "Vakenfönstret",
                     value: "\(wakeWindow) min",
                     icon: "sun.max.fill",
                     gradient: .orangePink,
@@ -479,7 +479,7 @@ struct LogGraphs: View {
                         Image(systemName: "chart.bar.fill")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(LinearGradient.blueIndigo)
-                        Text("Jamforelse med genomsnitt")
+                        Text("Jämförelse med genomsnitt")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(Color.appText)
                     }
@@ -537,7 +537,7 @@ struct LogGraphs: View {
             // Bar chart: diapers per day
             GlassCard(gradient: .tealMint) {
                 VStack(alignment: .leading, spacing: DS.s3) {
-                    Text("Blojbyten per dag")
+                    Text("Blöjbyten per dag")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color.appText)
 
@@ -618,7 +618,7 @@ struct LogGraphs: View {
                 value: String(format: "%.1f", dailyAvg),
                 icon: "chart.bar.fill",
                 gradient: .tealMint,
-                subtitle: "blojbyten per dag"
+                subtitle: "blöjbyten per dag"
             )
         }
     }
