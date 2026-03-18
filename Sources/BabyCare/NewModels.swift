@@ -22,12 +22,12 @@ enum MilestoneCategory: String, Codable, CaseIterable {
 
 @Model
 final class Milestone {
-    @Attribute(.unique) var id: UUID
-    var title: String
-    var date: Date
+    @Attribute(.unique) var id: UUID = UUID()
+    var title: String = ""
+    var date: Date = Date()
     var photo: Data?
     var notes: String?
-    var categoryRaw: String
+    var categoryRaw: String = MilestoneCategory.other.rawValue
 
     init(id: UUID = UUID(), title: String, date: Date = Date(), photo: Data? = nil, notes: String? = nil, category: MilestoneCategory = .other) {
         self.id = id
@@ -45,9 +45,9 @@ final class Milestone {
 
 @Model
 final class TemperatureLog {
-    @Attribute(.unique) var id: UUID
-    var date: Date
-    var temperature: Double
+    @Attribute(.unique) var id: UUID = UUID()
+    var date: Date = Date()
+    var temperature: Double = 0.0
     var medicineGiven: String?
     var medicineDose: String?
     var notes: String?
@@ -67,9 +67,9 @@ final class TemperatureLog {
 
 @Model
 final class BabyTooth {
-    @Attribute(.unique) var id: UUID
-    var toothId: String
-    var eruptionDate: Date
+    @Attribute(.unique) var id: UUID = UUID()
+    var toothId: String = ""
+    var eruptionDate: Date = Date()
     var notes: String?
 
     init(id: UUID = UUID(), toothId: String, eruptionDate: Date = Date(), notes: String? = nil) {

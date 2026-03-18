@@ -18,15 +18,15 @@ enum LHTestResult: String, Codable, CaseIterable {
 
 @Model
 final class CycleDay {
-    @Attribute(.unique) var id: UUID
-    var date: Date
+    @Attribute(.unique) var id: UUID = UUID()
+    var date: Date = Date()
     var bbt: Double?
     var cervicalMucusRaw: String?
     var lhTestResultRaw: String?
     var moodRaw: String?
     var painLevel: Int?
     var libidoLevel: Int?
-    var hasSpotting: Bool
+    var hasSpotting: Bool = false
     var notes: String?
 
     init(
@@ -56,5 +56,15 @@ final class CycleDay {
     var lhTestResult: LHTestResult? {
         guard let raw = lhTestResultRaw else { return nil }
         return LHTestResult(rawValue: raw)
+    }
+
+    var cervicalMucus: CervicalMucusType? {
+        guard let raw = cervicalMucusRaw else { return nil }
+        return CervicalMucusType(rawValue: raw)
+    }
+
+    var mood: Mood? {
+        guard let raw = moodRaw else { return nil }
+        return Mood(rawValue: raw)
     }
 }
