@@ -39,6 +39,12 @@ struct BabyCareApp: App {
             StoryProgress.self,
             CourseProgress.self,
             HospitalBagItem.self,
+            CycleDay.self,
+            Milestone.self,
+            TemperatureLog.self,
+            BabyTooth.self,
+            BirthPlan.self,
+            BabyNameSuggestion.self,
         ])
     }
 }

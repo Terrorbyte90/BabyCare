@@ -39,6 +39,8 @@
 		AABB000000000310 /* ResourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000410 /* ResourcesView.swift */; };
 		AABB000000000311 /* StoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000411 /* StoriesView.swift */; };
 		AABB000000000312 /* WeekByWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000412 /* WeekByWeekView.swift */; };
+		AABB000000000313 /* CycleDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000413 /* CycleDay.swift */; };
+		AABB000000000314 /* NewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000414 /* NewModels.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000202 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000010D /* Models.swift */; };
@@ -83,6 +85,8 @@
 		AABB000000000410 /* ResourcesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourcesView.swift; sourceTree = "<group>"; };
 		AABB000000000411 /* StoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesView.swift; sourceTree = "<group>"; };
 		AABB000000000412 /* WeekByWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekByWeekView.swift; sourceTree = "<group>"; };
+		AABB000000000413 /* CycleDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleDay.swift; sourceTree = "<group>"; };
+		AABB000000000414 /* NewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewModels.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -129,6 +133,7 @@
 				AABB000000000403 /* CourseData.swift */,
 				AABB000000000404 /* CoursesView.swift */,
 				AABB000000000405 /* CycleTracker.swift */,
+				AABB000000000413 /* CycleDay.swift */,
 				AABB000000000107 /* DesignSystem.swift */,
 				AABB000000000406 /* DuJustNuData.swift */,
 				AABB000000000407 /* DuJustNuView.swift */,
@@ -143,6 +148,7 @@
 				AABB00000000040C /* LoggingHub.swift */,
 				AABB00000000040D /* MockFirebaseService.swift */,
 				AABB00000000010D /* Models.swift */,
+				AABB000000000414 /* NewModels.swift */,
 				AABB00000000010E /* OnboardingView.swift */,
 				AABB00000000040E /* PregnancyDashboard.swift */,
 				AABB00000000040F /* PregnancyWeekData.swift */,
@@ -283,6 +289,7 @@
 				AABB000000000303 /* CourseData.swift in Sources */,
 				AABB000000000304 /* CoursesView.swift in Sources */,
 				AABB000000000305 /* CycleTracker.swift in Sources */,
+				AABB000000000313 /* CycleDay.swift in Sources */,
 				AABB000000000207 /* DesignSystem.swift in Sources */,
 				AABB000000000306 /* DuJustNuData.swift in Sources */,
 				AABB000000000307 /* DuJustNuView.swift in Sources */,
@@ -297,6 +304,7 @@
 				AABB00000000030C /* LoggingHub.swift in Sources */,
 				AABB00000000030D /* MockFirebaseService.swift in Sources */,
 				AABB00000000020D /* Models.swift in Sources */,
+				AABB000000000314 /* NewModels.swift in Sources */,
 				AABB00000000020E /* OnboardingView.swift in Sources */,
 				AABB00000000030E /* PregnancyDashboard.swift in Sources */,
 				AABB00000000030F /* PregnancyWeekData.swift in Sources */,
