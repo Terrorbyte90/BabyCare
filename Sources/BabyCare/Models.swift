@@ -212,7 +212,7 @@ enum FertilitySymptom: String, Codable, CaseIterable {
         switch self {
         case .cramps: return "bolt.fill"
         case .bloating: return "circle.fill"
-        case .headache: return "brain.head.profile"
+        case .headache: return "brain.fill"
         case .breastTenderness: return "heart.fill"
         case .backPain: return "figure.walk"
         case .fatigue: return "battery.25"

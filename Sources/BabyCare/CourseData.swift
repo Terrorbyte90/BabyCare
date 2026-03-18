@@ -61,7 +61,10 @@ extension Course {
         Course.tryggaAnknytningen,
         Course.somnUtanTarar,
         Course.startenMedMat,
-        Course.forstaAretsUtveckling
+        Course.forstaAretsUtveckling,
+        Course.amningGuide,
+        Course.forlossningsForberedelse,
+        Course.bebisenForstaAret
     ]
     static var allCourses: [Course] { all }
 }
@@ -1238,7 +1241,7 @@ extension Course {
                 id: "sut-1",
                 title: "Hur bebisar sover",
                 subtitle: "Sömnens vetenskap för de allra minsta",
-                icon: "brain.head.profile",
+                icon: "brain.fill",
                 introduction: """
                 Att förstå hur barns sömn faktiskt fungerar biologiskt är det första steget mot att hantera sömnproblem utan frustration. Bebisar sover inte som vuxna – och det finns goda evolutionära skäl till det. Deras sömnmönster har utvecklats under hundratusentals år för att maximera överlevnad, och det innebär frekventa uppvaknanden, korta sömncykler och ett stort behov av närhet.
 
@@ -2433,5 +2436,858 @@ extension Course {
         ],
         targetAudience: "Föräldrar med barn 0-12 månader",
         estimatedWeeks: 6
+    )
+}
+
+// MARK: - Course 6: Amning — din guide till en bra start
+
+extension Course {
+    static let amningGuide = Course(
+        id: "amning-guide",
+        title: "Amning — din guide till en bra start",
+        subtitle: "Praktisk kunskap för de avgörande första veckorna",
+        description: "En kurs som ger dig evidensbaserad kunskap om amning — från förberedelse under graviditeten till avvänjning. Lär dig rätt teknik, hur du hanterar vanliga problem och hur du fattar välgrundade beslut om din och bebisens matning.",
+        icon: "drop.fill",
+        gradient: LinearGradient(colors: [Color(hex: "0EA5E9"), Color(hex: "38BDF8")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "amning-1",
+                title: "Förberedelse för amning",
+                subtitle: "Vad du kan göra redan under graviditeten",
+                icon: "checkmark.circle.fill",
+                introduction: """
+                De flesta mammor kan amma, men kunskap ökar sannolikheten för en bra start avsevärt. Amning är en färdighet som lärs in — av dig och din bebis — och förberedelse under graviditeten gör de första dygnen mer hanterbara.
+
+                Brösten börjar förbereda sig för amning tidigt i graviditeten. Från vecka 16 produceras råmjölk (kolostrum) — en guldfärgad, koncentrerad vätska rik på antikroppar och näring. Produktionen av mogen mjölk startar 2-5 dagar efter förlossningen, styrd av hormonet prolaktin.
+
+                Det viktigaste du kan göra under graviditeten är att informera dig. Gå på amningskurs (erbjuds av barnmorskan/MVC), läs om rätt amningsteknik, och bestäm dig för hur länge du vill försöka amma utan att sätta orealistiska mål.
+                """,
+                keyPoints: [
+                    "Kolostrum produceras redan från vecka 16 — brösten är redan förberedda",
+                    "Amning är en inlärd färdighet — förberedelse ökar chansen till lyckad start",
+                    "Rätt tag (latch) är det viktigaste enskilda elementet för smertsam amning",
+                    "Hud-mot-hud direkt efter förlossningen stimulerar amning effektivt",
+                    "Amningsstöd finns att få — du behöver inte klara det ensam"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du är gravid i vecka 30 och orolig för att du inte har tillräckligt med mjölk",
+                        wrongApproach: "Vänta och hoppas att det löser sig — eller köp hemlagringspump direkt.",
+                        rightApproach: "Gå på amningskurs via MVC, diskutera med barnmorskan, och lär dig om hur mjölkproduktionen fungerar.",
+                        explanation: "Mjölkproduktionen styrs av bebisens sugande — inte av bröststorlek eller förberedelse. Kunskap minskar oro."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Amningsförberedelse",
+                    description: "Gör tre konkreta saker den här veckan för att förbereda dig för amning.",
+                    steps: [
+                        "Boka amningskurs via MVC om du inte redan gjort det",
+                        "Läs om rätt amningsteknik och rätt tag (latch) — amningshjälpen.se är en bra källa",
+                        "Prata med din partner om hur ni ska samarbeta kring amning/matning",
+                        "Förbered en amningskorg: vatten, snacks, amningskudde, amningsinlägg, lanolin",
+                        "Lägg in telefonnumret till amningsrådgivaren på MVC i mobilen"
+                    ],
+                    duration: "En timmes förberedelse"
+                ),
+                reflectionQuestions: [
+                    "Vilka förväntningar har du på amningen? Är de realistiska?",
+                    "Hur länge vill du försöka amma? Vad händer om det inte fungerar — vad är din Plan B?",
+                    "Vet du var du kan söka amningsstöd om det blir svårt?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Blivande mammor och nyblivna mammor delar om amningsförberedelse:",
+                    consensus: "De flesta önskar att de hade förberett sig mer. Amningskursen via MVC nämns som värdefull. Att veta att det kan vara svårt — och att hjälp finns — ses som det viktigaste.",
+                    quotes: [
+                        "\"Ingen berättade för mig att det kunde göra ONT de första veckorna. Förberedelse hade minskat chocken.\" – Sara, mamma till Alva 2 mån",
+                        "\"Amningskursen var ovärderlig. Lärde oss rätt tag och vad normal amning ser ut.\" – Karin, mamma till Noel 3 mån",
+                        "\"Valde att inte amma. Bästa beslut vi tog för vår familj. Det är OK att det inte passar alla.\" – Marie, mamma till Leo 5 mån"
+                    ],
+                    source: "Amningshjälpen.se, WHO/UNICEF Baby-Friendly Hospital Initiative"
+                ),
+                readingTimeMinutes: 8
+            ),
+            CourseModule(
+                id: "amning-2",
+                title: "Amningsteknik",
+                subtitle: "Rätt tag är allt",
+                icon: "hand.point.up.left.fill",
+                introduction: """
+                Det vanligaste skälet till amningssmärta och mjölkproblem är felaktigt tag. Med rätt tag töms bröstet effektivt, du slipper sår bröstvårtor och mjölkproduktionen stimuleras optimalt.
+
+                Amning ska inte göra ont. Lite initial ömhet de första dagarna är normalt, men ihållande smärta är ett tecken på att något inte stämmer — oftast tagget. Det är alltid rätt att kontakta amningsrådgivare om amningen gör ont.
+
+                Det finns flera amningspositioner — välj den som fungerar för dig och bebisen. Fotbollsgrepp, ligga ner och amma, klassisk madonna-position, crossover. Pröva dig fram. Nyfödda ammar 8-12 gånger per dygn, vilket är helt normalt och nödvändigt för mjölkproduktionen.
+                """,
+                keyPoints: [
+                    "Bebisens mun ska vara vidöppen vid tag — som ett gäspande",
+                    "Läpparna ska vara utåtvikta, hakan mot bröstet, näsan fri",
+                    "Areolan (inte bara bröstvårtan) ska vara i munnen",
+                    "Amning ska inte göra ont — ihållande smärta kräver hjälp",
+                    "Nyfödda ammar 8-12 gånger/dygn — det är normalt, inte otillräcklig mjölk"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Bebisen verkar inte vilja ta tag eller tappar bröstet hela tiden",
+                        wrongApproach: "Pressa bebisens huvud mot bröstet hårdare eller ge upp och ta fram flaska.",
+                        rightApproach: "Försök igen med wider approach: håll bröstet, tickla bebisens läppar med bröstvårtan tills munnen öppnar sig STORT, och för sedan bebisen snabbt in mot bröstet.",
+                        explanation: "Bebisen behöver ha munnen vidöppen INNAN du för henne mot bröstet. Hastigheten är viktig — sänka snarare än att pressa."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Amningsteknik-checklist",
+                    description: "Gå igenom rätt amningsteknik steg för steg vid nästa amningstillfälle.",
+                    steps: [
+                        "Hitta en bekväm position — stöd din arm och rygg",
+                        "Håll bebisen mage mot mage, örat-axel-höft i en rak linje",
+                        "Tickla bebisens läppar med bröstvårtan — vänta tills munnen öppnar sig brett",
+                        "För bebisen snabbt mot bröstet (inte bröstet mot bebisen)",
+                        "Kontrollera: utåtvikta läppar? Haka mot bröstet? Gör det inte ont?",
+                        "Om smärta — bryt suget med finger i mungipan och försök igen"
+                    ],
+                    duration: "Praktisera vid varje amningstillfälle"
+                ),
+                reflectionQuestions: [
+                    "Gör amningen ont? Om ja — har du sökt hjälp av amningsrådgivare?",
+                    "Verkar bebisen nöjd efter amning, åtminstone ibland?",
+                    "Hur många gånger ammar bebisen per dygn?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om amningsteknik:",
+                    consensus: "Rätt tag nämns som den enskilt viktigaste faktorn. Att söka hjälp av amningsrådgivare vid smärta ses som självklart i efterhand.",
+                    quotes: [
+                        "\"Amningsrådgivaren kom hem till oss dag 4. Fixade tagget på 10 minuter. Aldrig ont sedan dess.\" – Lisa, mamma till Ebbe 6 veckor",
+                        "\"Videoguider på YouTube hjälpte mig förstå hur tagget ska se ut. Lättare att lära sig visuellt.\" – Petra, mamma till Ida 2 mån"
+                    ],
+                    source: "Amningshjälpen.se, WHO Baby-Friendly Hospital guidelines"
+                ),
+                readingTimeMinutes: 7
+            ),
+            CourseModule(
+                id: "amning-3",
+                title: "Vanliga utmaningar",
+                subtitle: "Mjölkstockning, mastit och osäker mjölkproduktion",
+                icon: "exclamationmark.triangle.fill",
+                introduction: """
+                De flesta ammande mammor möter utmaningar — det är normalt, inte ett tecken på misslyckande. Kunskap om vanliga problem och hur man hanterar dem gör det möjligt att fortsätta amma om det är ditt mål, eller fatta ett välgrundat beslut om att gå över till flaskmatning.
+
+                Ömma bröstvårtor, mjölkstockning och mastit är de vanligaste problemen de första veckorna. Alla har lösningar. Nyckeln är att söka hjälp tidigt — inte att brottas med problemen ensam.
+                """,
+                keyPoints: [
+                    "Ömma bröstvårtor orsakas nästan alltid av felaktigt tag — inte av 'för känslig hud'",
+                    "Mjölkstockning behandlas med värme, massage och frekventa amningstillfällen",
+                    "Mastit kräver antibiotika men amning ska fortsätta under behandlingen",
+                    "Uppfattad otillräcklig mjölk är vanligare än verklig brist — bebisen avgör med antalet blötor blöjor",
+                    "Amningsrådgivare (IBCLC) kan lösa de flesta problem"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du vaknar med ett hårt, ömt område i bröstet och rodnad på huden",
+                        wrongApproach: "Undvika att amma från det bröstet för att det gör ont.",
+                        rightApproach: "Värm bröstet, massera mot bröstvårtan, amma ofta från det drabbade bröstet och kontakta barnmorskan vid feber.",
+                        explanation: "Att tömma bröstet är behandlingen vid mjölkstockning. Att undvika det förvärrar och kan leda till mastit."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Problemlösningsplan",
+                    description: "Förbered en plan för vad du gör om amningsproblemet uppstår.",
+                    steps: [
+                        "Lägg in Amningshjälpens nummer i telefonen: 0771-22 00 00",
+                        "Identifiera vem din amningsrådgivare på MVC är och hur du kontaktar henne",
+                        "Köp lanolin-salva och amningsinlägg i god tid",
+                        "Lär dig tecknen på mastit: feber, frossa, röd/het fläck i bröstet = sök vård"
+                    ],
+                    duration: "30 minuters förberedelse"
+                ),
+                reflectionQuestions: [
+                    "Vet du vad du ska göra om amningen gör ont?",
+                    "Har du telefonnumret till amningsrådgivaren sparad?",
+                    "Vad är din plan om amningen inte fungerar — är du redo att fatta det beslutet utan skuld?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Mammor delar om amningsutmaningar:",
+                    consensus: "Att söka hjälp tidigt — och att sluta amma är ett giltigt val — är det genomgående budskapet.",
+                    quotes: [
+                        "\"Hade mastit tre gånger. Tredje gången var nog. Ingen ska behöva lida för att amma.\" – Helena",
+                        "\"Amningsrådgivaren bokade in mig dagen efter jag ringde. Gratis. Världens bästa investering.\" – Johanna"
+                    ],
+                    source: "Amningshjälpen.se, 1177.se"
+                ),
+                readingTimeMinutes: 8
+            ),
+            CourseModule(
+                id: "amning-4",
+                title: "Kostråd under amning",
+                subtitle: "Vad du behöver äta — och inte äta",
+                icon: "fork.knife",
+                introduction: """
+                Amning kräver extra kalorier och vätska, men det är inte nödvändigt med en perfekt kost för att producera näringssrik mjölk. Kroppens prioritering är alltid bebisen — om din kost är bristfällig tar mjölken näringen från dina egna förråd.
+
+                Det viktiga är att äta tillräckligt (ungefär 500 kalorier extra per dag), dricka tillräckligt (lyssna på törst), och inte utesluta hela livsmedelsgrupper utan anledning. Myten om att du måste undvika vitlök, kål och kryddstark mat är i stort sett ogrundad — de flesta mammor kan äta normalt utan att bebisen reagerar.
+                """,
+                keyPoints: [
+                    "500 extra kalorier per dag rekommenderas under amning",
+                    "D-vitamin-tillskott till bebisen rekommenderas oavsett kosthållning",
+                    "Alkohol: liten mängd är OK — vänta 2-3 timmar per drink innan amning",
+                    "Koffein passerar till mjölken men är OK i normala mängder (max 2-3 koppar kaffe)",
+                    "De flesta mammor kan äta normalt — undvik inte mat utan anledning"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Bebisen verkar kolik-trött och gasig — du misstänker att det beror på din mat",
+                        wrongApproach: "Sluta äta vitlök, lök, kål, citrus och allt kryddstark omedelbart.",
+                        rightApproach: "Håll matdagbok i en vecka. Om ett specifikt livsmedel konsekvent verkar ge bebisen symtom 2-6 timmar efter att du ätit det — testa att utesluta just det under en vecka.",
+                        explanation: "Studier visar att kolik sällan beror på mammans kost. Eliminationsdieter utan anledning kan leda till näringsbrist."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Amningskost-vecka",
+                    description: "Fokusera på att äta tillräckligt och dricka tillräckligt den här veckan.",
+                    steps: [
+                        "Ät tre ordentliga måltider per dag — hoppa inte över frukost",
+                        "Ha snacks lättillgängligt: nötter, frukt, yoghurt, smörgås",
+                        "Drick ett glas vatten inför varje amningstillfälle",
+                        "Ta D-vitamintillskott till bebisen om BVC rekommenderat det",
+                        "Ät inte restriktivt — ditt välmående påverkar amningen"
+                    ],
+                    duration: "En veckas fokus"
+                ),
+                reflectionQuestions: [
+                    "Äter du tillräckligt? Hoppar du ofta över måltider?",
+                    "Dricker du tillräckligt vatten? Är du sällan törstig?",
+                    "Har du uteslutit livsmedel utan konkret anledning?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Ammande mammor om kosthållning:",
+                    consensus: "De flesta inser att de onödigt begränsat sin kost. Att äta gott och tillräckligt beskrivs som viktigare än att utesluta mat.",
+                    quotes: [
+                        "\"Åt ingenting med smak i tre månader. Bebisen fick kolik ändå. Önskar att jag vetat att det inte var mitt fel.\"",
+                        "\"Amningssuget var reellt. Ät och drick ordentligt — det gör skillnad för hur du mår.\""
+                    ],
+                    source: "Livsmedelsverket, WHO Infant Feeding guidelines"
+                ),
+                readingTimeMinutes: 6
+            ),
+            CourseModule(
+                id: "amning-5",
+                title: "Avsluta amningen",
+                subtitle: "Avvänjning på ditt och bebisens villkor",
+                icon: "arrow.forward.circle.fill",
+                introduction: """
+                Att avsluta amningen är ett beslut som hör till dig, din bebis och er familj — inte till andra. WHO rekommenderar amning upp till 2 år, men svenska rekommendationer är att amma minst 6 månader med fast föda som komplement. Det finns inget rätt svar på när avvänjning ska ske.
+
+                Avvänjning kan initieras av mamman, av bebisen, eller av omständigheter. Den kan vara gradvis (att minska ett amningstillfälle i taget) eller snabb (om medicinskt nödvändigt). Gradvis avvänjning är gentlast för kroppen och bebisens trygghet.
+                """,
+                keyPoints: [
+                    "Det finns inget rätt eller fel datum för avvänjning",
+                    "Gradvis avvänjning (ersätt ett amningstillfälle i taget) är skonsamst",
+                    "Engorgement vid snabb avvänjning behandlas med kylning, inte med pumpning",
+                    "Bebisens näring tas over av välling, fast föda och bröstmjölksersättning",
+                    "Amningsstoppet kan utlösa hormonell dipp — var beredd på humörsvängningar"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du vill sluta amma vid 6 månader men bebisen vägrar flaska",
+                        wrongApproach: "Slutar abrupt och låter bebisen svälta tills hon accepterar flaskan.",
+                        rightApproach: "Introducera flaska tidigt (helst vid 4-6 veckors ålder för den som ska amma och ändå introducera flaska), låt någon annan än mamman ge flaskan initialt, och ha tålamod.",
+                        explanation: "Bebisen associerar mamman med amning. En annan person kan lättare introducera flaska."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Avvänjningsplan",
+                    description: "Planera avvänjningen om det är relevant för dig nu.",
+                    steps: [
+                        "Bestäm vilket amningstillfälle du vill ersätta först (vanligtvis mitt på dagen)",
+                        "Ersätt det tillfället med flaska/sippy cup i en vecka",
+                        "Nästa vecka: ersätt ytterligare ett tillfälle",
+                        "Fortsätt gradvis — bevarar alltid morgon- och kvällsamnning sist",
+                        "Ge extra kramar och kroppsnärhet under processen"
+                    ],
+                    duration: "Gradvis process över 4-8 veckor"
+                ),
+                reflectionQuestions: [
+                    "Är du redo att sluta amma? Är det ett fritt val eller driven av omständigheter?",
+                    "Hur tror du bebisen kommer reagera på avvänjning?",
+                    "Vet du att det är normalt att känna sorg när amningen avslutas — oavsett dina känslor inför det?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Mammor delar om avvänjning:",
+                    consensus: "Att avsluta amningen på egna villkor och utan skuld lyfts som centralt. Sorgen är verklig, oavsett om man ammat länge eller kort.",
+                    quotes: [
+                        "\"Slutade vid 3 månader av medicinska skäl. Grät i en vecka. Sen lättade det. Bebisen mår bra.\"",
+                        "\"Ammade i 18 månader tills dottern avvände sig själv. Saknar det fortfarande men det var hennes tid.\""
+                    ],
+                    source: "WHO, 1177.se, Amningshjälpen.se"
+                ),
+                readingTimeMinutes: 7
+            )
+        ],
+        targetAudience: "Gravida och nyblivna mammor",
+        estimatedWeeks: 3
+    )
+}
+
+// MARK: - Course 7: Förlossningsförberedelse
+
+extension Course {
+    static let forlossningsForberedelse = Course(
+        id: "forlossnings-forberedelse",
+        title: "Förlossningsförberedelse",
+        subtitle: "Bli redo för förlossningens alla faser",
+        description: "Lär dig allt om förlossningens faser, smärtlindring, andningstekniker och vad som händer på BB. Kunskap minskar rädsla och ökar din känsla av kontroll — oavsett hur förlossningen utvecklar sig.",
+        icon: "heart.circle.fill",
+        gradient: LinearGradient(colors: [Color(hex: "EC4899"), Color(hex: "F472B6")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "forl-1",
+                title: "Förlossningens faser",
+                subtitle: "Vad som händer i kroppen",
+                icon: "waveform.path.ecg",
+                introduction: """
+                Förlossningen delas in i tre faser: öppningsskedet, utdrivningsskedet och efterbördsskedet. Att förstå dessa faser hjälper dig att veta var du är i processen och vad du kan förvänta dig härnäst.
+
+                Förlossningens varaktighet varierar enormt. Förstagångsmammors förlossningar tar i genomsnitt 12-18 timmar från aktiv förlossning. Flergångsmammors förlossningar är ofta kortare, 6-8 timmar. Variation är dock stor — förlossningar kan ta allt från 2 timmar till mer än 24 timmar, vilket är normalt.
+                """,
+                keyPoints: [
+                    "Öppningsskedet: livmoderhalsen utplånas och öppnar sig 0-10 cm",
+                    "Latent fas (0-6 cm) kan vara lång och ska hanteras hemma om möjligt",
+                    "Aktiv fas (6-10 cm) börjar vanligtvis när du ringer förlossningen",
+                    "Utdrivningsskedet: kryststadiet — bebisen föds",
+                    "Efterbördsskedet: moderkakan föds, brukar ta 5-30 minuter"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du har värkar var 10:e minut sedan 5 timmar — ska du åka in?",
+                        wrongApproach: "Åka in direkt eftersom det pågått länge.",
+                        rightApproach: "Ringa förlossningen och beskriva värkarna. Aktiv fas börjar vanligtvis vid värkar var 3-5:e minut, i 1 minut, under 1 timme (3-1-1-regeln).",
+                        explanation: "Att åka in för tidigt i latent fas kan leda till onödig oro och medicinsk intervention. De flesta förlossningsavdelningar rekommenderar att du ringer och får råd."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Förlossningsplan",
+                    description: "Skriv en kortfattad förlossningsplan.",
+                    steps: [
+                        "Vilka smärtlindringsmetoder vill du prova? (ordning: TENS, bad, lustgas, epidural)",
+                        "Vem ska vara med på förlossningen?",
+                        "Finns det något du är extra rädd för?",
+                        "Vad är dina önskemål om hud-mot-hud och navelsträng?",
+                        "Kom ihåg: förlossningsplanen är önskemål, inte ett kontrakt"
+                    ],
+                    duration: "30 minuter att skriva"
+                ),
+                reflectionQuestions: [
+                    "Vad är du mest rädd för inför förlossningen?",
+                    "Har du och din partner pratat om era roller under förlossningen?",
+                    "Vet du när du ska ringa förlossningen?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Gravida och nyförlösta delar om förlossning:",
+                    consensus: "Att ha ett öppet sinne och acceptera att planen kan ändras är det vanligaste rådet. Kunskap minskar rädsla.",
+                    quotes: [
+                        "\"Min förlossningsplan kastades ut direkt. Lärde mig att hålla planen löst och förlita mig på barnmorskan.\" – Anna",
+                        "\"Hade inte förstått att latent fas kunde vara SÅ lång. Satt hemma i 14 timmar. Bra förberedelse hade hjälpt.\" – Maria"
+                    ],
+                    source: "1177.se, Barnmorskeförbundet, WHO"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "forl-2",
+                title: "Smärtlindring",
+                subtitle: "Alternativ och vad som passar dig",
+                icon: "cross.case.fill",
+                introduction: """
+                Det finns ett brett spektrum av smärtlindringsalternativ, från naturliga metoder till medicinsk analgesi. Alla är giltiga val — det finns ingen medalj för att föda utan smärtlindring. Välj det som hjälper dig att hantera förlossningsarbetet.
+
+                Smärtan vid förlossning är annorlunda från annan smärta: den är intermittent, ändamålsenlig och ledsagad av hormonet oxytocin som skapar välmående mellan värkarna. Det är ett filosofiskt perspektiv, men många kvinnor finner det hjälpsamt att se smärtan som arbete snarare än skada.
+                """,
+                keyPoints: [
+                    "TENS: elektrisk stimulering som motverkar smärtsignaler — börja tidigt",
+                    "Varmt bad: kraftigt smärtlindrande, tillgängligt tidigt i förlossningen",
+                    "Lustgas: snabbverkande, tar inte bort smärtan men tar bort kanten",
+                    "Epidural: den mest effektiva smärtlindringen men påverkar rörelseförmåga",
+                    "Sterila vatteninjektioner: effektivt mot värk i korsryggen"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du vill ha epidural men är rädd att den ska bromsa förlossningen",
+                        wrongApproach: "Vänta tills du inte klarar smärtan längre för att inte 'riskera' förlossningen.",
+                        rightApproach: "Fråga barnmorskan när det är lämpligaste tillfälle. Moderna studier visar inte att epidural i aktiv fas förlänger förlossningen.",
+                        explanation: "Rädslan för att epidural bromsar förlossningen är en seglivad myt. Det är OK att begära epidural."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Smärtlindrings-ranking",
+                    description: "Rangordna smärtlindringsalternativen i din preferensordning.",
+                    steps: [
+                        "Läs om varje alternativ (TENS, bad, lustgas, epidural, opioider)",
+                        "Diskutera med din partner vad ni vill prova",
+                        "Skriv ner en önskad ordning — utan att låsa dig",
+                        "Lägg in önskemålen i din förlossningsplan",
+                        "Acceptera att du kan ändra dig under förlossningen"
+                    ],
+                    duration: "En timme att diskutera"
+                ),
+                reflectionQuestions: [
+                    "Är du orolig för smärtan? Vad skrämmer dig mest?",
+                    "Har du fördomar mot epidural eller naturlig förlossning?",
+                    "Vet du att du kan ändra dig om smärtlindringen under förlossningen?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Förlossningserfarenheter och smärtlindring:",
+                    consensus: "Att ta den smärtlindring man behöver utan att döma sig själv är det viktigaste budskapet.",
+                    quotes: [
+                        "\"Ville föda naturligt. Tog epidural vid 7 cm. Den bästa beslut jag fattade.\" – Petra",
+                        "\"Badet var fantastiskt. Klarade hela förlossningen i vattnet. Men det är inte för alla.\" – Sofie"
+                    ],
+                    source: "1177.se, SBU-rapport om smärtlindring under förlossning"
+                ),
+                readingTimeMinutes: 8
+            ),
+            CourseModule(
+                id: "forl-3",
+                title: "Andningstekniker",
+                subtitle: "Andningen som ditt viktigaste verktyg",
+                icon: "wind",
+                introduction: """
+                Andningen är det enda du alltid kan kontrollera under förlossningen. Medveten andning aktiverar det parasympatiska nervsystemet, motverkar stressrespons, minskar smärtupplevelsen och hjälper dig att bevara fokus under värkarna.
+
+                Det behövs ingen komplicerad teknik. Grundprincipen är: andas ut längre än du andas in. Det aktiverar vagusnerven och sänker kortisol. Du kan öva på det nu — det kommer naturligt vid förlossningen om du praktiserat.
+                """,
+                keyPoints: [
+                    "Andas IN 4 sekunder, UT 6-8 sekunder — aktiverar parasympatiska nervsystemet",
+                    "Under värken: fokusera på en lång, lugn utandning",
+                    "Undvik att hålla andan — det spänner muskler",
+                    "Hypnobirthing-andning: mjuk abdominal andning med öppen mun",
+                    "Öva dagligen under graviditeten — kroppen lär sig andningsmönstret"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "En stark väck gör att du spänner dig och håller andan",
+                        wrongApproach: "Bita ihop och vänta på att värken ska gå över.",
+                        rightApproach: "Så fort värken börjar: en lång inandning, sedan en lång kontrollerad utandning. Slappna av axlar, händer och käke medvetet.",
+                        explanation: "Spänning förstärker smärtupplevelsen. Att andas ut aktivt ger kroppen signalen att det är säkert att slappna av."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "5-minuters daglig andningsövning",
+                    description: "Öva förlossningsandning varje dag fram till förlossningen.",
+                    steps: [
+                        "Sätt dig bekvämt eller ligg på sidan",
+                        "Andas in genom näsan, 4 sekunder, känn magen expandera",
+                        "Andas ut mjukt genom munnen, 6-8 sekunder",
+                        "Upprepa 10 gånger, 2 gånger om dagen",
+                        "Under den simulerade 'värken' (30 sek): fokusera enbart på utandningen"
+                    ],
+                    duration: "5 minuter dagligen"
+                ),
+                reflectionQuestions: [
+                    "Har du praktiserat andningstekniken? Känns det naturligt?",
+                    "Vet din partner din andningsteknik och kan de påminna dig under förlossningen?",
+                    "Vad hjälper dig att fokusera under intensiv smärta?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om andningstekniker under förlossning:",
+                    consensus: "De flesta som övat beskriver andningen som avgörande. Det svåra är att komma ihåg den mitt i en intensiv väck.",
+                    quotes: [
+                        "\"Min man påminde mig om andningen vid varje väck. Utan hans röst hade jag glömt allt.\" – Karin",
+                        "\"Hade övat hypnobirthingandning varje dag. Den enda sak som verkligen hjälpte mig.\" – Emma"
+                    ],
+                    source: "Hypnobirthing Institute, 1177.se Förlossning"
+                ),
+                readingTimeMinutes: 6
+            ),
+            CourseModule(
+                id: "forl-4",
+                title: "På BB och förlossningsavdelningen",
+                subtitle: "Vad du kan förvänta dig",
+                icon: "building.2.fill",
+                introduction: """
+                Att veta vad som händer på förlossningsavdelningen och BB minskar ångesten. De flesta förlossningsavdelningar i Sverige har privata rum, och BB-vistelsen är vanligtvis 1-2 dagar för okomplicerad vaginal förlossning och 2-3 dagar efter kejsarsnitt.
+
+                Under BB-vistelsen får du och din bebis stöd av barnmorskor och BH-sjuksköterskor i etablering av amning, observationer av bebisens tillstånd, och din återhämtning.
+                """,
+                keyPoints: [
+                    "Ta med bebisens hemfärdskläder och bilbarnstol",
+                    "BB-vistelse: 1-2 dagar vaginal, 2-3 dagar kejsarsnitt",
+                    "Bebisen kontrolleras: viktsförlust, gulsot, hörsel, hjärta, reflexer",
+                    "PKU-provet (blodprov) tas 48-72 timmar efter förlossning",
+                    "Hembesök av barnmorska erbjuds vanligtvis 1-2 dagar efter hemgång"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Din bebis har tappat 8% av födslovikten vid 3 dagars ålder",
+                        wrongApproach: "Panikera och ge genast bröstmjölksersättning.",
+                        rightApproach: "Förstå att viktnedgång upp till 7-10% är normalt de första dagarna. Diskutera med barnmorskan om ämning och eventuell komplettering.",
+                        explanation: "Bebisen minskar i vikt de första dagarna tills mjölken kommit in. Det är normalt och förväntat."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "BB-packlista",
+                    description: "Packa BB-väskan i god tid — från graviditetsvecka 36.",
+                    steps: [
+                        "Till dig: komfortabla kläder, toalettsaker, amningsinlägg, smärtstillande",
+                        "Till bebisen: bodys (3 st), sparkdräkt, mössa, sockar, hemfärdskläder, filtar",
+                        "Administrativt: legitimation, vårdkort, eventuell förlossningsplan",
+                        "Komfort: hörlurar, laddare, snacks, kudde hemifrån",
+                        "Till partner: ombyte, toalettsaker, pengar/kort till automater"
+                    ],
+                    duration: "En timme att packa"
+                ),
+                reflectionQuestions: [
+                    "Har du packat BB-väskan?",
+                    "Vet du hur ni tar er till förlossningsavdelningen?",
+                    "Har ni planerat vem som tar hand om eventuella äldre barn?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Erfarenheter från BB:",
+                    consensus: "Att be om hjälp på BB och ta vara på barnmorskornas stöd nämns som viktigt. Vistelsen kan kännas kort — fråga allt du undrar.",
+                    quotes: [
+                        "\"Frågade barnmorskan om allt varje gång de kom in. Det är deras jobb och de ville hjälpa.\" – Lena",
+                        "\"BB gick för fort. Hade velat ha mer stöd med amningen. Lär dig ställa krav på vård.\" – Hanna"
+                    ],
+                    source: "1177.se BB-vistelsen, Socialstyrelsen"
+                ),
+                readingTimeMinutes: 7
+            ),
+            CourseModule(
+                id: "forl-5",
+                title: "Hemgång och de första dagarna",
+                subtitle: "Vad händer när ni är hemma?",
+                icon: "house.fill",
+                introduction: """
+                Hemgången kan kännas överväldigande — du lämnar den trygga miljön med professionellt stöd och är plötsligt ensam ansvarig för ett litet liv. Det är normalt att känna sig osäker, rädd och overwhelmed. Det är också normalt att känna enormt lycka och kärlek.
+
+                De första veckorna hemma handlar om återhämtning, etablering av matning och att lära känna sin bebis. Acceptera hjälp. Sänk förväntningarna på dig själv. Huset behöver inte vara städat. Mat behöver inte lagas från grunden. Din uppgift är att läka och ta hand om bebisen.
+                """,
+                keyPoints: [
+                    "Barnmorska hembesöker vanligtvis 1-2 dagar efter hemgång",
+                    "BVC-besök bokas via 1177 och sker vanligtvis vecka 1-2",
+                    "Eftervärkar (normal sammandragning av livmodern) är normala och kan göra ont",
+                    "Baby blues (dag 3-5): hormonell dipp med tårar och svängningar — normalt",
+                    "Ring 1177 eller gå till akuten vid: hög feber, starkt blödning, andningsproblem hos bebisen"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Dag 3 hemma: du gråter oavbrutet utan anledning och känner dig hopplös",
+                        wrongApproach: "Tänka att du är en dålig mamma eller att något är fel med dig.",
+                        rightApproach: "Förstå att du sannolikt upplever baby blues — en hormonell reaktion som kulminerar dag 3-4. Prata med din partner. Det går över inom en vecka. Om det inte gör det — kontakta barnmorskan.",
+                        explanation: "Baby blues drabbar upp till 80% av mammor och är orsakad av den kraftigaste hormonella förändringen i livet. Det är biologiskt, inte psykologiskt."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Hjälpplan",
+                    description: "Planera konkret hjälp för de första två veckorna.",
+                    steps: [
+                        "Lista tre personer som kan komma och hjälpa till praktiskt",
+                        "Boka dem specifikt: 'Kan du komma tisdag och laga mat?'",
+                        "Planera enkla maträtter — acceptera leverans och halvfabrikat",
+                        "Bestäm med partner hur ni delar på natten de första veckorna",
+                        "Ta bort alla icke-nödvändiga åtaganden de första 2 veckorna"
+                    ],
+                    duration: "30 minuter att planera"
+                ),
+                reflectionQuestions: [
+                    "Har du ett stödsystem planerat för de första veckorna?",
+                    "Vet du att baby blues skiljer sig från förlossningsdepression?",
+                    "Vad behöver du för att känna dig trygg hemma med bebisen?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om hemgången och de första dagarna:",
+                    consensus: "Att acceptera hjälp och sänka förväntningarna på sig själv lyfts som det viktigaste rådet.",
+                    quotes: [
+                        "\"Hade storhandlat och fryst mat inför hemgången. Det räddade oss. Gör det.\" – Filip, pappa till Max",
+                        "\"Dag 3 var det mörkaste jag upplevt. Dag 7 var det ljusaste. Baby blues är verkligt.\" – Sara"
+                    ],
+                    source: "Rikshandboken Barnhälsovård, 1177.se"
+                ),
+                readingTimeMinutes: 8
+            )
+        ],
+        targetAudience: "Gravida i andra och tredje trimestern",
+        estimatedWeeks: 3
+    )
+}
+
+// MARK: - Course 8: Bebisens första år — milstolpar och utveckling
+
+extension Course {
+    static let bebisenForstaAret = Course(
+        id: "bebisenforsta-aret",
+        title: "Bebisens första år",
+        subtitle: "Milstolpar och utveckling månad för månad",
+        description: "Följ din bebis resa från nyfödd till ett-åring. Lär dig om motorisk, kognitiv, social och språklig utveckling — och hur du som förälder kan stötta varje fas på bästa sätt.",
+        icon: "star.circle.fill",
+        gradient: LinearGradient(colors: [Color(hex: "8B5CF6"), Color(hex: "C4B5FD")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "bfa-1",
+                title: "0–3 månader",
+                subtitle: "Den nyföddes fantastiska kapacitet",
+                icon: "moon.stars.fill",
+                introduction: """
+                En nyfödd är inte ett "tomt blad". Bebisen föds med en fullt fungerande uppsättning reflexer, förmåga att känna igen mammans röst (inlärd under graviditeten), preferens för ansikten, och känslighet för beröring, smak och doft.
+
+                De första tre månaderna handlar om att anpassa sig till världen utanför livmodern, etablera grundläggande sömnmönster, och bygga den grundläggande tillitsrelationen till föräldrarna. Ditt responsiva föräldraskap dessa veckor lägger grunden för ett tryggt anknytningsmönster.
+                """,
+                keyPoints: [
+                    "Nyfödda kan fokusera 20-30 cm — precis din ansiktsdistans vid amning",
+                    "Socialt leende uppstår vid 4-8 veckor — ett av föräldraskapets stora ögonblick",
+                    "Kolik kulminerar runt 6 veckor och avtar nästan alltid vid 3 månader",
+                    "Sömncykler är 40-50 minuter — nattliga uppvaknanden är normala och biologiska",
+                    "Tummy time från dag ett (när bebisen är vaken) bygger motorisk grund"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Din 6 veckor gamla bebis skriker i timmar utan uppenbar orsak på kvällen",
+                        wrongApproach: "Tro att det är något allvarligt fel eller att du gör något fel.",
+                        rightApproach: "Kolik är normalt, drabbar ca 20% av bebisars, kulminerar vid 6 veckor och går över vid 3 månader. Prova: rörelse, hud-mot-hud, vagnsåkning, vit brus.",
+                        explanation: "Kolik är inte smärtsamt för bebisen (trots utseendet) och kan inte 'bort-uppfostras'. Det är en övergående fas."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Tummy time-rutin",
+                    description: "Etablera daglig tummy time de tre första månaderna.",
+                    steps: [
+                        "Börja med 1-2 minuters tummy time direkt efter varje byt (inte efter mat)",
+                        "Bygg upp till 20-30 minuter totalt per dag vid 3 månader",
+                        "Gör det roligt: lägg dig bredvid på golvet, prata och sjung",
+                        "Pröva tummy time på ditt bröst/mage — bebisen kan lättare lyfta huvudet",
+                        "Om bebisen hatar det: börja med kortare stunder och avsluta INNAN gråten"
+                    ],
+                    duration: "2-5 min per session"
+                ),
+                reflectionQuestions: [
+                    "Känner du igen bebisens olika skrik? Hunger, trötthet, stimulering?",
+                    "Hur hanterar du de svåra stunderna — kolik, sömnbrist, osäkerhet?",
+                    "Vad är det mest fantastiska du sett bebisen göra den här månaden?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar om de tre första månaderna:",
+                    consensus: "Att överleva snarare än att prestera är mantrat. De flesta beskriver perioden som svårare och underbarare än de förväntat sig.",
+                    quotes: [
+                        "\"Ingen berättade för mig hur hårt det skulle vara. Och ingen berättade hur fantastiskt. Bådadera är sanna.\" – Maja",
+                        "\"Sociala leendet vid 6 veckor. Inget hade förberett mig för hur det skulle kännas.\" – Anders"
+                    ],
+                    source: "Rikshandboken Barnhälsovård, WHO, American Academy of Pediatrics"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "bfa-2",
+                title: "3–6 månader",
+                subtitle: "Bebisens personlighet träder fram",
+                icon: "sun.max.fill",
+                introduction: """
+                Månaderna 3-6 är för många föräldrar en ynnestperiod: kolik brukar ha försvunnit, bebisen ler och skrattar, kommunicerar med joller, och interaktionen börjar kännas mer meningsfull. Du börjar lära känna ditt barns unika personlighet.
+
+                Motoriken tar stora kliv: bebisen lyfter huvud och bröst vid tummy time, börjar rulla (vanligtvis rygg till mage), börjar nå efter föremål och föra dem till munnen. Handkoordination och munaktivitet är central — allt går i munnen, och det är normalt och bra för sensorisk inlärning.
+                """,
+                keyPoints: [
+                    "Joller börjar vid 3-4 månader — svarar på dig, turtagning i proto-konversation",
+                    "Handfunktion: grepp börjar medvetet vid 3-4 månader, palmer till pincett vid 9-12 mån",
+                    "Rullning: rygg till mage vanligtvis vid 4-5 månader",
+                    "Smakintroduktion kan börja vid 6 månader — Livsmedelsverket rekommenderar ej tidigare",
+                    "Separationsångest börjar byggas upp i slutet av perioden — normalt och sunt"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Bebisen (5 månader) verkar tråkad och gnällig hela dagen",
+                        wrongApproach: "Skärmdump eller sätta på TV för att underhålla.",
+                        rightApproach: "Babyn behöver variation och stimulering: spegel-aktivitet, bollövningar, sjunga, läsa, tummy time, utevistelse. Variera miljö.",
+                        explanation: "5-månadersbebisen behöver aktivt samspel och sensorisk variation — inte passiv underhållning."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Aktivitetsmeny",
+                    description: "Skapa en meny med aktiviteter för 3-6 månader.",
+                    steps: [
+                        "Spegel-stund: håll bebisen framför spegel, prata om vad ni ser",
+                        "Sångstund: sjung 3 valfria sånger med ögonkontakt",
+                        "Sensorisk låda: olika texturer att känna på (silke, bubbelplast, korrugerat papper)",
+                        "Utevistelse: 30 minuter dagligen — natur är sensorisk stimulering",
+                        "Bokläsning: enkla pekböcker med kontrasterande färger"
+                    ],
+                    duration: "10-15 minuter per aktivitet"
+                ),
+                reflectionQuestions: [
+                    "Har du märkt bebisens personlighet börja träda fram? Vad är karaktäristiskt för just ditt barn?",
+                    "Svarar bebisen på ditt joller med eget joller?",
+                    "Hur förbereder du er för introduktionen av fast föda vid 6 månader?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar om 3-6 månader:",
+                    consensus: "Perioden beskrivs som 'belöningen' efter de tunga nyfödddsveckorna. Det sociala samspelet är en vändpunkt.",
+                    quotes: [
+                        "\"Skrattet vid 4 månader. Det första riktiga skrattet. Allt förändrades.\" – Eva",
+                        "\"Han börjar bli EN PERSON. Med åsikter. Det är häpnadsväckande och roligt.\" – Jonas"
+                    ],
+                    source: "Rikshandboken Barnhälsovård, Socialstyrelsen"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "bfa-3",
+                title: "6–9 månader",
+                subtitle: "Fast föda och stor rörlighet",
+                icon: "fork.knife",
+                introduction: """
+                Vid 6 månader rekommenderar Livsmedelsverket att fast föda introduceras. Det är inte för att ersätta mjölkmat (bröstmjölk eller bröstmjölksersättning är fortfarande primär näringskälla), utan för att introducera smaker, texturer och ätkunskaper.
+
+                Motoriken exploderar: sittande utan stöd, krypning i alla varianter, dra sig upp mot möbler. Bebisen börjar utforska rummet aktivt — nu är det tid för babyproofing.
+                """,
+                keyPoints: [
+                    "Smakintroduktion: börja med enstaka smaker, ett i taget, vänta 3 dagar för allergikoll",
+                    "BLW (Baby Led Weaning) och purée är båda giltiga — välj det som passar er",
+                    "Pincettgrepp (tumme + pekfinger) börjar runt 7-9 månader",
+                    "Separation/främlingsångest kulminerar vid 6-9 månader — normalt och sunt",
+                    "Krypning: normalt att börja 6-9 månader, men inte obligatoriskt"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Bebisen (7 månader) börjar gråta hysteriskt när du lämnar rummet",
+                        wrongApproach: "Aldrig lämna bebisen ensam — alltid vara i närheten.",
+                        rightApproach: "Normalisera kort frånvaro: berätta att du går, kom tillbaka och bekräfta. Gradvis öka distansen. Separationsångest är ett tecken på trygg anknytning.",
+                        explanation: "Separationsångest visar att bebisen har bildat en trygg anknytning — det är ett positivt tecken, inte ett problem."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Smakintroduktionsplan",
+                    description: "Planera de första smakerna.",
+                    steps: [
+                        "Börja med mild, enkelt smaker: rotfrukter (sötpotatis, morot), frukt (banan, päron)",
+                        "En ny smak varannan dag — observera reaktioner",
+                        "Introducera potentiella allergener (ägg, fisk, nötter) tidigt — de reducerar allergirisken",
+                        "Välj en struktur: purée, finger food, eller mix",
+                        "Förvänta dig stök — skydda golvet och klä bebisen enkelt"
+                    ],
+                    duration: "10 minuter per måltid"
+                ),
+                reflectionQuestions: [
+                    "Hur planerar du smakintroduktionen?",
+                    "Har du babyproofat hemmet inför den ökade rörligheten?",
+                    "Hur reagerar bebisen på separation från dig?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om 6-9 månader:",
+                    consensus: "Matintroduktionen beskrivs som rolig och stressig. Att inte ta det för allvarligt och ha kul med maten lyfts.",
+                    quotes: [
+                        "\"BLW var kaotisk men dottern älskade kontrollen. Ät vad familjen äter (mjukt).\" – Carina",
+                        "\"Separationsångesten kom som ett blixtslag. Förstod äntligen vad anknytning innebär i praktiken.\" – Robert"
+                    ],
+                    source: "Livsmedelsverket: Bra mat 0-5 år, Rikshandboken BHV"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "bfa-4",
+                title: "9–12 månader",
+                subtitle: "Mot upprätt gång och första ord",
+                icon: "figure.walk",
+                introduction: """
+                Det sista kvartalet av det första levnadsåret är en explosion av nya färdigheter. De flesta barn börjar gå (eller är nära att börja) och säger de första meningsfulla orden. Leken utvecklas från att bara undersöka föremål till att använda dem meningsfullt.
+
+                Kommunikationen är rikare: pekande, vinkning, imitation av ljud och rörelser. Allt detta är förstadier till språk och socialt samspel.
+                """,
+                keyPoints: [
+                    "Pekande (deictic gesture) vid 9-12 mån är ett starkt tecken på kommunikationsutveckling",
+                    "Första ord: vanligtvis 'mamma', 'pappa', eller ett enkelt substantiv",
+                    "Fritt gående: genomsnitt 12 månader, normalt 9-15 månader",
+                    "Imitation ökar kraftigt — de observerar allt du gör",
+                    "Läsning högt varje dag är den bästa investeringen för språkutveckling"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Ditt barn (11 månader) säger fortfarande inga tydliga ord",
+                        wrongApproach: "Jämföra med andra barn och oroa dig för sen språkutveckling.",
+                        rightApproach: "Kolla kommunikationsmarkörerna: pekar barnet? Vinkar? Imiterar ljud och rörelser? Dessa är viktigare indikationer än ord. Prata med BVC om du är orolig.",
+                        explanation: "Ord vid 12 månader är ett genomsnitt — stor variation är normal. Kommunikationsmarkörer är bättre indikatorer på utveckling."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Språkstimulering dagligen",
+                    description: "Fem enkla sätt att stimulera språkutvecklingen varje dag.",
+                    steps: [
+                        "Kommentera vad du gör: 'Nu sätter pappa på bebisens jacka. Den är röd.'",
+                        "Läs högt minst 10 minuter per dag — välj böcker med tydliga bilder",
+                        "Sjung sånger med rörelser (Byssan Lull, Fem fina fingrar)",
+                        "Svara på pekanden: 'Ja! Det är en bil! Brum-brum!'",
+                        "Prata till bebisen hela dagen — löpande kommentar på livet"
+                    ],
+                    duration: "Integrerat i vardagen"
+                ),
+                reflectionQuestions: [
+                    "Hur kommunicerar bebisen med dig? Utöver gråt?",
+                    "Peker bebisen på saker de vill visa dig?",
+                    "Hur förbereder ni er för ettårsdagen och reflektionen över ett fantastiskt första år?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar om 9-12 månader:",
+                    consensus: "Det första riktiga ordet och de första stegen beskrivs som livsavgörande ögonblick. Årets snabbhet upplevs av alla.",
+                    quotes: [
+                        "\"Första gången hon sa 'mamma' och menade det. Jag grät i 20 minuter.\" – Ingrid",
+                        "\"Årets gick SÅ fort. Nu förstår jag varför alla säger det. Ångrar att jag inte tog fler bilder på det enkla vardagslivet.\" – Marcus"
+                    ],
+                    source: "Rikshandboken BHV, Language Development in the First Year of Life"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "bfa-5",
+                title: "Lekstimulering",
+                subtitle: "Lek som lärande — hela första året",
+                icon: "sparkles",
+                introduction: """
+                Lek är barnets arbete. Det är genom lek som bebisen utforskar världen, bygger hjärnförbindelser, och lär sig allt från motorik till sociala regler. Du behöver inte köpa dyra leksaker — de bästa leksaker för bebisar är enkla, sensoriska och involverar dig.
+
+                Lekens karaktär förändras under det första året: från refleksstyrd till intentionell, från solitär till social, från enkel utforskning till symbolisk lek (låtsaslek). Varje fas har sin logik och sina behov.
+                """,
+                keyPoints: [
+                    "0-3 mån: sensorisk stimulering — kontraster, ljud, beröring",
+                    "3-6 mån: kaus-effekt lek — 'om jag gör X händer Y'",
+                    "6-9 mån: objektpermanens — saker finns kvar när de göms",
+                    "9-12 mån: funktionell lek — använda föremål rätt (kopp, sked, telefon)",
+                    "De bästa 'leksakerna': vardagsföremål, ditt ansikte, din röst"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Din bebis (8 månader) är mer intresserad av kartonger och köksredskap än sina leksaker",
+                        wrongApproach: "Köpa fler och dyrare leksaker.",
+                        rightApproach: "Förstå att nyfikenhet på vardagsföremål är normalt och bra. Säkra föremål från köket, kartonger, kasserade behållare — ge fri tillgång.",
+                        explanation: "Bebisar är mer intresserade av 'riktiga' saker än designade leksaker. Vardagsföremål erbjuder rikare sensorisk upplevelse."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Åldersanpassade lekidéer",
+                    description: "En veckas lekaktiviteter anpassade till din bebis ålder.",
+                    steps: [
+                        "Måndag: Sensorlåda — fyll en låda med material av olika texturer",
+                        "Tisdag: Musik — slå på kärl med sked, skaka flaska fylld med ris",
+                        "Onsdag: Utomhusexploration — gräs, löv, sand (under uppsikt)",
+                        "Torsdag: Pekbok-session — 20 minuter med en bok",
+                        "Fredag: Spegellek — titta i spegel och imitera ansiktsuttryck",
+                        "Lördag: Vattensäck — lägg bebisen på en vattenmadrass med vatten inuti",
+                        "Söndag: Familjens bästa aktivitet — vad gillar just er bebis?"
+                    ],
+                    duration: "15-30 minuter per aktivitet"
+                ),
+                reflectionQuestions: [
+                    "Vad verkar din bebis tycka är roligast? Vad ger du mer av det?",
+                    "Är du bra på att följa bebisens ledning i leken — låta henne bestämma riktningen?",
+                    "Hur balanserar du strukturerade aktiviteter med fri utforskning?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar om lek och stimulering:",
+                    consensus: "Att följa bebisens intresse och inte pressa fram aktiviteter lyfts. De enklaste aktiviteterna är ofta de bästa.",
+                    quotes: [
+                        "\"Köpte allt dyrt leksaker. Han föredrog den tomma yoghurtbehållaren. Spenderade för mycket pengar.\" – Peter",
+                        "\"Att vara fullt närvarande under 15 minuter är mer värt än passiv närvaro under en timme.\" – Sofie"
+                    ],
+                    source: "Socialstyrelsen, WHO Early Childhood Development guidelines"
+                ),
+                readingTimeMinutes: 8
+            )
+        ],
+        targetAudience: "Föräldrar med barn 0-12 månader",
+        estimatedWeeks: 5
     )
 }

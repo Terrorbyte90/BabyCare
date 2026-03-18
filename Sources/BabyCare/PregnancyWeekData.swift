@@ -28,7 +28,52 @@ struct PregnancyForumSection {
 // MARK: - Compatibility Properties (used by HomeView, PregnancyDashboard)
 
 extension PregnancyWeekContent {
-    var sizeEmoji: String { sfSymbol }
+    /// Emoji representation of fetal size — mapped per week range.
+    /// sfSymbol is used for Image(systemName:) in animated circles; sizeEmoji for Text() views.
+    var sizeEmoji: String {
+        switch week {
+        case 4:       return "🌱"
+        case 5:       return "🌿"
+        case 6:       return "🫘"
+        case 7:       return "🫐"
+        case 8:       return "🍇"
+        case 9:       return "🍓"
+        case 10:      return "🫒"
+        case 11:      return "🍋"
+        case 12:      return "🍊"
+        case 13:      return "🫑"
+        case 14:      return "🍋"
+        case 15:      return "🍎"
+        case 16:      return "🥑"
+        case 17:      return "🥕"
+        case 18:      return "🍠"
+        case 19:      return "🥭"
+        case 20:      return "🍌"
+        case 21:      return "🥦"
+        case 22:      return "🌽"
+        case 23:      return "🍍"
+        case 24:      return "🌽"
+        case 25:      return "🥬"
+        case 26:      return "🥦"
+        case 27:      return "🥒"
+        case 28:      return "🍆"
+        case 29:      return "🎃"
+        case 30:      return "🥥"
+        case 31:      return "🥥"
+        case 32:      return "🍈"
+        case 33:      return "🍈"
+        case 34:      return "🎯"
+        case 35:      return "🥝"
+        case 36:      return "🧸"
+        case 37:      return "🎁"
+        case 38:      return "🎀"
+        case 39:      return "🌟"
+        case 40:      return "👶"
+        case 41:      return "👶"
+        case 42:      return "👶"
+        default:      return "🌱"
+        }
+    }
     var sizeComparison: String { fetalSizeComparison }
     var highlight: String { fetalDevelopment.first ?? "" }
     var tip: String { tips.first ?? "" }
@@ -116,7 +161,7 @@ extension PregnancyWeekContent {
                 name: "ALLA SINNEN",
                 headline: "Alla fem sinnen är nu aktiva",
                 detail: "Känsel, smak, hörsel, syn och lukt – din bebis använder nu alla sina sinnen i livmodern. Sensorisk inlärning pågår för fullt. Musik du spelar, röster du hör, mat du äter – allt registreras och skapar minnen.",
-                icon: "brain.head.profile",
+                icon: "brain.fill",
                 colorHex: "7B6FBF"
             )
 
@@ -849,7 +894,7 @@ extension PregnancyWeekContent {
             fetalSizeComparison: "En banan",
             fetalWeightGrams: "300 g",
             fetalLengthCM: "16,4 cm",
-            sfSymbol: "flag.checkered",
+            sfSymbol: "star.circle.fill",
             motherChanges: [
                 "Halvvägs! Livmodern är nu i nivå med naveln.",
                 "Naveln kan börja sticka ut – helt normalt och den går tillbaka efter förlossningen.",
@@ -1069,7 +1114,7 @@ extension PregnancyWeekContent {
             fetalSizeComparison: "En kålrot",
             fetalWeightGrams: "660 g",
             fetalLengthCM: "34,6 cm",
-            sfSymbol: "brain.head.profile.fill",
+            sfSymbol: "brain.fill",
             motherChanges: [
                 "Magen växer snabbt nu och du kan känna dig klumpig och otymplig.",
                 "Hemorrhojder kan uppstå på grund av ökat tryck i bäckenet och förstoppning.",

@@ -1664,6 +1664,543 @@ BVC-sköterskan är din första kontakt. Hon kan bedöma tillväxt, ge individan
             ]
         ),
 
+        // =====================================================================
+        // MARK: FÖRÄLDRAHÄLSA (5 articles)
+        // =====================================================================
+
+        // MARK: Article 21 – Sömnbrist
+        Article(
+            id: "parenthealth_sleep_deprivation",
+            category: .parentHealth,
+            title: "Sömnbrist och hur du hanterar det",
+            subtitle: "Praktiska strategier för utmattade föräldrar",
+            icon: "moon.zzz.fill",
+            readTimeMinutes: 5,
+            intro: "Sömnbrist är en av de svåraste utmaningarna med ett litet barn. Att förstå vad som händer i kroppen och lära sig strategier för att hantera det kan göra stor skillnad för hela familjens välmående.",
+            sections: [
+                ArticleSection(
+                    heading: "Vad händer i kroppen vid sömnbrist?",
+                    body: """
+Sömnbrist påverkar i stort sett alla kroppsfunktioner. Redan efter 17-19 timmars vakenhet försämras reaktionsförmåga, beslutsfattande och emotionell reglering lika mycket som vid en promille i blodet. Det här förklarar varför du kan bli omotiverat irriterad över bagateller eller gråta av att du spillt kaffe.
+
+Kortisol, stresshormonet, stiger vid sömnbrist. Det ökar hunger – särskilt efter socker och kolhydrater – och försämrar immunförsvaret. Kronisk sömnbrist ökar risken för depression, ångest och hjärt-kärlsjukdom. Det är alltså inte "bara trötthet".
+
+Minnet konsolideras under sömnen, vilket är varför allt känns suddigt och du glömmer saker hela tiden. Det är biologiskt, inte ett tecken på att du håller på att bli dement. Hjärnan sorterar och lagrar information under djupsömnen som du just nu inte får tillräckligt av.
+
+Det positiva: hjärnan är anpassningsbar. Föräldrar lär sig att fungera med fragmenterad sömn. Och det tar slut – barnet kommer med tid att sova mer sammanhängande. Du klarar av det.
+"""
+                ),
+                ArticleSection(
+                    heading: "Strategier som faktiskt hjälper",
+                    body: """
+Sov när bebisen sover – det klassiska rådet låter enkelt men är svårt att följa när du vill ha lite tid för dig själv. Prioritera i alla fall ett tuppluret per dag, helst 20-30 minuter på förmiddagen när kortisol naturligt är högt och insomnandet är lättare.
+
+Dela på natten med din partner. En person ansvarar fram till ett visst klockslag, den andra tar resten. Det ger var och en ett sammanhängande sömnblock. En "rak" natt varannan natt är bättre än halvdålig sömn varje natt.
+
+Om du ammar: låt partnern lägga om och byta blöja – du kan sova medan. Om ni flaskmatar, ta tydliga skift. Dokumentera vem som var uppe sist – trötthetsminnet är opålitligt och kan skapa onödiga konflikter.
+
+Avsäga vardagsuppgifter. Huset behöver inte vara perfekt. Mat kan beställas eller vara enkel. Be om och ta emot hjälp från familj och vänner. Många vill hjälpa men vet inte hur – ge dem konkreta uppgifter: "Kan du komma och hålla bebisen i två timmar på lördag?"
+
+Koffein med omdöme. En kopp kaffe på morgonen hjälper. Koffein efter klockan 14 saboterar den sömn du faktiskt kan få på natten. Prioritera sömnkvaliteten när du väl sover.
+"""
+                ),
+                ArticleSection(
+                    heading: "Mental hälsa under sömnbrist",
+                    body: """
+Det är normalt att känna sig överväldigad, tom och irriterad under svåra sömnperioder. Det är viktigt att skilja på normal trötthet och depression. Baby blues (de första 2 veckorna) är hormonellt och går över. Förlossningsdepression håller i sig längre och kräver stöd.
+
+Varningssignaler att ta på allvar: ihållande hopplöshetskänslor som varar mer än 2 veckor, oförmåga att bry sig om eller knyta an till barnet, tankar om att skada dig själv eller barnet, extrem ångest och oroliga tankar som inte går att kontrollera. Sök hjälp vid dessa symtom – prata med barnmorskan, BVC eller din läkare.
+
+Ta hand om det grundläggande. Ät regelbundna måltider – hoppa inte över frukost. Rör på dig, även kort promenad med vagnen räknas och förbättrar humöret märkbart. Ha kontakt med andra vuxna – isolering förvärrar allt.
+
+Prata med din partner om hur ni mår. Sömnbrist ökar konflikter i relationer. Schemalägg tid att prata, inte om logistik utan om hur ni faktiskt har det. Ni är ett lag, inte motståndare.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar sina erfarenheter av sömnbrist:",
+                consensus: "Att ta hjälp och dela på natten lyfts som det viktigaste. Många önskar att de hade prioriterat sömn framför att hålla ordning.",
+                quotes: [
+                    "– Vi delade upp natten strikt. Jag till 02, han från 02. Det räddade oss och vår relation.",
+                    "– Slutade städa. Lät maten vara enkel. Sov varje chans jag fick. Bebisen brydde sig inte om att disken stod.",
+                    "– Tröttast jag någonsin känt men också starkast. Man klarar mer än man tror."
+                ],
+                source: "Källa: Familjeliv.se, Rikshandboken Barnhälsovård"
+            ),
+            sources: [
+                "Harrison Y, Horne JA (2000). The impact of sleep deprivation on decision making: A review. Journal of Experimental Psychology Applied.",
+                "Goyal D et al. (2009). Fragmented Maternal Sleep Is More Strongly Correlated With Depressive Symptoms Than Infant Temperament at Three Months Postpartum. Archives of Women's Mental Health."
+            ]
+        ),
+
+        // MARK: Article 22 – Baby blues vs förlossningsdepression
+        Article(
+            id: "parenthealth_baby_blues_ppd",
+            category: .parentHealth,
+            title: "Baby blues vs. förlossningsdepression",
+            subtitle: "Vad är skillnaden och när ska du söka hjälp?",
+            icon: "heart.text.clipboard.fill",
+            readTimeMinutes: 6,
+            intro: "Upp till 80 procent av alla nyblivna mammor upplever baby blues. Förlossningsdepression är vanligare än de flesta tror och drabbar 10-15 procent av mammor och 5-10 procent av pappor. Att kunna skilja på dem är viktigt.",
+            sections: [
+                ArticleSection(
+                    heading: "Baby blues – den hormonella dipp",
+                    body: """
+Baby blues är en hormonell reaktion som uppstår dagarna efter förlossningen. Under graviditeten är östrogen och progesteron kraftigt förhöjda. Dagen efter förlossningen rasar nivåerna dramatiskt – det är en av de kraftigaste hormonella förändringarna en människa kan uppleva. Resultatet är en period av tårar, känslosvängningar, irritabilitet och känslighet som kan verka oproportionerlig.
+
+Baby blues börjar vanligtvis dag 2-5 efter förlossningen och kulminerar runt dag 3-4. Det är inte ovanligt att gråta av att solen lyser, att vara överväldigad av kärlek och sedan sekunden efter överväldigad av rädsla, att sova dåligt trots trötthet och att känna sig inkompetent trots att du gör ett fantastiskt jobb.
+
+Baby blues kräver ingen behandling. Det löser sig inom 10-14 dagar i takt med att hormonerna stabiliseras. Det hjälper med sömn, näring, stöd från partner och familj, och vetskapen om att det är normalt och tillfälligt.
+
+Gränsen mot förlossningsdepression är om symtomen inte avtar efter 2 veckor, utan snarare förvärras.
+"""
+                ),
+                ArticleSection(
+                    heading: "Förlossningsdepression – vad det är och inte är",
+                    body: """
+Förlossningsdepression (PPD, postpartum depression) är en klinisk depression som uppstår inom ett år efter förlossningen, vanligast de första 3 månaderna. Det är inte ett tecken på svaghet, dålig föräldraförmåga eller att du inte älskar ditt barn. Det är en sjukdom med neurologiska och hormonella orsaker som svarar väl på behandling.
+
+Symtom på förlossningsdepression: nedstämdhet som varar mer än 2 veckor, ointresse för barnet eller svårt att knyta an, intensiv oro och ångest (ibland mer framträdande än nedstämdheten), sömnproblem som inte enbart beror på barnets vakennätter, irritabilitet och ilska utöver det vanliga, skuld- och skamkänslor, känsla av att vara en dålig förälder eller att barnet vore bättre utan dig.
+
+Risken ökar vid: tidigare depression eller ångest, sömnbrist, relationskonflikter, socioekonomisk stress, svår förlossning eller komplikationer, brist på socialt stöd, och amningsproblem kombinerat med höga förväntningar på sig själv.
+
+Förlossningsdepression hos pappor och icke-bärande partners är lika verklig men ofta oupptäckt eftersom symtomen kan se annorlunda ut: irritabilitet, aggressivitet, ökat alkoholintag, undvikande av familjen, eller att begrava sig i jobb.
+"""
+                ),
+                ArticleSection(
+                    heading: "Behandling och var du söker hjälp",
+                    body: """
+Förlossningsdepression är behandlingsbar. Det fungerar inte att "kämpa sig igenom" utan stöd. Ju tidigare du söker hjälp, desto snabbare mår du bättre.
+
+Behandlingsalternativ inkluderar: samtalsterapi, framför allt KBT och interpersonell terapi, antidepressiva läkemedel (flera är säkra vid amning), stödgrupper för nyblivna föräldrar, och kombinationer av dessa.
+
+Var söker du hjälp? BVC-sköterskan screenar för PPD med Edinburgh-formuläret (EPDS) vid 6-8 veckors besöket. Du kan ta upp symtom vid vilket BVC-besök som helst. Din barnmorska under graviditet och de första veckorna. Vårdcentralen – boka tid med läkare och berätta hur du mår. Du ska inte behöva motivera att du behöver hjälp. Akutmottagningen om du har tankar på att skada dig själv eller barnet.
+
+EPDS-formuläret (Edinburgh Postnatal Depression Scale) kan du fylla i hemma. Om du poängar högt, sök hjälp omgående. Det är ett screeningverktyg, inte en diagnos, men ett viktigt verktyg för att fånga upp dem som mår dåligt.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar erfarenheter av PPD:",
+                consensus: "Att söka hjälp tidigt och att inte skämmas beskrivs som avgörande. Att veta att man inte är ensam hjälper.",
+                quotes: [
+                    "– Jag trodde jag var den enda som inte kände den där kärleken direkt. Det tog 3 veckor för mig. Det är OK.",
+                    "– Sökte hjälp vid 8 veckor. KBT och antidepressiva. Kände mig som mig själv igen vid 4 månader. Önskar att jag sökt tidigare.",
+                    "– Min man fick PPD. Han grät aldrig men var borta mentalt. Terapi hjälpte enormt. Pappor glöms bort i det här samtalet."
+                ],
+                source: "Källa: Mind.se, 1177.se, Rikshandboken Barnhälsovård"
+            ),
+            sources: [
+                "Cox JL et al. (1987). Detection of postnatal depression. Development of the 10-item Edinburgh Postnatal Depression Scale. British Journal of Psychiatry.",
+                "Paulson JF, Bazemore SD (2010). Prenatal and Postpartum Depression in Fathers and Its Association With Maternal Depression. JAMA.",
+                "SBU (2014). Behandling av depression och ångest hos gravida och ammande."
+            ]
+        ),
+
+        // MARK: Article 23 – Partnerstöd
+        Article(
+            id: "parenthealth_partner_support",
+            category: .parentHealth,
+            title: "Partnerstöd under graviditet och efter förlossning",
+            subtitle: "Hur du som partner kan göra verklig skillnad",
+            icon: "figure.2.arms.open",
+            readTimeMinutes: 5,
+            intro: "Den gravida eller just förlösta personens välmående påverkas starkt av partnerns stöd. Forskning visar att aktivt, konkret partnerstöd minskar risken för förlossningsdepression, stärker anknytningstrygghet och förbättrar relationskvaliteten. Det handlar inte om att göra allt rätt – utan om att vara genuint närvarande.",
+            sections: [
+                ArticleSection(
+                    heading: "Under graviditeten",
+                    body: """
+Att vara partner under en graviditet innebär att gå bredvid en stor fysisk och emotionell förändring du inte själv upplever inifrån. Det kan kännas svårt att veta vad du ska göra. Det viktigaste är att fråga – inte anta.
+
+Praktiskt stöd: ta över uppgifter som blivit svåra att utföra, som att bära tunga saker, stå länge vid spisen eller sova bekvämt. Följ med på läkarbesök och ultraljud när det är möjligt. Det visar engagemang och ger dig inblick i vad som händer.
+
+Emotionellt stöd: lyssna utan att lösa. Graviditet innebär oro, ambivalens och hormonella humörsvängningar. Din roll är att lyssna, validera och inte avfärda. "Jag förstår att det känns svårt" räcker långt. Undvik att jämföra med hur andras graviditeter ser ut.
+
+Informera dig: läs på om graviditet, förlossning och nyfödda. Ju mer du kan, desto mer kompetent och involverad kan du vara. Gå föräldraförberedelsekursen. Delta aktivt, inte som observatör.
+
+Prata om förväntningar: hur ska ni dela på ansvaret efter förlossningen? Vem tar föräldraledighet och när? Diskutera detta i god tid. Oenighet om rollfördelning är en av de vanligaste orsakerna till relationsstress det första året.
+"""
+                ),
+                ArticleSection(
+                    heading: "Under förlossningen",
+                    body: """
+Din närvaro under förlossningen spelar stor roll. Studier visar att kontinuerligt stöd under förlossning – vare sig från partner, doula eller barnmorska – minskar behovet av smärtlindring, förkortar förlossningen och ökar upplevelsen av kontroll.
+
+Du behöver inte göra något speciellt. Var där. Håll handen. Ge massage om det önskas. Håll vatten och is. Hecka inte – finnas.
+
+Om förlossningen inte går som planerat, stötta beslutsfattandet. Var hennes röst om hon inte kan tala för sig själv. Fråga barnmorskan och läkaren om du inte förstår vad som sker. Det är din rätt och ditt ansvar.
+
+Ta hand om dig själv också – förlossningar kan vara långa och traumatiska. Ät, drick, rör på dig om det finns möjlighet. Om du mår dåligt efter förlossningen är det okej att sätta ord på det.
+"""
+                ),
+                ArticleSection(
+                    heading: "De första veckorna hemma",
+                    body: """
+Det första som händer hemma är att den icke-bärande partnern ofta återgår till arbete inom en till två veckor – medan den som fött är hemma med ett nyfödd barn under hormonell och fysisk återhämtning. Den här perioden kan vara extremt ensam och överväldigande.
+
+Om du är hemma: ta ansvar för hushållet så att den som fött kan fokusera på att återhämta sig och mata barnet. Laga mat. Städa. Ta emot besök och skydda vilobehov. Ha aldrig förväntningar på att hemmet ska vara i ordning.
+
+Om du jobbar: när du kommer hem, avlasta genast. Ta barnet. Fråga "vad behöver du?" – inte "hur ser det ut här?" Aktiv föräldraledighet tidigt bygger kompetens och tillit som håller i sig hela barnets uppväxt.
+
+Tala om din partners psychiska mående. Fråga regelbundet hur hon verkligen mår. Om du märker tecken på förlossningsdepression – uppmuntra och hjälp henne att söka hjälp. Gör det konkret: boka tid, följ med.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Partners delar sina erfarenheter:",
+                consensus: "Att vara aktiv och praktiskt involverad – inte bara stödjande i ord – lyfts som det som gör störst skillnad. Det räcker inte att finnas i bakgrunden.",
+                quotes: [
+                    "– Jag tog en extra veckas tjänstledighet för att vara hemma. Det bästa beslutet jag fattat. Jag lärde mig bebisen och min fru fick sova.",
+                    "– Visste inte vad jag skulle göra i förlossningsrummet. Höll hennes hand hela tiden. Efteråt sa hon att det var det viktigaste.",
+                    "– Vi hade inte pratat om rollfördelning. Det ledde till konflikter. Gör det INNAN. Seriöst."
+                ],
+                source: "Källa: Familjeliv.se, Föräldramötet, forskning av John Gottman"
+            ),
+            sources: [
+                "Hodnett ED et al. (2013). Continuous support for women during childbirth. Cochrane Database Syst Rev.",
+                "Gottman JM (2011). Bringing Baby Home. The Gottman Institute.",
+                "Parfitt Y, Ayers S (2014). Transition to parenthood and mental health in first-time parents. Infant Mental Health Journal."
+            ]
+        ),
+
+        // MARK: Article 24 – Föräldraidentitet
+        Article(
+            id: "parenthealth_identity",
+            category: .parentHealth,
+            title: "Din identitet som förälder",
+            subtitle: "Att hitta dig själv i den nya rollen",
+            icon: "person.fill.checkmark",
+            readTimeMinutes: 5,
+            intro: "Att bli förälder är en av livets mest djupgående identitetstransformationer. Psykologer kallar det matrescence (för mammor) och patrescence (för pappor) – en parallellprocess till ungdomens identitetsutveckling. Det är normalt att känna sig vilsen, förändrad och inte igen sig i spegeln.",
+            sections: [
+                ArticleSection(
+                    heading: "Vad är matrescence och patrescence?",
+                    body: """
+Matrescence, ett begrepp myntat av antropologen Dana Raphael på 1970-talet och populariserat av psykologen Aurélie Athan, beskriver den djupa biopsykosociala förändringen en person genomgår när de blir förälder. Precis som tonåringen förändrar kropp och identitet, förändrar den nya föräldern sitt neurala nätverk, sin hjärnas struktur och sin plats i världen.
+
+Hjärnan förändras faktiskt strukturellt under graviditet och föräldraskap. Grå substans minskar i specifika regioner kopplade till social kognition – inte för att hjärnan "minskar" utan för att den specialiseras. Resultatet är ökad förmåga att läsa barnets signaler och stärkt empatisk förmåga. Den populärt kallade "gravidhjärnan" är en hjärna under omstrukturering, inte en sämre hjärna.
+
+Identitetskrockarna är verkliga: "Vem är jag nu? Är jag samma person jag var? Vad händer med min karriär, mina vänner, mitt förhållande, min kropp, mina drömmar?" Dessa frågor är normala och viktiga. Att ignorera dem leder till oanade spänningar. Att möta dem med nyfikenhet och öppenhet leder till tillväxt.
+
+Det finns ingen rätt tid att "känna sig som förälder". Bonding kan ta tid. Kärlek till sitt barn kan växa gradvis. Det är normalt.
+"""
+                ),
+                ArticleSection(
+                    heading: "Att inte förlora sig själv",
+                    body: """
+En vanlig rädsla – och verklighet – hos nya föräldrar är att den egna personen "sugs upp" av föräldrarollen. Allt handlar om bebisen. Din tid, din kropp, dina tankar. Det är en period av radikal osjälviskhet som kroppen och psyket inte är byggda för att klara hur länge som helst.
+
+Att ta hand om sig själv är inte själviskt. Det är nödvändigt. Ett gammalt uttryck: sätt på din egen syrgasmask först. Du kan inte ge från ett tomt kärl.
+
+Vad hjälper: en aktivitet per vecka som är enbart din. Det behöver inte vara storslaget. En promenad utan barnvagn. En bok du faktiskt läser. En kaffestund med en vän. Något som påminner dig om vem du är utöver förälder.
+
+Behåll eller återuppbygg vänskap. Det sociala nätverket tunnas ut kraftigt det första året. Håll i relationer som ger dig energi. Var ärlig om att du inte har mycket kapacitet just nu – äkta vänner förstår och anpassar sig.
+
+Prata med din partner om hur ni bevarar "ni" i vardagen. Inte föräldrarna, utan partnerna. Schemalägg tid för varandra, även om det är 30 minuter på soffan utan telefon.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar tankar om identitetsförändringen:",
+                consensus: "Att tillåta sig att sörja sin gamla tillvaro och välkomna den nya beskrivs som en nyckelerfarenhet. Det är inte antingen-eller, utan en gradvis integration.",
+                quotes: [
+                    "– Grät i månader för att jag saknade mitt gamla jag. Sedan insåg jag att mitt nya jag är rikare. Det tog tid att se.",
+                    "– Föräldrarollen rev upp allt. Gamla sår, gamla mönster. Men det gav mig chansen att växa på ett sätt ingenting annat hade gjort.",
+                    "– Jag höll på att tappa mig själv helt. Började springa igen vid 4 månader. Det räddade min hälsa och mitt humör."
+                ],
+                source: "Källa: Aurélie Athan, matrescence.com; Rikshandboken Barnhälsovård"
+            ),
+            sources: [
+                "Athan AM (2016). Matrescence: Lifespan development in the transition to motherhood. In Selin H (Ed.), Parenting Across Cultures.",
+                "Hoekzema E et al. (2017). Pregnancy leads to long-lasting changes in human brain structure. Nature Neuroscience.",
+                "Coall DA, Hertwig R (2010). Grandparental investment. Behavioral and Brain Sciences."
+            ]
+        ),
+
+        // MARK: Article 25 – Stress och återhämtning
+        Article(
+            id: "parenthealth_stress_recovery",
+            category: .parentHealth,
+            title: "Stress och återhämtning för föräldrar",
+            subtitle: "Verktyg för att reglera nervsystemet i vardagen",
+            icon: "leaf.fill",
+            readTimeMinutes: 5,
+            intro: "Föräldrastress är inte ett tecken på svaghet eller att du gör något fel. Det är ett naturligt svar på en krävande situation. Det som avgör hur du mår på lång sikt är inte om du stressar, utan hur väl du återhämtar dig.",
+            sections: [
+                ArticleSection(
+                    heading: "Vad är stress och varför känns det så kroppsligt?",
+                    body: """
+Stress är nervsystemets alarmberedskap. Amygdala aktiverar det sympatiska nervsystemet – "fight or flight" – och cortisol och adrenalin flödar ut. Hjärtat slår snabbare, musklerna spänner sig, matsmältningen saktas ner. Det här systemet är designat för akut fara, inte för kronisk stress under månader och år.
+
+Föräldrastress triggar samma system: ett skrikande spädbarn aktiverar amygdala precis som ett hot. Det är evolutionärt klokt – babyn behöver din uppmärksamhet. Men om "alarmet" aldrig stängs av, om det inte finns återhämtning, slits systemet ut.
+
+Kronisk stress påverkar: koncentrationsförmåga och minne, humör och emotionell reglering (du blir "kortare"), immunförsvar, sömn, relation och sexliv, och i längden hjärthälsa och metabol hälsa.
+
+Det parasympatiska nervsystemet – "rest and digest" – är din naturliga motreglering. Att aktivera det är återhämtning.
+"""
+                ),
+                ArticleSection(
+                    heading: "Praktiska återhämtningsverktyg",
+                    body: """
+Andning: det snabbaste sättet att aktivera det parasympatiska nervsystemet. Fysiologisk suck (dubbel inandning genom näsan + lång utandning genom munnen) sänker hjärtfrekvensen på sekunder. Box-andning (4 sekunder in, 4 håll, 4 ut, 4 håll) fungerar utmärkt i akut stress.
+
+Rörelse: 20-30 minuters aerob träning minskar kortisol och ökar BDNF (hjärnans tillväxtfaktor) och serotonin. Det behöver inte vara gymträning. Promenad med barnvagnen räknas. Yoga med bebisen räknas. Det som räknas är att det sker regelbundet.
+
+Natur: 20 minuter i natur utan telefon minskar kortisol med mätbara 21 procent (studie från Cornell). En promenad i parken är faktiskt medicinsk återhämtning.
+
+Socialt stöd: att prata med någon du litar på aktiverar oxytocin och motverkar stressrespons. Isolering förstärker stress. Ring en vän. Gå till öppen förskola. Kontakta grannen med bebis.
+
+Mindfulness och meditation: forskning visar att 8 veckor med mindfulness-based stress reduction (MBSR) förändrar hjärnans stressrespons mätbart. Appar som Headspace och Calm har guidade övningar för föräldrar.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar sina återhämtningsstrategier:",
+                consensus: "Rörelse och utomhusvistelse nämns konsekvent som det mest effektiva. Att ha minst en stund per dag för sig själv lyfts som avgörande.",
+                quotes: [
+                    "– Varje dag, oavsett väder, 30 minuter promenad med vagnen. Det enda som faktiskt hjälpte mot stressen.",
+                    "– Började meditera 10 minuter om dagen vid 6-veckorsbesöket. Låter banalt men förändrade verkligen mitt lugn.",
+                    "– Öppen förskola räddade min psykiska hälsa. Att träffa andra i samma situation normaliserade allt."
+                ],
+                source: "Källa: Socialstyrelsen, Stress.se, 1177.se"
+            ),
+            sources: [
+                "Hunter MR et al. (2019). Urban Nature Experiences Reduce Stress in the Context of Daily Life. Frontiers in Psychology.",
+                "Hölzel BK et al. (2011). Mindfulness practice leads to increases in regional brain gray matter density. Psychiatry Research: Neuroimaging.",
+                "Söderström M et al. (2012). Vilken roll spelar sömn och återhämtning? Stress och utmattning. Karolinska Institutet."
+            ]
+        ),
+
+        // =====================================================================
+        // MARK: EXTRA ARTIKLAR – ÖVRIGA KATEGORIER (5 articles)
+        // =====================================================================
+
+        // MARK: Article 26 – Skärmar och barn
+        Article(
+            id: "development_screens",
+            category: .development,
+            title: "Skärmar och barn under 3 år",
+            subtitle: "Vad forskningen faktiskt säger",
+            icon: "iphone.slash",
+            readTimeMinutes: 5,
+            intro: "Frågan om skärmar och spädbarn är laddad och full av dömande kommentarer i föräldraforum. Vad säger faktiskt forskningen – och hur hittar man en rimlig linje i en digital vardag?",
+            sections: [
+                ArticleSection(
+                    heading: "Rekommendationerna",
+                    body: """
+WHO, American Academy of Pediatrics och svenska Socialstyrelsen rekommenderar: inga skärmar för barn under 2 år (undantag videochat med familj), och max 1 timme per dag för 2-5-åringar med vuxen tillsammans. Det handlar inte om att skärmar är farliga i sig, utan om möjlighetskostnaden: tid vid skärmen är tid som inte spenderas med aktiviteter som stärker utvecklingen mer.
+
+Under de två första åren är hjärnan under intensiv utveckling. Inlärning sker framför allt genom ömsesidigt samspel: tur-tagning, ögonkontakt, imitation, fysisk utforskning. Skärmar är ett-vägs-kommunikation. Bebisen kan inte interagera med en skärm på det sätt hjärnan behöver.
+
+Passiv skärmtid (bakgrundsteve) påverkar negativt. Studier visar att barn i hem med TV på i bakgrunden har kortare och mer fragmenterade samspelsstunder med sina föräldrar. Det gäller även om barnet inte tittar direkt på skärmen.
+
+Videochat är ett undantag. Barn kan faktiskt lära sig av videosamtal med välbekanta vuxna (mor-och farföräldrar) för att kommunikationen är interaktiv och ömsesidig.
+"""
+                ),
+                ArticleSection(
+                    heading: "Praktiska riktlinjer för en digital familj",
+                    body: """
+Var realistisk. De allra flesta familjer håller inte rekommendationerna strikt. Det viktiga är riktningen, inte perfektion. Skillnaden mellan inga skärmar alls och passiv TV fyra timmar om dagen är enorm. Skillnaden mellan 15 och 30 minuter är liten.
+
+Kvalitet framför kvantitet. Interaktiva appar (som barn-till-barn-samtal eller appar du använder tillsammans) är bättre än passivt tittande. Innehåll anpassat för ålder, utan reklam och med pedagogisk approach, är bättre än slumpmässig YouTube.
+
+Inga skärmar vid måltider. Forskning är tydlig: skärmar vid bordet minskar samtal och samspel, som är avgörande för språkutveckling.
+
+Föregå med gott exempel. Barn gör som du gör, inte som du säger. Om du scrollar i telefonen varje gång du är uttråkad, gör barnet det senare. Ditt eget skärmbeteende är den viktigaste variabeln.
+
+Schemalägg skärmfri tid och skärmtid. Ge tydliga ramar som gäller konsekvent. Det minskar konflikter och skapar förutsägbarhet som barn behöver.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar erfarenheter av skärmregler:",
+                consensus: "De flesta håller inte rekommendationerna strikt men uppskattar tydlighet om varför. Konsekvens och struktur lyfts som viktigare än noll-tolerans.",
+                quotes: [
+                    "– Vi försöker begränsa till 20 minuter per dag och alltid tillsammans. Fungerar hyfsat.",
+                    "– Bakgrundsteve hade vi inte tänkt på. Stängde av. Märkte direkt att vi pratade mer.",
+                    "– Mor-och farföräldrarna bor långt bort. Dagliga videosamtal är undantaget vi är tacksamma för."
+                ],
+                source: "Källa: WHO 2019 guidelines, SBU, American Academy of Pediatrics"
+            ),
+            sources: [
+                "WHO (2019). Guidelines on Physical Activity, Sedentary Behaviour and Sleep for Children under 5 Years.",
+                "Radesky JS et al. (2015). Patterns of Mobile Device Use by Caregivers and Children During Meals in Fast Food Restaurants. Pediatrics.",
+                "Kirkorian HL et al. (2009). The impact of background television on parent-child interaction. Child Development."
+            ]
+        ),
+
+        // MARK: Article 27 – Amningsproblem
+        Article(
+            id: "feeding_breastfeeding_challenges",
+            category: .feeding,
+            title: "Vanliga amningsproblem och lösningar",
+            subtitle: "Praktisk guide för de tuffa första veckorna",
+            icon: "drop.fill",
+            readTimeMinutes: 6,
+            intro: "Amning beskrivs ofta som naturligt och enkelt. I verkligheten är det en färdighet som behöver läras in – av både mamma och bebis. Upp till 80 procent av ammande mammor upplever problem de första veckorna. Du är inte misslyckad om det är svårt.",
+            sections: [
+                ArticleSection(
+                    heading: "Ömma och sår bröstvårtor",
+                    body: """
+Det vanligaste amningsproblemet och ofta det första. Orsakas nästan alltid av felaktigt tag: bebisen tar inte tillräckligt stor del av areolan i munnen, utan suger direkt på bröstvårtan. Det ska inte göra ont vid ett korrekt tag.
+
+Rätt tag: bebisens mun ska vara vidöppen, med läpparna utåtvikta (som en fisk), näsan och hakan mot bröstet, och stora delar av areolan (inte bara bröstvårtan) i munnen. Bebisens haka ska nudda bröstet. Om det gör ont när bebisen tar tag – avbryt suget med ett finger i mungipan och försök igen.
+
+Behandling: låt bröstvårtorna lufttorka efter amning, applicera lite bröstmjölk på huden (har läkande egenskaper), och vid sår kan lansolin-salva (Lansinoh) hjälpa. Bröstvårtsplattor (nipple shields) kan vara ett tillfälligt hjälpmedel men bör användas med stöd från amningsrådgivare för att inte minska mjölkproduktionen.
+
+Sök hjälp av amningsrådgivare (IBCLC) om smärtan kvarstår. Barnmorskor, BVC och amningshjälpen (amningshjälpen.se) kan hjälpa.
+"""
+                ),
+                ArticleSection(
+                    heading: "Mjölkstockning och mastit",
+                    body: """
+Mjölkstockning uppstår när ett mjölkgång blockeras. Symtom: hårt, ömt område i bröstet, eventuellt rödhet. Behandling: fortsätt amma eller pumpa ofta, värm bröstet före amning (varmt bad, varm kompress), massera varsamt mot bröstvårtan under amning.
+
+Mastit är en inflammation i bröstvävnaden, ofta med infektion. Symtom: röd, het, öm bröstet, hård kula, kombinerat med feber, frossa och influensaliknande symtom. Mastit kräver läkarbehandling med antibiotika. Fortsätt amma under behandlingen – det är säkert för bebisen och hjälper bröstets läkning.
+
+Om mastit inte behandlas kan bröstabscess utvecklas. Det är sällsynt men kräver dränering. Sök vård tidigt vid mastitsymtom.
+
+Förebygg: se till att bröstet töms ordentligt, variera amningspositioner så att alla gångar töms, undvik tätta BH-er och press mot bröstet (sovposition).
+"""
+                ),
+                ArticleSection(
+                    heading: "Otillräcklig mjölkproduktion",
+                    body: """
+Uppfattad otillräcklig mjölkproduktion är den vanligaste orsaken till att mammor slutar amma i förtid. I de allra flesta fall är produktionen faktiskt tillräcklig – känslan av att "inte ha mjölk" stämmer inte med verkligheten.
+
+Mjölkproduktionen styrs av tillgång och efterfrågan. Ju mer bebisen suger, desto mer mjölk produceras. Det tar 3-5 dagar efter förlossningen för mjölken att komma in. Dessförinnan produceras råmjölk (kolostrum) i liten men koncentrerad mängd. Bebisen behöver inte mer.
+
+Tecken på att bebisen får tillräckligt: 6 eller fler blöta blöjor per dygn, vikten återgår till födslovikten vid 2 veckors ålder och sedan ökar stabilt, bebisen verkar nöjd efter amning (åtminstone ofta).
+
+För att öka produktionen: amma ofta och länge, se till att bebisen tömer bröstet ordentligt, pumpning mellan amningstillfällen stimulerar produktionen, undvik att komplettera med bröstmjölksersättning tidigt om det inte är medicinskt nödvändigt.
+
+Sök amningsrådgivare om oron kvarstår. Det finns faktisk otillräcklig mjölkproduktion (glandulär hypoplasi, hormonstörningar) som behöver professionell bedömning.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Mammor delar amningserfarenheter:",
+                consensus: "Att få rätt stöd tidigt – framför allt av amningsrådgivare – lyfts som avgörande. Att sluta amma beskrivs sällan som ett enkelt beslut men ibland som rätt.",
+                quotes: [
+                    "– Vecka 2 grät vi båda vid varje amning. En amningsrådgivare fixade tagget på 20 minuter. Fick aldrig ont igen.",
+                    "– Fick mastit tre gånger. Tredje gången slutade jag amma. Rätt beslut för oss. En nöjd mamma är viktigare.",
+                    "– Alla sa att det skulle gå bra. Tog 6 veckor. Gå nu bra. Men de första veckorna – inget sa att det skulle vara SÅ svårt."
+                ],
+                source: "Källa: Amningshjälpen.se, WHO/UNICEF Baby-Friendly Hospital Initiative, 1177.se"
+            ),
+            sources: [
+                "WHO (2009). Infant and Young Child Feeding: Model Chapter for Textbooks.",
+                "Spencer JP (2008). Management of mastitis in breastfeeding women. American Family Physician.",
+                "Gatti L (2008). Maternal perceptions of insufficient milk supply in breastfeeding. JOGNN."
+            ]
+        ),
+
+        // MARK: Article 28 – Tandsprickning
+        Article(
+            id: "health_teething",
+            category: .health,
+            title: "Tandsprickning — vad är normalt och vad hjälper?",
+            subtitle: "Fakta och praktiska råd om bebisens första tänder",
+            icon: "cross.case.fill",
+            readTimeMinutes: 4,
+            intro: "Tandsprickning börjar vanligtvis vid 4-7 månaders ålder, men det är normalt att det sker så tidigt som vid 3 månader eller så sent som vid 12 månader. Processen kan vara smärtsam och stressig för hela familjen – här är vad du kan göra.",
+            sections: [
+                ArticleSection(
+                    heading: "Symtom på tandsprickning",
+                    body: """
+Vanliga tecken: ökad salivering, gnuggning av tandköttet, kinder som rodnar, irritabilitet och gnällighet, suga och bita mer än vanligt.
+
+Kontroversielle symtom: feber och diarré tillskrivs ofta tandsprickning men forskning är oklar. En lätt temperaturhöjning (upp till 38 grader) kan förekomma, men hög feber (över 38,5) beror inte på tandsprickning utan ska utredas. Detsamma gäller kraftig diarré.
+
+Ordningen på tänderna varierar men vanligtvis: undre framtänder (6-10 mån), övre framtänder (8-12 mån), laterala incisiver (9-13 mån), första molarerna (13-19 mån), hörntänderna (16-22 mån), andra molarerna (23-33 mån). Alla 20 mjölktänder brukar ha kommit vid 2,5-3 år.
+"""
+                ),
+                ArticleSection(
+                    heading: "Vad hjälper?",
+                    body: """
+Kylda tandleksaker: en kyld (inte fryst) bitleksak kan lindra. Frys den inte – för kall kan skada tandköttet. Tygbitar i kylen, eller en kyld sked kan fungera lika bra.
+
+Massage: massera tandköttet försiktigt med ett rent finger. Trycket kan tillfälligt lindra smärtan.
+
+Bitring utan vätska inuti: undvik bitlitar med gel inuti – de kan läcka och innehåller ibland tveksamma ämnen.
+
+Smärtstillande: paracetamol eller ibuprofen (åldersanpassad dos) vid kraftig smärta som stör sömn och välmående. Använd inte tandköttsgelér med bensokain (numera inte rekommenderat) eller homeopatiska medel utan vetenskaplig evidens.
+
+Undvik: bernstensband och -halsband. De innebär kvävningsrisk och är inte verksamma.
+
+Tandvård från första tanden: borsta med mjuk tandborste och mängd fluortandkräm som ett riskorn (0-2 år). Flortandkräm skyddar de nya tänderna.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar tandsprickningstips:",
+                consensus: "Kylda bitleksaker och att bita på föräldrarnas finger nämns mest. Paracetamol vid nätterna är vanligt.",
+                quotes: [
+                    "– Kylt äppelmos i nätmatningspåse. Det hjälpte bättre än allt annat.",
+                    "– De värsta nätterna var med molarerna. Inget annat än ibuprofen hjälpte.",
+                    "– Vägrade bitleksaker men älskade att bita på min knoge. Fick ha det som reserv."
+                ],
+                source: "Källa: Tandvårdsupplysningen, 1177.se, American Academy of Pediatric Dentistry"
+            ),
+            sources: [
+                "Massignan C et al. (2016). Signs and Symptoms of Primary Tooth Eruption: A Meta-analysis. Pediatrics.",
+                "Marks MB (1982). Recognizing the allergic person. American Family Physician."
+            ]
+        ),
+
+        // MARK: Article 29 – Kroppsutveckling 6–12 månader
+        Article(
+            id: "development_motor_612",
+            category: .development,
+            title: "Motorisk utveckling 6–12 månader",
+            subtitle: "Från sittande till de första stegen",
+            icon: "figure.walk",
+            readTimeMinutes: 5,
+            intro: "Det andra halvåret av bebisens första år är en explosionsartad period av motorisk utveckling. Från att ha legat still på ryggen lär sig de flesta barn att sitta, krypa och stå – och en del börjar gå. Variation är stor och det mesta är normalt.",
+            sections: [
+                ArticleSection(
+                    heading: "Sittande, krypande och stående",
+                    body: """
+Sittande utan stöd: de flesta barn klarar detta vid 6-8 månaders ålder. Vissa sitter stabilt redan vid 5, andra vid 9. Det kräver balans och bålstyrka som byggs upp gradvis. Stötta bebisen med kuddar runt om och ge golvtid på hård yta (inte alltid i mjuka kuddhögar).
+
+Förflyttning: krypning i alla dess varianter (klassisk krypning på alla fyra, maginbåtning, rullning, eller att glida på rumpan) kan börja när som helst från 6 månader. Barn som hoppar över krypstadiet och går direkt till gång är normala och behöver ingen utredning.
+
+Stående: de flesta pull to stand (drar sig upp till stående) vid 8-10 månader. Börja gå längs möbler (cruising) strax efter. Det kräver benmuskelstyrka som byggs av daglig aktiv rörelse.
+
+Gå: i genomsnitt vid 12 månader, men normalt intervall är 9-15 månader. Om barnet inte går vid 18 månader, prata med BVC.
+"""
+                ),
+                ArticleSection(
+                    heading: "Hur du stöttar motorisk utveckling",
+                    body: """
+Magläge varje dag: baby on tummy time är grundfundamentet för motorisk utveckling. Bygger rygg-, nacke- och skuldermuskulatur. Börja kort (1-2 min) och bygg upp. Gör det när bebisen är pigg och nöjd, inte trött eller after mat. Ligga ner och titta på bebisen ögon i ögon gör det roligare.
+
+Fri golvrörighet: minimera tid i bouncers, sittlösningar och vagnar (mer än nödvändigt). Bebisen behöver oreglerad tid på golvet för att utforska rörelsemönster på egna villkor.
+
+Barefoot learning: inga skor inomhus om det är varmt nog. Fötterna känner golvet och ger sensorisk feedback som hjälper balans och gångmönster.
+
+Säker utforskningsmiljö: babyproofing som ger rörelsefriheten snarare än begränsar den. Säkra trappor men öppna övriga rum för utforskande.
+
+Undvik walker (gåstol med hjul). De är farliga (fallrisk, trappor) och bevisligen försenar gångdebuten eftersom barnet inte tränar rätt muskelgrupper.
+"""
+                )
+            ],
+            forumSection: ArticleForumSection(
+                intro: "Föräldrar delar erfarenheter av motorisk utveckling:",
+                consensus: "Variation är regeln, inte undantaget. De flesta oroar sig i onödan. Tummy time nämns av alla som nyckeln.",
+                quotes: [
+                    "– Min son kröp aldrig. Gick vid 10 månader rakt upp. Barnläkaren sa att det är helt normalt.",
+                    "– Tummy time hatade hon till att börja med. Vi la oss bredvid henne. Blev hennes favoritaktivitet vid 4 månader.",
+                    "– Gick vid 14 månader. Alla andra i gruppen hade gått länge. Det gick bra, hon är nu 3 och springer som en vind."
+                ],
+                source: "Källa: Rikshandboken Barnhälsovård, BVC, American Academy of Pediatrics"
+            ),
+            sources: [
+                "Adolph KE, Robinson SR (2015). Motor development. Handbook of Child Psychology and Developmental Science.",
+                "Majnemer A, Barr RG (2005). Influence of supine sleep positioning on early motor milestone acquisition. Developmental Medicine & Child Neurology."
+            ]
+        ),
+
     ]
 
     static let all: [Article] = _allOriginal

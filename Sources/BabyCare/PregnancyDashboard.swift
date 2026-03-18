@@ -425,46 +425,100 @@ private struct FetalVisualizationView: View {
     @State private var appeared = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    private var scaleFactor: CGFloat {
-        let base: CGFloat = 0.35
-        let growth = CGFloat(min(week, 40)) / 40.0 * 0.65
-        return base + growth
+    // MARK: - Fetal emoji per vecka
+    private static func fetalEmoji(for week: Int) -> String {
+        switch week {
+        case ..<5:   return "🫘"
+        case 5:      return "🫘"
+        case 6:      return "🫘"
+        case 7:      return "🫐"
+        case 8:      return "🍇"
+        case 9:      return "🍇"
+        case 10:     return "🍓"
+        case 11:     return "🍓"
+        case 12:     return "🍋"
+        case 13:     return "🍋"
+        case 14:     return "🍊"
+        case 15:     return "🍊"
+        case 16:     return "🥑"
+        case 17:     return "🥑"
+        case 18:     return "🥭"
+        case 19:     return "🥭"
+        case 20:     return "🍌"
+        case 21:     return "🍌"
+        case 22:     return "🍌"
+        case 23:     return "🌽"
+        case 24:     return "🌽"
+        case 25:     return "🌽"
+        case 26:     return "🥦"
+        case 27:     return "🥦"
+        case 28:     return "🥦"
+        case 29:     return "🥥"
+        case 30:     return "🥥"
+        case 31:     return "🥥"
+        case 32:     return "🍍"
+        case 33:     return "🍍"
+        case 34:     return "🍍"
+        case 35:     return "🎃"
+        case 36:     return "🎃"
+        case 37:     return "🎃"
+        default:     return "🍉"
+        }
     }
 
     private var weekEmoji: String {
-        PregnancyWeekContent.forWeek(max(4, min(week, 40))).sizeEmoji
+        Self.fetalEmoji(for: max(1, min(week, 40)))
+    }
+
+    // Gradient baserat på trimester
+    private var trimester: Int {
+        switch week {
+        case 0..<13: return 1
+        case 13..<27: return 2
+        default:     return 3
+        }
+    }
+
+    private var trimesterGradient: LinearGradient {
+        switch trimester {
+        case 1: return LinearGradient(colors: [Color(hex: "A18CD1"), Color(hex: "FBC2EB")], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case 2: return LinearGradient(colors: [Color(hex: "84FAB0"), Color(hex: "8FD3F4")], startPoint: .topLeading, endPoint: .bottomTrailing)
+        default: return LinearGradient(colors: [Color(hex: "F9A8D4"), Color(hex: "FDA085")], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
     }
 
     var body: some View {
         GlassCard(gradient: .pregnancyGradient) {
             VStack(spacing: DS.s3) {
                 ZStack {
-                    // Concentric pulse rings — reduced motion friendly
-                    ForEach([1.0, 1.2, 1.4] as [CGFloat], id: \.self) { scale in
-                        Circle()
-                            .fill(Color.appLavender.opacity(0.06))
-                            .frame(width: 140, height: 140)
-                            .scaleEffect((pulse && !reduceMotion) ? scale * 1.1 : scale)
-                            .opacity((pulse && !reduceMotion) ? 0.4 : 0.7)
-                    }
-
-                    // Heartbeat ring
+                    // Gradient-cirkel bakgrund baserat på trimester
                     Circle()
-                        .strokeBorder(Color.appLilac.opacity(0.2), lineWidth: 1)
+                        .fill(trimesterGradient)
+                        .frame(width: 140, height: 140)
+                        .opacity(0.35)
+                        .scaleEffect((pulse && !reduceMotion) ? 1.08 : 1.0)
+
+                    Circle()
+                        .fill(trimesterGradient)
+                        .frame(width: 110, height: 110)
+                        .opacity(0.25)
+                        .scaleEffect((pulse && !reduceMotion) ? 1.05 : 1.0)
+
+                    // Inre puls-ring
+                    Circle()
+                        .strokeBorder(Color.appLilac.opacity(0.3), lineWidth: 1.5)
                         .frame(width: 100, height: 100)
 
-                    // Fetal emoji + icon layered
-                    VStack(spacing: 4) {
-                        Text(weekEmoji)
-                            .font(.system(size: 44))
-                            .scaleEffect(appeared ? max(0.6, scaleFactor) : 0.1)
-                            .opacity(appeared ? 1 : 0)
-                    }
+                    // Stor emoji — hjärtat av vyn
+                    Text(weekEmoji)
+                        .font(.system(size: 62))
+                        .scaleEffect(appeared ? 1.0 : 0.1)
+                        .opacity(appeared ? 1 : 0)
                 }
                 .frame(height: 160)
                 .onAppear {
                     if !reduceMotion {
-                        withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true)) {
+                        withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true)) {
                             pulse = true
                         }
                     }

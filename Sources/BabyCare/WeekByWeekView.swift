@@ -200,9 +200,12 @@ struct WeekByWeekView: View {
                         HStack(spacing: DS.s1) {
                             Text(data.sizeEmoji)
                                 .font(.system(size: 14))
+                                .accessibilityHidden(true)
                             Text("Som en \(data.fetalSizeComparison.lowercased())")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.8))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)

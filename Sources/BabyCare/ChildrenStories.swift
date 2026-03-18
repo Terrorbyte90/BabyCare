@@ -1919,6 +1919,7 @@ stor kram-scen.
         ),
 
         // K10 -- Alla Kan Inte Allt
+
         ChildrenStory(
             id: "k10_alla_kan_inte_allt",
             title: "Alla kan inte allt",
@@ -1945,6 +1946,396 @@ glada färger.
 """,
             recurringCharacterIDs: ["solvi", "rask", "droppa", "lille_mopp", "kvall_uglan"],
             keywords: ["känslor", "talang", "självkänsla", "empati", "uppskattning"]
-        )
+        ),
+
+        // ====================================================================
+        // MARK: NYA SAGOR — 15 stycken
+        // ====================================================================
+
+        // NY1 — Lille Björn hittar hem
+        ChildrenStory(
+            id: "ny01_lille_bjorn_hittar_hem",
+            title: "Lille Björn hittar hem",
+            synopsis: """
+En liten björnunge vid namn Bjarni ger sig iväg på äventyr djupt in i skogen \
+och inser plötsligt att han inte vet vägen hem. Mörkret faller och han är rädd. \
+Men stjärnorna lyser upp en hemlig väg — och Bjarni lär sig att natthimlen \
+alltid visar vägen till dem man älskar.
+""",
+            category: .aventyrssagor,
+            ageRange: .preschool,
+            length: .long,
+            readingTimeMinutes: 10,
+            mainCharacters: "Bjarni (björnunge), Stjärnan Vega, Mamma Brunhild",
+            moral: "Även när man går vilse finns det alltid en väg hem.",
+            visualDescription: """
+Djup, mystisk skog med träd som pekar mot en stjärnklar himmel. En liten \
+björnunge med stor ryggsäck tittar upp mot en lysande stjärna. Varma \
+orange och blå toner — läskigt men tryggt på samma gång.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["äventyr", "gå vilse", "stjärnor", "hem", "mod"]
+        ),
+
+        // NY2 — Prinsessan och draken som aldrig ville vara elak
+        ChildrenStory(
+            id: "ny02_prinsessan_och_draken",
+            title: "Prinsessan och draken som aldrig ville vara elak",
+            synopsis: """
+Draken Fridolf bor ensam i ett berg och är ledsen för att alla rymmer när han \
+kommer. Han vill bara ha en vän. Prinsessan Sigrid är den enda som stannar kvar \
+och lyssnar. Tillsammans lär de sig att man aldrig ska döma någon för hur de ser ut — \
+och Fridolf blir den bäste vännen Sigrid någonsin haft.
+""",
+            category: .kanslosagor,
+            ageRange: .preschool,
+            length: .long,
+            readingTimeMinutes: 9,
+            mainCharacters: "Draken Fridolf, Prinsessan Sigrid",
+            moral: "Döm aldrig någon för hur de ser ut — titta på vad de är i hjärtat.",
+            visualDescription: """
+En lila drake med stora, sorgsna ögon sitter utanför en berggrotta. En djärv \
+liten prinsessa i röd klänning går rakt mot honom. Bakgrunden är ett sagolikt \
+landskap med slott och gröna ängar. Kontrasten mellan drakens storlek och \
+prinsessans djärvhet är tydlig.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["vänskap", "fördomar", "mod", "annorlunda", "hjärta"]
+        ),
+
+        // NY3 — Fiskaren och den magiska havshästen
+        ChildrenStory(
+            id: "ny03_fiskaren_och_havshästen",
+            title: "Fiskaren och den magiska havshästen",
+            synopsis: """
+Den gamle fiskaren Erik drar upp ett litet nät och finner en bittesmå havshäst \
+med guldigt skinn. Havshästen erbjuder honom tre önskningar. Erik önskar sig \
+mat, hälsa och att alla hans grannar ska ha det bra. Han önskar aldrig för sig \
+själv mer än det han behöver — och det visar sig vara den klokaste önskan av alla.
+""",
+            category: .aventyrssagor,
+            ageRange: .allAges,
+            length: .medium,
+            readingTimeMinutes: 6,
+            mainCharacters: "Fiskaren Erik, Havshästen Nautika",
+            moral: "Den som delar med sig och tänker på andra är rikare än den som samlar allt för sig själv.",
+            visualDescription: """
+Turkost hav med solreflex på vattnet. En gammal fiskare i en liten träreka \
+håller ett lysande, guldfärgat litet djur i handflatorna. Havshästen strålar \
+av ett varmt, magiskt ljus. Pastelltoner i turkos och guld.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["önskningar", "generositet", "hav", "klokskap", "magi"]
+        ),
+
+        // NY4 — Regnbågens hemlighet
+        ChildrenStory(
+            id: "ny04_regnbagens_hemlighet",
+            title: "Regnbågens hemlighet",
+            synopsis: """
+Lilla Iris undrar varför regnbågen har alla sina sju färger och inte bara en. \
+I en dröm reser hon upp till himlen och möter färgernas feer — varje färg \
+berättar om sin uppgift och varför den behövs. Iris lär sig att världen blir \
+vackrare när alla olika saker får finnas tillsammans.
+""",
+            category: .naturssagor,
+            ageRange: .toddler,
+            length: .medium,
+            readingTimeMinutes: 5,
+            mainCharacters: "Iris (liten flicka), Regnbågens sju feer",
+            moral: "Olikheter gör världen vackrare — precis som regnbågen behöver alla sina färger.",
+            visualDescription: """
+En söt liten flicka sover i en blomstäng med en gigantisk, glittrande regnbåge \
+över himmeln. Varje färg är personifierad som en liten fe med egna kläder i sin \
+färg. Drömlik, fantasifull stil med rika, mättade färger.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["regnbåge", "färger", "olikheter", "dröm", "natur"]
+        ),
+
+        // NY5 — Den lilla molnpuffsen som ville bli åska
+        ChildrenStory(
+            id: "ny05_molnpuffsen",
+            title: "Den lilla molnpuffsen som ville bli åska",
+            synopsis: """
+Puffen är ett litet, vitt, fluddigt moln och han är avundsjuk på de stora \
+mörka åskmoln som alla pratar om. Han försöker bli mörk och dundrig men \
+misslyckas hela tiden. Till slut inser han att han är precis vad de soliga \
+dagarna behöver — ett lätt, glatt moln som ger skugga när det är varmt och \
+skapar vackra former mot den blå himlen.
+""",
+            category: .kanslosagor,
+            ageRange: .toddler,
+            length: .medium,
+            readingTimeMinutes: 4,
+            mainCharacters: "Molnet Puffen, Åskmolnet Stormbror",
+            moral: "Var stolt över vad du är — alla har sin roll i världen.",
+            visualDescription: """
+En liten, rund, vit molnpuff bredvid enorma, mörka åskmoln. Puffen har ett \
+busigt leende. Himlen skiftar från mörkt till soligt. Lekfull stil med \
+mjuka, rundade former och ljusa färger.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["självkänsla", "moln", "vara sig själv", "avundsjuka", "stolthet"]
+        ),
+
+        // NY6 — Trollet under bryggan som älskade musik
+        ChildrenStory(
+            id: "ny06_trollet_under_bryggan",
+            title: "Trollet under bryggan som älskade musik",
+            synopsis: """
+Alla är rädda för trollet Grumble som bor under den gamla bryggan. Men en dag \
+hör lilla Maja honom nynna en vacker melodi och stannar kvar för att lyssna. \
+Grumble visar sig vara en konstnär — inte ett monster. Maja lär honom att dela \
+sin musik med byn, och för första gången i sitt liv känner sig Grumble sedd \
+och älskad.
+""",
+            category: .kanslosagor,
+            ageRange: .preschool,
+            length: .long,
+            readingTimeMinutes: 8,
+            mainCharacters: "Trollet Grumble, Maja (liten flicka)",
+            moral: "Bakom ett hårt skal kan det gömma sig ett varmt hjärta — våga titta närmare.",
+            visualDescription: """
+En gammal, träig brygga över en lugn sjö. Under bryggan syns ett lurigt troll \
+med ett litet dragspel. En nyfiken flicka sitter med benen hängandes ner från \
+bryggan och lyssnar. Varma höstfärger i rött och orange.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["musik", "fördomar", "vänskap", "annorlunda", "mod"]
+        ),
+
+        // NY7 — Solen och månens kappsegling
+        ChildrenStory(
+            id: "ny07_solen_och_manens_kappsegling",
+            title: "Solen och månens kappsegling",
+            synopsis: """
+Solen och Månen bestämde sig en gång för länge sedan för att ha kappsegling \
+om vem som fick skina mest. De kappseglade så länge och så hårt att de \
+hittade på ett system: Solen skiner om dagen och Månen om natten. Och det är \
+därför vi aldrig ser dem båda på en gång — de är fortfarande tävlande!
+""",
+            category: .naturssagor,
+            ageRange: .toddler,
+            length: .short,
+            readingTimeMinutes: 3,
+            mainCharacters: "Solen Sol, Månen Mani",
+            moral: "Ibland är det bäst att dela — då får alla plats.",
+            visualDescription: """
+Hälften av bilden är dag med en glad, lysande sol. Andra hälften är natt \
+med en silvrig, leende måne. I mitten kappseglar de i varsitt moln-segelbåt. \
+Livfull, färgstark tecknad stil.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["sol", "måne", "dag", "natt", "dela", "natur"]
+        ),
+
+        // NY8 — Lansen och draken
+        ChildrenStory(
+            id: "ny08_lansen_och_draken",
+            title: "Lansen och draken",
+            synopsis: """
+Den unge riddaren Lansen ger sig iväg för att besegra en fruktad drake och \
+bevisa sitt mod. Men på vägen lär han sig att riktigt mod inte handlar om att \
+slåss — utan om att välja fred framför strid. Han erbjuder draken fred och \
+vänskap istället för svärd, och de blir de bästa allierade kungariket någonsin \
+sett.
+""",
+            category: .aventyrssagor,
+            ageRange: .preschool,
+            length: .long,
+            readingTimeMinutes: 9,
+            mainCharacters: "Riddaren Lansen, Draken Ember",
+            moral: "Riktigt mod är att välja kärlek och fred framför rädsla och strid.",
+            visualDescription: """
+En ung riddare i skinande rustning möter en eldsprutande drake i ett bergspass. \
+Men istället för att dra svärdet sträcker riddaren fram en hand. Draken ser \
+förvånad ut. Dramatisk belysning med guld och rött — ett episkt men varmt ögonblick.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["mod", "riddare", "drake", "fred", "vänskap", "äventyr"]
+        ),
+
+        // NY9 — Liten Myra och det stora äventyret
+        ChildrenStory(
+            id: "ny09_liten_myra_stora_aventyr",
+            title: "Liten Myra och det stora äventyret",
+            synopsis: """
+Myran Mira är den minsta i hela kolonin men har de största drömmarna. En dag \
+bestämmer hon sig för att utforska bortom myrkornet — ut i den stora \
+trädgården. Vad hon hittar är ett helt universum av under: regndroppar som \
+smakar sött, bladlöss som berättar historier, och en jättelik blomma som \
+gömmer en hel värld inuti.
+""",
+            category: .naturssagor,
+            ageRange: .toddler,
+            length: .medium,
+            readingTimeMinutes: 5,
+            mainCharacters: "Myran Mira, Bladlusen Gröna, Blomman Solros",
+            moral: "Stor nyfikenhet behöver inte ett stort format — den lilla världen är full av under.",
+            visualDescription: """
+Allt sett från myrans perspektiv — gräsbladen är jättelika träd, \
+en daggdroppe är en bubbla av silver, en blomma är ett palats. \
+Detaljrik, närgången stil med intensiva gröna och gula toner.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["natur", "äventyr", "nyfikenhet", "liten", "stor värld"]
+        ),
+
+        // NY10 — Nattfjärilens dans
+        ChildrenStory(
+            id: "ny10_nattfjarilens_dans",
+            title: "Nattfjärilens dans",
+            synopsis: """
+Nattfjärilen Luna bor i en mörk skog och dansar bara när alla andra sover. \
+Hon är ensam men vill inte väcka någon. En natt möter hon en liten igelkott \
+som inte kan sova, och de dansar tillsammans i månljuset. Luna inser att \
+delade glädjeämnen är dubbel glädje — och börjar väcka skogen till en \
+underbar nattlig fest.
+""",
+            category: .godnattssagor,
+            ageRange: .baby,
+            length: .short,
+            readingTimeMinutes: 3,
+            mainCharacters: "Fjärilen Luna, Igelkotten Nox",
+            moral: "Glädje som delas är dubbel glädje — våga bjuda in andra.",
+            visualDescription: """
+Mystisk, mörk skog upplyst av månljus och glödflugor. En silvervit \
+nattfjäril dansar bland lysande blomster. En liten igelkott tittar på \
+med stora, förvånade ögon. Drömlik, magisk stämning med blå och silver toner.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["natt", "dans", "glädje", "vänskap", "måne", "godnatt"]
+        ),
+
+        // NY11 — Kungariket under havet
+        ChildrenStory(
+            id: "ny11_kungariket_under_havet",
+            title: "Kungariket under havet",
+            synopsis: """
+Lilla August hittar ett sjöstjärnformigt snäckskal på stranden och när han \
+håller det mot örat hör han ett eko av ett helt kungadöme under vattnet. \
+Sjöjungfrun Marina inbjuder honom till en undervattensdag där han möter \
+bläckfiskar som berättar sagor, koraller som sjunger och torskar som håller \
+på med matlagning. Drömsk och underbar.
+""",
+            category: .aventyrssagor,
+            ageRange: .preschool,
+            length: .long,
+            readingTimeMinutes: 10,
+            mainCharacters: "August (liten pojke), Sjöjungfrun Marina, Bläckfisken Bläck",
+            moral: "Undren i världen finns för dem som vågar lyssna och titta noga.",
+            visualDescription: """
+Djupblått hav med ett magiskt, lysande undervattenskungadöme. Färgrika \
+koraller, fisk i alla former och en silverhårig sjöjungfru. En liten pojke \
+simmar med en bubbla av luft runt sig. Rikt, detaljerat undervattenslandskap.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["hav", "under vatten", "magi", "äventyr", "natur"]
+        ),
+
+        // NY12 — Bröderna Vindil och Brandil
+        ChildrenStory(
+            id: "ny12_broderna_vindil_brandil",
+            title: "Bröderna Vindil och Brandil",
+            synopsis: """
+Vindil har makt över vinden och Brandil över elden — två bröder med starka \
+krafter som alltid bråkar om vem som är starkast. En vinter när byn fryser \
+inser de att de behöver varandra: Brandils värme + Vindils kraft = \
+varma vindar som räddar hela byn. Tillsammans är de oslagbara.
+""",
+            category: .aventyrssagor,
+            ageRange: .preschool,
+            length: .medium,
+            readingTimeMinutes: 7,
+            mainCharacters: "Vindil (vindmagiker), Brandil (eldmagiker)",
+            moral: "Syskon som samarbetar kan åstadkomma mer än varje syster och bror för sig.",
+            visualDescription: """
+Två stiliga unga magiker — en i blått med virvlande vind, en i rött med \
+dansande lågor. De bildar tillsammans en spiralformad storm av vind och eld \
+i varma, kraftfulla färger. Episk, actionfylld stil.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["syskon", "samarbete", "magi", "styrka", "bror"]
+        ),
+
+        // NY13 — Feen i blåklockorna
+        ChildrenStory(
+            id: "ny13_feen_i_blåklockorna",
+            title: "Feen i blåklockorna",
+            synopsis: """
+I midsommarängen bor den lilla feen Klinga inne i en blåklocka. Varje dag \
+ringar hon sin lilla blomklocka och skickar ut lycka i världen. En dag \
+missar hon att ringa och märker att ingen verkar le. Hon lär sig hur \
+mycket det lilla bidraget betyder — och att en liten sak kan göra \
+stor skillnad.
+""",
+            category: .naturssagor,
+            ageRange: .baby,
+            length: .short,
+            readingTimeMinutes: 3,
+            mainCharacters: "Feen Klinga",
+            moral: "Även de allra minsta handlingarna kan lysa upp världen för dem runtomkring dig.",
+            visualDescription: """
+Sommaräng med blåa blåklockor och gula smörblommor. En bittesmå fe med \
+blå vingar sitter inuti en blåklocka och håller i en liten guldklocka. \
+Solsken och fjärilar. Varm, idyllisk sommarstämning.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["sommar", "fe", "hjälpsamhet", "natur", "liten sak"]
+        ),
+
+        // NY14 — Den modige igelkotten
+        ChildrenStory(
+            id: "ny14_den_modige_igelkotten",
+            title: "Den modige igelkotten",
+            synopsis: """
+Igelkotten Spike är rädd för nästan allt: mörker, blixtar, djupa vatten \
+och stora hunden i grannhuset. Hans vänner vet inte hur de ska hjälpa. \
+Men en dag räddar Spike av misstag en liten fågel ur ett djupt hål — och \
+inser att han hade det modet hela tiden. Rädsla och mod kan bo i samma hjärta.
+""",
+            category: .kanslosagor,
+            ageRange: .preschool,
+            length: .medium,
+            readingTimeMinutes: 6,
+            mainCharacters: "Igelkotten Spike, Fågeln Titti",
+            moral: "Mod är inte frånvaron av rädsla — det är att göra rätt sak trots rädslan.",
+            visualDescription: """
+En liten klotrund igelkott med stora, runda ögon tittar nervöst ner i ett \
+djupt mörkt hål. Sedan ser vi honom heroiskt dra upp en liten fågel. \
+Kontrasten mellan det läskiga hålet och igelkottens triumfglädje är tydlig.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["mod", "rädsla", "hjälpa", "igelkott", "övervinna"]
+        ),
+
+        // NY15 — Stjärnornas hemlighet
+        ChildrenStory(
+            id: "ny15_stjarnornas_hemlighet",
+            title: "Stjärnornas hemlighet",
+            synopsis: """
+Lilla Vera kan inte sova och frågar pappan varför stjärnorna lyser. Han \
+berättar att varje stjärna är en gammal berättelse som himlen håller kvar \
+för evigt — för att de var för vackra att glömma. Tillsammans hittar de en \
+stjärna som ännu inte har ett namn och döper den till Vera-stjärnan. Natta \
+god, Vera — nu lyser du på himlen för alltid.
+""",
+            category: .godnattssagor,
+            ageRange: .baby,
+            length: .short,
+            readingTimeMinutes: 3,
+            mainCharacters: "Vera (liten flicka), Pappan",
+            moral: "Du är värdefull — din historia förtjänar att minnas för alltid.",
+            visualDescription: """
+En pappa håller sin sovande dotter i armarna vid ett öppet fönster. \
+Utanför är en stjärnklar natthimmel och en av stjärnorna lyser extra starkt. \
+Varma inomhusfärger mot den kalla, vackra nattens blå. \
+Innerlig och kärleksfull stämning.
+""",
+            recurringCharacterIDs: [],
+            keywords: ["godnatt", "stjärnor", "pappa", "kärlek", "minnen"]
+        ),
+
     ]
 }

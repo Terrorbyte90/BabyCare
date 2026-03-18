@@ -775,7 +775,7 @@ extension DuJustNuContent {
             milestones: [
                 DuJustNuMilestone(title: "Drar sig upp", description: "Bebisen kan dra sig upp till stående vid möbler och soffkanter. Stor milstolpe på väg mot att gå!", icon: "arrow.up.to.line"),
                 DuJustNuMilestone(title: "Pekar", description: "Bebisen pekar på saker hen vill ha eller visa dig. Det är ett viktigt kommunikationssteg!", icon: "hand.point.right.fill"),
-                DuJustNuMilestone(title: "Förstår ord", description: "Bebisen förstår nu flera ord och kan svara med att titta mot det du nämner. 'Var är katten?' – och bebisen tittar mot katten!", icon: "brain.head.profile.fill"),
+                DuJustNuMilestone(title: "Förstår ord", description: "Bebisen förstår nu flera ord och kan svara med att titta mot det du nämner. 'Var är katten?' – och bebisen tittar mot katten!", icon: "text.bubble.fill"),
                 DuJustNuMilestone(title: "Kryser", description: "Bebisen kan 'krysa' – gå sidledes längs möbler medan hen håller sig i dem. Nästa steg mot att gå!", icon: "figure.walk")
             ],
             tips: [

@@ -411,7 +411,7 @@ struct StoryReaderView: View {
             switch story.category {
             case .godnattssagor: return ["moon.stars.fill", "star.fill", "cloud.moon.fill", "sparkles", "moon.fill", "zzz"]
             case .aventyrssagor: return ["map.fill", "mountain.2.fill", "binoculars.fill", "flag.fill", "compass.drawing", "star.circle.fill"]
-            case .larosagor: return ["lightbulb.fill", "book.fill", "graduationcap.fill", "puzzlepiece.fill", "brain.head.profile", "sparkle"]
+            case .larosagor: return ["lightbulb.fill", "book.fill", "graduationcap.fill", "puzzlepiece.fill", "brain.fill", "sparkle"]
             case .naturssagor: return ["leaf.fill", "tree.fill", "sun.max.fill", "drop.fill", "ladybug.fill", "bird.fill"]
             case .kanslosagor: return ["heart.fill", "face.smiling.fill", "hand.raised.fill", "sun.and.horizon.fill", "heart.circle.fill", "sparkles"]
             }
