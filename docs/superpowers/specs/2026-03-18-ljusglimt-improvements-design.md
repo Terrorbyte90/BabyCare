@@ -156,7 +156,7 @@ struct ForumThread { id, title, summary, category, phase, reactionsCount, source
 **P1 — Bör ha:**
 - Sömnanalys-AI (Core ML) — mönsterigenkänning ovanpå regelbaserad motor
 - Introduktion av fast föda — livsmedel, allergireaktioner, schema
-- Blöjloggning (utbyggd) — typ, färg, konsistens, läkarexport
+- Blöjloggning (utbyggd) — typ, konsistens, läkarexport
 - Milstolpar (utbyggd) — tidslinje med fotostöd
 - Tandsprickning — diagram
 - Temperaturlogger — feber-historik med medicin
@@ -165,7 +165,7 @@ struct ForumThread { id, title, summary, category, phase, reactionsCount, source
 **P2 — Kan vänta:**
 - Sömnljud (vitt brus, regn, vaggsång)
 - Separationsångestal — guide och övningar
-- Blöjloggning läkarexport
+- Blöjloggning (utbyggd med läkarexport)
 
 ---
 
