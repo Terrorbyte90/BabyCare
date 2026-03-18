@@ -28,7 +28,7 @@ struct AboutView: View {
                             .shadow(color: Color.appPink.opacity(0.3), radius: 20, y: 8)
 
                             VStack(spacing: DS.s1 + 2) {
-                                Text("Kubik")
+                                Text("Ljusglimt")
                                     .font(.system(size: 32, weight: .heavy, design: .rounded))
                                     .foregroundStyle(LinearGradient.pinkPurple)
 
@@ -52,7 +52,7 @@ struct AboutView: View {
                                         .foregroundStyle(Color.appText)
                                 }
 
-                                Text("Kubik är skapad med kärlek för att stödja föräldrar och gravida genom en av livets mest magiska resor. Från de första veckorna av graviditet till barnets femte år — vi finns här.")
+                                Text("Ljusglimt är skapad med kärlek för att stödja föräldrar och gravida genom en av livets mest magiska resor. Från de första veckorna av graviditet till barnets femte år — vi finns här.")
                                     .font(.system(size: 14))
                                     .foregroundStyle(Color.appTextSec)
                                     .lineSpacing(5)
@@ -193,7 +193,7 @@ struct AboutView: View {
                     .padding(.horizontal, DS.s4)
                 }
             }
-            .navigationTitle("Om Kubik")
+            .navigationTitle("Om Ljusglimt")
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(Color.appBg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)

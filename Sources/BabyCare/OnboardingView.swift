@@ -205,7 +205,7 @@ struct OnboardingView: View {
                     .foregroundStyle(Color.appTextSec)
 
                 GradientText(
-                    text: "Kubik",
+                    text: "Ljusglimt",
                     gradient: .pinkPurple,
                     font: .system(size: 40, weight: .heavy, design: .rounded)
                 )
