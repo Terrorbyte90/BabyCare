@@ -511,7 +511,7 @@ struct ProfileView: View {
                     NavigationLink(destination: AboutView()) {
                         HStack(spacing: DS.s3) {
                             IconBadge(icon: "info.circle.fill", gradient: .blueIndigo, size: 36)
-                            Text("Om BabyCare")
+                            Text("Om Kubik")
                                 .font(.system(size: 15, weight: .medium))
                                 .foregroundStyle(Color.appText)
                             Spacer()

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AABB000000000010"
-               BuildableName = "BabyCare.app"
+               BuildableName = "Kubik.app"
                BlueprintName = "BabyCare"
                ReferencedContainer = "container:BabyCare.xcodeproj">
             </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AABB000000000010"
-            BuildableName = "BabyCare.app"
+            BuildableName = "Kubik.app"
             BlueprintName = "BabyCare"
             ReferencedContainer = "container:BabyCare.xcodeproj">
          </BuildableReference>
@@ -87,7 +87,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AABB000000000010"
-            BuildableName = "BabyCare.app"
+            BuildableName = "Kubik.app"
             BlueprintName = "BabyCare"
             ReferencedContainer = "container:BabyCare.xcodeproj">
          </BuildableReference>
