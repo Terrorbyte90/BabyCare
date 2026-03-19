@@ -36,16 +36,14 @@ struct FertilityDashboard: View {
     }
 
     private var cyclePhase: DashboardCyclePhase {
-        guard let day = currentCycleDay else { return .unknown }
-        let ovulationDay = cycleLength - 14
-        let fertileStart = ovulationDay - 5
-        let fertileEnd = ovulationDay + 1
-
-        if day <= 5 { return .menstruation }
-        if day < fertileStart { return .follicular }
-        if day == ovulationDay { return .ovulation }
-        if day >= fertileStart && day <= fertileEnd { return .fertile }
-        return .luteal
+        guard let start = lastPeriodStart else { return .unknown }
+        switch FertilityPredictor.cyclePhase(for: Date(), lastPeriodStart: start, cycleLength: cycleLength) {
+        case .menstruation: return .menstruation
+        case .follicular:   return .follicular
+        case .fertile:      return .fertile
+        case .ovulation:    return .ovulation
+        case .luteal:       return .luteal
+        }
     }
 
     private var nextPeriodDate: Date? {
@@ -742,7 +740,7 @@ struct PeriodLoggingSheet: View {
                         }
                     }
 
-                    datePickerRow(label: isStarting ? "STARTDATUM" : "STARTDATUM", selection: $date, components: .date)
+                    datePickerRow(label: isStarting ? "STARTDATUM" : "SLUTDATUM", selection: $date, components: .date)
 
                     // Flow intensity
                     VStack(alignment: .leading, spacing: DS.s2) {
@@ -1130,5 +1128,5 @@ struct MucusLoggingSheet: View {
 
 #Preview {
     FertilityDashboard()
-        .modelContainer(for: [UserData.self, PeriodLog.self], inMemory: true)
+        .modelContainer(for: [UserData.self, PeriodLog.self, CycleDay.self], inMemory: true)
 }

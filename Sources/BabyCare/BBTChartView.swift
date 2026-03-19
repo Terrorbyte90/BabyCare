@@ -30,7 +30,7 @@ struct BBTChartView: View {
     private var bbtPoints: [BBTPoint] {
         cycleDays.compactMap { entry -> BBTPoint? in
             guard let bbt = entry.bbt else { return nil }
-            guard bbt > 35 && bbt < 42 else { return nil }
+            guard bbt >= 35.5 && bbt <= 37.5 else { return nil }
             let dayNumber = Calendar.current.dateComponents([.day], from: lastPeriodStart, to: entry.date).day ?? 0
             let adjustedDay = (dayNumber % cycleLength) + 1
             return BBTPoint(dayOfCycle: adjustedDay, temperature: bbt, date: entry.date)
