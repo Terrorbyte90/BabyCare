@@ -290,6 +290,7 @@ struct ToothCell: View {
                 )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isErupted ? "\(label), sprunget ut" : "\(label), ej sprunget")
     }
 }
 

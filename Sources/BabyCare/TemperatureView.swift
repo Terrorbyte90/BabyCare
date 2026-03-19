@@ -29,6 +29,7 @@ struct TemperatureView: View {
                         HStack(spacing: DS.s2) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundColor(.appRed)
+                                .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Hög feber (≥39.5°C) — kontakta 1177 om du är orolig")
                                     .font(.subheadline.bold())
@@ -122,6 +123,7 @@ struct TemperatureView: View {
                             Image(systemName: "thermometer")
                                 .font(.system(size: 40))
                                 .foregroundColor(.appTextTert)
+                                .accessibilityHidden(true)
                             Text("Inga temperaturloggningar ännu")
                                 .font(.headline)
                                 .foregroundColor(.appTextSec)
@@ -156,6 +158,7 @@ struct TemperatureView: View {
                     .clipShape(Circle())
                     .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
             }
+            .accessibilityLabel("Logga temperatur")
             .padding(.trailing, DS.s4)
             .padding(.bottom, DS.s4)
         }

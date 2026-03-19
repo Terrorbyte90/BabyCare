@@ -115,6 +115,7 @@ struct VaccinationView: View {
                         Image(systemName: "square.and.arrow.up")
                             .foregroundStyle(Color.appBlue)
                     }
+                    .accessibilityLabel("Exportera vaccinationsschema som PDF")
                 }
             }
             .sheet(isPresented: $showPDFSheet) {
@@ -214,6 +215,7 @@ struct VaccinationView: View {
                             .font(.system(size: 16))
                             .foregroundStyle(isGiven ? Color.appGreen : Color.appBlue)
                     }
+                    .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: DS.s1) {
                         Text(entry.vaccineName)
@@ -245,6 +247,7 @@ struct VaccinationView: View {
                             .foregroundStyle(isGiven ? Color.appGreen : Color.appTextTert)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(isGiven ? "Markera \(entry.vaccineName) som ej given" : "Markera \(entry.vaccineName) som given")
                 }
 
                 if !entry.notes.isEmpty {

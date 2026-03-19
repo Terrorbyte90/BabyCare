@@ -72,6 +72,7 @@ struct BabyNamesView: View {
                         Image(systemName: showFavoritesOnly ? "star.fill" : "star")
                             .foregroundStyle(showFavoritesOnly ? Color.appOrange : Color.appTextSec)
                     }
+                    .accessibilityLabel(showFavoritesOnly ? "Visa alla namn" : "Visa endast favoriter")
                 }
             }
             .searchable(text: $searchText, prompt: "Sök namn, ursprung eller betydelse")
@@ -136,6 +137,7 @@ struct BabyNamesView: View {
                         .foregroundStyle(suggestion.isFavorite ? Color.appOrange : Color.appTextTert)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(suggestion.isFavorite ? "Ta bort \(suggestion.name) från favoriter" : "Lägg till \(suggestion.name) i favoriter")
             }
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
