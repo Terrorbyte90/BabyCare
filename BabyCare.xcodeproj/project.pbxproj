@@ -47,6 +47,9 @@
 		AABB000000000318 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000418 /* NotificationSettingsView.swift */; };
 		AABB000000000319 /* AIEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000419 /* AIEngine.swift */; };
 		AABB00000000031A /* SleepAnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041A /* SleepAnalysisView.swift */; };
+		AABB00000000031B /* BBTChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041B /* BBTChartView.swift */; };
+		AABB00000000031C /* CycleCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041C /* CycleCalendarView.swift */; };
+		AABB00000000031D /* SymptomsLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041D /* SymptomsLogView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -103,6 +106,9 @@
 		AABB000000000418 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
 		AABB000000000419 /* AIEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEngine.swift; sourceTree = "<group>"; };
 		AABB00000000041A /* SleepAnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepAnalysisView.swift; sourceTree = "<group>"; };
+		AABB00000000041B /* BBTChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BBTChartView.swift; sourceTree = "<group>"; };
+		AABB00000000041C /* CycleCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleCalendarView.swift; sourceTree = "<group>"; };
+		AABB00000000041D /* SymptomsLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymptomsLogView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -180,6 +186,9 @@
 				AABB00000000010F /* ProfileView.swift */,
 				AABB000000000410 /* ResourcesView.swift */,
 				AABB00000000041A /* SleepAnalysisView.swift */,
+				AABB00000000041B /* BBTChartView.swift */,
+				AABB00000000041C /* CycleCalendarView.swift */,
+				AABB00000000041D /* SymptomsLogView.swift */,
 				AABB000000000411 /* StoriesView.swift */,
 				AABB000000000412 /* WeekByWeekView.swift */,
 			);
@@ -346,6 +355,9 @@
 				AABB00000000020F /* ProfileView.swift in Sources */,
 				AABB000000000310 /* ResourcesView.swift in Sources */,
 				AABB00000000031A /* SleepAnalysisView.swift in Sources */,
+				AABB00000000031B /* BBTChartView.swift in Sources */,
+				AABB00000000031C /* CycleCalendarView.swift in Sources */,
+				AABB00000000031D /* SymptomsLogView.swift in Sources */,
 				AABB000000000311 /* StoriesView.swift in Sources */,
 				AABB000000000312 /* WeekByWeekView.swift in Sources */,
 			);

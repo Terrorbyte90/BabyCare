@@ -12,6 +12,9 @@ struct FertilityDashboard: View {
     @State private var showSymptomSheet = false
     @State private var showTemperatureSheet = false
     @State private var showMucusSheet = false
+    @State private var showSymptomsLogSheet = false
+    @State private var selectedLogDay: Date = Date()
+    @State private var bbtExpanded = false
 
     private var user: UserData? { userData.first }
 
@@ -120,8 +123,22 @@ struct FertilityDashboard: View {
                         statisticsSection
                             .staggerAppear(index: 4)
 
-                        forumSection
+                        calendarSection
                             .staggerAppear(index: 5)
+
+                        bbtSection
+                            .staggerAppear(index: 6)
+
+                        if user?.fertilityGoal == .tryingToConceive {
+                            ttcBanner
+                                .staggerAppear(index: 7)
+                        }
+
+                        logTodayButton
+                            .staggerAppear(index: 8)
+
+                        forumSection
+                            .staggerAppear(index: 9)
 
                         Color.clear.frame(height: 90)
                     }
@@ -138,6 +155,9 @@ struct FertilityDashboard: View {
         .sheet(isPresented: $showSymptomSheet) { SymptomLoggingSheet() }
         .sheet(isPresented: $showTemperatureSheet) { TemperatureLoggingSheet() }
         .sheet(isPresented: $showMucusSheet) { MucusLoggingSheet() }
+        .sheet(isPresented: $showSymptomsLogSheet) {
+            SymptomsLogView(date: selectedLogDay)
+        }
         .preferredColorScheme(.dark)
     }
 
@@ -459,6 +479,112 @@ struct FertilityDashboard: View {
                 }
             }
         }
+    }
+
+    // MARK: - Cycle Calendar Section
+
+    private var calendarSection: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Cykelkalender")
+
+            GlassCard {
+                CycleCalendarView()
+            }
+        }
+    }
+
+    // MARK: - BBT Section
+
+    private var bbtSection: some View {
+        VStack(spacing: DS.s3) {
+            DisclosureGroup(
+                isExpanded: $bbtExpanded,
+                content: {
+                    GlassCard {
+                        BBTChartView()
+                    }
+                    .padding(.top, DS.s2)
+                },
+                label: {
+                    HStack(spacing: DS.s2) {
+                        Image(systemName: "thermometer.medium")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.appOrange)
+                        Text("Basaltemperatur")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(Color.appText)
+                        Spacer()
+                    }
+                }
+            )
+            .tint(Color.appOrange)
+        }
+        .padding(DS.s4)
+        .background(Color.appSurface)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        .overlay(RoundedRectangle(cornerRadius: DS.radius).stroke(Color.appBorder, lineWidth: 1))
+    }
+
+    // MARK: - TTC Banner
+
+    private var ttcBanner: some View {
+        GradientCard(gradient: .warmGradient) {
+            HStack(spacing: DS.s3) {
+                Image(systemName: "star.circle.fill")
+                    .font(.system(size: 28))
+                    .foregroundStyle(.white)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("TTC-läge")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .textCase(.uppercase)
+                        .tracking(0.6)
+
+                    if let periodStart = lastPeriodStart {
+                        let days = FertilityPredictor.daysToOvulation(lastPeriodStart: periodStart, cycleLength: cycleLength)
+                        if days >= 0 {
+                            Text("Dagar till ägglossning: \(days)")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundStyle(.white)
+                        } else {
+                            Text("Ägglossning passerad")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                    } else {
+                        Text("Logga mens för prognos")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.8))
+                    }
+                }
+
+                Spacer()
+            }
+        }
+    }
+
+    // MARK: - Log Today Button
+
+    private var logTodayButton: some View {
+        Button {
+            selectedLogDay = Calendar.current.startOfDay(for: Date())
+            showSymptomsLogSheet = true
+            HapticFeedback.light()
+        } label: {
+            HStack(spacing: DS.s2) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                Text("Logga idag")
+                    .font(.system(size: 15, weight: .bold))
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, DS.s4)
+            .background(LinearGradient.fertilityGradient)
+            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+        }
+        .buttonStyle(ScaleButtonStyle())
     }
 
     // MARK: - Forum Section
