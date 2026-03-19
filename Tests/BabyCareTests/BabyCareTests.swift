@@ -1,6 +1,6 @@
 import XCTest
 import SwiftUI
-@testable import BabyCare
+@testable import Ljusglimt
 
 final class BabyCareTests: XCTestCase {
 
