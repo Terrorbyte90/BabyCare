@@ -3,7 +3,7 @@ import SwiftUI
 import UserNotifications
 
 struct NotificationSettingsView: View {
-    @StateObject private var manager = NotificationManager.shared
+    @ObservedObject private var manager = NotificationManager.shared
     @State private var authorizationDenied = false
     @State private var testScheduled = false
 

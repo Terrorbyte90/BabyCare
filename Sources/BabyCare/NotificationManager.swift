@@ -153,11 +153,12 @@ final class NotificationManager: ObservableObject {
     }
 
     func cancelAllLjusglimtNotifications() {
-        center.getPendingNotificationRequests { requests in
+        Task {
+            let requests = await center.pendingNotificationRequests()
             let ids = requests
                 .filter { $0.identifier.hasPrefix("ljusglimt.") }
                 .map { $0.identifier }
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
+            center.removePendingNotificationRequests(withIdentifiers: ids)
         }
     }
 }
