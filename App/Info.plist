@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>sv</string>
     <key>CFBundleDisplayName</key>
-    <string>BabyCare</string>
+    <string>Ljusglimt</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -22,9 +22,7 @@
     <string>1</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
-    <key>NSHealthUpdateUsageDescription</key>
-    <string>BabyCare behöver tillgång till Hälsa för att spåra bebisens aktivitet och din graviditet.</string>
-    <key>UIApplicationSceneManifest</key>
+<key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
         <false/>
