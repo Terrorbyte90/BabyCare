@@ -237,67 +237,67 @@ struct GrowthCharts: View {
                         .clipShape(Capsule())
                 }
 
-                let percentileData = percentilesForTab()
+                let refData = swedishRefForTab()
                 let maxMonth = max(Double(babyAgeMonths + 2), 12)
+                let filteredRef = refData.filter { $0.ageMonths <= Int(maxMonth) }
 
                 Chart {
-                    // 3rd percentile — series identifier prevents Apple Charts
-                    // from merging lines that share the same x-values
-                    ForEach(percentileData.p3.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
+                    // P3 — Swedish BVC reference
+                    ForEach(filteredRef, id: \.ageMonths) { p in
                         LineMark(
                             x: .value("Månad", p.ageMonths),
-                            y: .value("Värde", valueForPercentile(p, percentile: .p3)),
+                            y: .value("Värde", p.p3),
                             series: .value("Serie", "p3")
                         )
-                        .foregroundStyle(Color.appTextTert.opacity(0.4))
+                        .foregroundStyle(Color.gray.opacity(0.3))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
                         .interpolationMethod(.catmullRom)
                     }
 
-                    // 15th percentile
-                    ForEach(percentileData.p15.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
+                    // P10
+                    ForEach(filteredRef, id: \.ageMonths) { p in
                         LineMark(
                             x: .value("Månad", p.ageMonths),
-                            y: .value("Värde", valueForPercentile(p, percentile: .p15)),
-                            series: .value("Serie", "p15")
+                            y: .value("Värde", p.p10),
+                            series: .value("Serie", "p10")
                         )
-                        .foregroundStyle(Color.appTextTert.opacity(0.5))
+                        .foregroundStyle(Color.gray.opacity(0.4))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
                         .interpolationMethod(.catmullRom)
                     }
 
-                    // 50th percentile
-                    ForEach(percentileData.p50.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
+                    // P50 — median
+                    ForEach(filteredRef, id: \.ageMonths) { p in
                         LineMark(
                             x: .value("Månad", p.ageMonths),
-                            y: .value("Värde", valueForPercentile(p, percentile: .p50)),
+                            y: .value("Värde", p.p50),
                             series: .value("Serie", "p50")
                         )
-                        .foregroundStyle(Color.appTextSec)
+                        .foregroundStyle(Color.appGreen.opacity(0.5))
                         .lineStyle(StrokeStyle(lineWidth: 2))
                         .interpolationMethod(.catmullRom)
                     }
 
-                    // 85th percentile
-                    ForEach(percentileData.p85.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
+                    // P90
+                    ForEach(filteredRef, id: \.ageMonths) { p in
                         LineMark(
                             x: .value("Månad", p.ageMonths),
-                            y: .value("Värde", valueForPercentile(p, percentile: .p85)),
-                            series: .value("Serie", "p85")
+                            y: .value("Värde", p.p90),
+                            series: .value("Serie", "p90")
                         )
-                        .foregroundStyle(Color.appTextTert.opacity(0.5))
+                        .foregroundStyle(Color.gray.opacity(0.4))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [3]))
                         .interpolationMethod(.catmullRom)
                     }
 
-                    // 97th percentile
-                    ForEach(percentileData.p97.filter { $0.ageMonths <= Int(maxMonth) }, id: \.ageMonths) { p in
+                    // P97
+                    ForEach(filteredRef, id: \.ageMonths) { p in
                         LineMark(
                             x: .value("Månad", p.ageMonths),
-                            y: .value("Värde", valueForPercentile(p, percentile: .p97)),
+                            y: .value("Värde", p.p97),
                             series: .value("Serie", "p97")
                         )
-                        .foregroundStyle(Color.appTextTert.opacity(0.4))
+                        .foregroundStyle(Color.gray.opacity(0.3))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
                         .interpolationMethod(.catmullRom)
                     }
@@ -377,11 +377,11 @@ struct GrowthCharts: View {
 
                 // Percentile labels
                 HStack(spacing: DS.s4) {
-                    percentileLabel("3:e", style: .dashed)
-                    percentileLabel("15:e", style: .dashed)
-                    percentileLabel("50:e", style: .solid)
-                    percentileLabel("85:e", style: .dashed)
-                    percentileLabel("97:e", style: .dashed)
+                    percentileLabel("P3", style: .dashed)
+                    percentileLabel("P10", style: .dashed)
+                    percentileLabel("P50", style: .solid)
+                    percentileLabel("P90", style: .dashed)
+                    percentileLabel("P97", style: .dashed)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -478,11 +478,11 @@ struct GrowthCharts: View {
                             .foregroundStyle(Color.appText)
                     }
 
-                    let percentileData = percentilesForTab()
-                    let p50AtAge = percentileData.p50.min(by: { abs($0.ageMonths - babyAgeMonths) < abs($1.ageMonths - babyAgeMonths) })
+                    let refDataForComparison = swedishRefForTab()
+                    let p50AtAge = refDataForComparison.min(by: { abs($0.ageMonths - babyAgeMonths) < abs($1.ageMonths - babyAgeMonths) })
 
                     if let avg = p50AtAge {
-                        let avgVal = valueForPercentile(avg, percentile: .p50)
+                        let avgVal = avg.p50
                         let babyVal = currentBabyValue()
 
                         if let babyVal {
@@ -627,6 +627,18 @@ struct GrowthCharts: View {
 
     // MARK: - Percentile Data Structures
 
+    private func swedishRefForTab() -> [PercentilePoint] {
+        switch selectedTab {
+        case .weight:
+            return isBoy ? SwedishGrowthReference.weightBoys : SwedishGrowthReference.weightGirls
+        case .length:
+            return isBoy ? SwedishGrowthReference.lengthBoys : SwedishGrowthReference.lengthGirls
+        case .head:
+            return isBoy ? SwedishGrowthReference.headBoys : SwedishGrowthReference.headGirls
+        }
+    }
+
+    // Keep legacy helper used by comparisonSection and computePercentile
     private struct PercentileSet {
         let p3: [MockFirebaseService.GrowthPercentiles]
         let p15: [MockFirebaseService.GrowthPercentiles]
@@ -690,6 +702,126 @@ struct GrowthCharts: View {
         MockFirebaseService.GrowthPercentiles(ageMonths: 12, p3: 42.2, p15: 43.4, p50: 44.9, p85: 46.3, p97: 47.5),
         MockFirebaseService.GrowthPercentiles(ageMonths: 18, p3: 43.5, p15: 44.7, p50: 46.2, p85: 47.7, p97: 48.9),
         MockFirebaseService.GrowthPercentiles(ageMonths: 24, p3: 44.3, p15: 45.5, p50: 47.0, p85: 48.5, p97: 49.7),
+    ]
+}
+
+// MARK: - Swedish BVC Growth Reference Data
+
+struct PercentilePoint {
+    let ageMonths: Int
+    let p3: Double
+    let p10: Double
+    let p50: Double
+    let p90: Double
+    let p97: Double
+}
+
+struct SwedishGrowthReference {
+
+    // MARK: Weight Boys (kg) — WHO 2006 adapted for Sweden (Socialstyrelsen)
+    static let weightBoys: [PercentilePoint] = [
+        PercentilePoint(ageMonths: 0,  p3: 2.5,  p10: 2.9,  p50: 3.3,  p90: 3.9,  p97: 4.2),
+        PercentilePoint(ageMonths: 1,  p3: 3.4,  p10: 3.9,  p50: 4.5,  p90: 5.1,  p97: 5.6),
+        PercentilePoint(ageMonths: 2,  p3: 4.4,  p10: 5.0,  p50: 5.6,  p90: 6.3,  p97: 6.8),
+        PercentilePoint(ageMonths: 3,  p3: 5.0,  p10: 5.7,  p50: 6.4,  p90: 7.2,  p97: 7.7),
+        PercentilePoint(ageMonths: 4,  p3: 5.6,  p10: 6.2,  p50: 7.0,  p90: 7.8,  p97: 8.3),
+        PercentilePoint(ageMonths: 5,  p3: 6.0,  p10: 6.7,  p50: 7.5,  p90: 8.4,  p97: 8.9),
+        PercentilePoint(ageMonths: 6,  p3: 6.4,  p10: 7.1,  p50: 7.9,  p90: 8.8,  p97: 9.4),
+        PercentilePoint(ageMonths: 9,  p3: 7.2,  p10: 8.0,  p50: 9.0,  p90: 10.0, p97: 10.6),
+        PercentilePoint(ageMonths: 12, p3: 7.8,  p10: 8.7,  p50: 9.6,  p90: 10.8, p97: 11.5),
+        PercentilePoint(ageMonths: 18, p3: 8.8,  p10: 9.8,  p50: 10.9, p90: 12.3, p97: 13.0),
+        PercentilePoint(ageMonths: 24, p3: 9.7,  p10: 10.8, p50: 12.0, p90: 13.6, p97: 14.4),
+        PercentilePoint(ageMonths: 36, p3: 11.4, p10: 12.7, p50: 14.2, p90: 16.2, p97: 17.3),
+        PercentilePoint(ageMonths: 48, p3: 13.0, p10: 14.5, p50: 16.3, p90: 18.8, p97: 20.2),
+        PercentilePoint(ageMonths: 60, p3: 14.6, p10: 16.3, p50: 18.4, p90: 21.4, p97: 23.1),
+    ]
+
+    // MARK: Weight Girls (kg)
+    static let weightGirls: [PercentilePoint] = [
+        PercentilePoint(ageMonths: 0,  p3: 2.4,  p10: 2.7,  p50: 3.2,  p90: 3.7,  p97: 4.0),
+        PercentilePoint(ageMonths: 1,  p3: 3.2,  p10: 3.6,  p50: 4.2,  p90: 4.8,  p97: 5.2),
+        PercentilePoint(ageMonths: 2,  p3: 4.0,  p10: 4.5,  p50: 5.1,  p90: 5.8,  p97: 6.2),
+        PercentilePoint(ageMonths: 3,  p3: 4.6,  p10: 5.1,  p50: 5.8,  p90: 6.6,  p97: 7.1),
+        PercentilePoint(ageMonths: 4,  p3: 5.1,  p10: 5.6,  p50: 6.4,  p90: 7.3,  p97: 7.8),
+        PercentilePoint(ageMonths: 5,  p3: 5.5,  p10: 6.1,  p50: 6.9,  p90: 7.8,  p97: 8.3),
+        PercentilePoint(ageMonths: 6,  p3: 5.7,  p10: 6.4,  p50: 7.3,  p90: 8.3,  p97: 8.8),
+        PercentilePoint(ageMonths: 9,  p3: 6.6,  p10: 7.3,  p50: 8.2,  p90: 9.4,  p97: 10.1),
+        PercentilePoint(ageMonths: 12, p3: 7.1,  p10: 7.9,  p50: 8.9,  p90: 10.2, p97: 11.0),
+        PercentilePoint(ageMonths: 18, p3: 8.1,  p10: 9.0,  p50: 10.2, p90: 11.8, p97: 12.7),
+        PercentilePoint(ageMonths: 24, p3: 9.0,  p10: 10.0, p50: 11.3, p90: 13.2, p97: 14.3),
+        PercentilePoint(ageMonths: 36, p3: 10.7, p10: 11.9, p50: 13.5, p90: 15.9, p97: 17.3),
+        PercentilePoint(ageMonths: 48, p3: 12.3, p10: 13.7, p50: 15.6, p90: 18.5, p97: 20.3),
+        PercentilePoint(ageMonths: 60, p3: 13.7, p10: 15.3, p50: 17.7, p90: 21.2, p97: 23.5),
+    ]
+
+    // MARK: Length Boys (cm)
+    static let lengthBoys: [PercentilePoint] = [
+        PercentilePoint(ageMonths: 0,  p3: 46.3,  p10: 47.5,  p50: 49.9,  p90: 52.3,  p97: 53.5),
+        PercentilePoint(ageMonths: 1,  p3: 51.1,  p10: 52.5,  p50: 54.7,  p90: 57.0,  p97: 58.3),
+        PercentilePoint(ageMonths: 2,  p3: 54.7,  p10: 56.2,  p50: 58.4,  p90: 60.7,  p97: 62.0),
+        PercentilePoint(ageMonths: 3,  p3: 57.6,  p10: 59.1,  p50: 61.4,  p90: 63.9,  p97: 65.2),
+        PercentilePoint(ageMonths: 4,  p3: 60.0,  p10: 61.5,  p50: 63.9,  p90: 66.4,  p97: 67.8),
+        PercentilePoint(ageMonths: 5,  p3: 61.7,  p10: 63.3,  p50: 65.9,  p90: 68.5,  p97: 69.9),
+        PercentilePoint(ageMonths: 6,  p3: 63.3,  p10: 65.0,  p50: 67.6,  p90: 70.2,  p97: 71.6),
+        PercentilePoint(ageMonths: 9,  p3: 67.7,  p10: 69.4,  p50: 72.0,  p90: 74.6,  p97: 76.0),
+        PercentilePoint(ageMonths: 12, p3: 71.7,  p10: 73.4,  p50: 75.7,  p90: 78.4,  p97: 79.8),
+        PercentilePoint(ageMonths: 18, p3: 78.4,  p10: 80.4,  p50: 82.4,  p90: 85.6,  p97: 87.5),
+        PercentilePoint(ageMonths: 24, p3: 82.3,  p10: 84.5,  p50: 87.8,  p90: 90.9,  p97: 92.9),
+        PercentilePoint(ageMonths: 36, p3: 89.0,  p10: 91.8,  p50: 95.6,  p90: 99.4,  p97: 101.5),
+        PercentilePoint(ageMonths: 48, p3: 95.1,  p10: 98.1,  p50: 102.4, p90: 106.6, p97: 108.9),
+        PercentilePoint(ageMonths: 60, p3: 100.7, p10: 103.9, p50: 109.2, p90: 113.7, p97: 116.2),
+    ]
+
+    // MARK: Length Girls (cm)
+    static let lengthGirls: [PercentilePoint] = [
+        PercentilePoint(ageMonths: 0,  p3: 45.4,  p10: 46.7,  p50: 49.1,  p90: 51.5,  p97: 52.8),
+        PercentilePoint(ageMonths: 1,  p3: 50.0,  p10: 51.3,  p50: 53.7,  p90: 56.1,  p97: 57.5),
+        PercentilePoint(ageMonths: 2,  p3: 53.2,  p10: 54.7,  p50: 57.1,  p90: 59.5,  p97: 60.9),
+        PercentilePoint(ageMonths: 3,  p3: 55.8,  p10: 57.2,  p50: 59.8,  p90: 62.4,  p97: 63.7),
+        PercentilePoint(ageMonths: 4,  p3: 57.8,  p10: 59.4,  p50: 62.1,  p90: 64.6,  p97: 66.1),
+        PercentilePoint(ageMonths: 5,  p3: 59.6,  p10: 61.2,  p50: 64.0,  p90: 66.6,  p97: 68.1),
+        PercentilePoint(ageMonths: 6,  p3: 61.5,  p10: 63.0,  p50: 65.7,  p90: 68.4,  p97: 69.9),
+        PercentilePoint(ageMonths: 9,  p3: 66.1,  p10: 67.7,  p50: 70.1,  p90: 73.0,  p97: 74.6),
+        PercentilePoint(ageMonths: 12, p3: 69.9,  p10: 71.5,  p50: 74.3,  p90: 77.5,  p97: 79.2),
+        PercentilePoint(ageMonths: 18, p3: 76.0,  p10: 78.2,  p50: 80.7,  p90: 84.2,  p97: 86.2),
+        PercentilePoint(ageMonths: 24, p3: 80.0,  p10: 82.4,  p50: 86.0,  p90: 89.4,  p97: 91.4),
+        PercentilePoint(ageMonths: 36, p3: 87.4,  p10: 90.2,  p50: 94.2,  p90: 98.1,  p97: 100.3),
+        PercentilePoint(ageMonths: 48, p3: 94.1,  p10: 97.0,  p50: 101.6, p90: 106.0, p97: 108.4),
+        PercentilePoint(ageMonths: 60, p3: 99.0,  p10: 102.7, p50: 108.4, p90: 113.3, p97: 116.0),
+    ]
+
+    // MARK: Head Circumference Boys (cm)
+    static let headBoys: [PercentilePoint] = [
+        PercentilePoint(ageMonths: 0,  p3: 32.1, p10: 33.0, p50: 34.5, p90: 36.0, p97: 36.9),
+        PercentilePoint(ageMonths: 1,  p3: 35.1, p10: 36.0, p50: 37.3, p90: 38.8, p97: 39.7),
+        PercentilePoint(ageMonths: 2,  p3: 36.9, p10: 37.8, p50: 39.1, p90: 40.6, p97: 41.5),
+        PercentilePoint(ageMonths: 3,  p3: 38.1, p10: 39.1, p50: 40.5, p90: 42.0, p97: 42.9),
+        PercentilePoint(ageMonths: 4,  p3: 39.2, p10: 40.2, p50: 41.6, p90: 43.1, p97: 44.0),
+        PercentilePoint(ageMonths: 6,  p3: 41.0, p10: 42.0, p50: 43.3, p90: 44.9, p97: 45.8),
+        PercentilePoint(ageMonths: 9,  p3: 43.0, p10: 44.0, p50: 45.3, p90: 46.8, p97: 47.7),
+        PercentilePoint(ageMonths: 12, p3: 44.2, p10: 45.2, p50: 46.5, p90: 48.0, p97: 48.9),
+        PercentilePoint(ageMonths: 18, p3: 45.6, p10: 46.5, p50: 47.9, p90: 49.3, p97: 50.2),
+        PercentilePoint(ageMonths: 24, p3: 46.5, p10: 47.5, p50: 48.9, p90: 50.4, p97: 51.3),
+        PercentilePoint(ageMonths: 36, p3: 47.5, p10: 48.5, p50: 50.0, p90: 51.4, p97: 52.3),
+        PercentilePoint(ageMonths: 48, p3: 48.3, p10: 49.3, p50: 50.8, p90: 52.2, p97: 53.2),
+        PercentilePoint(ageMonths: 60, p3: 48.8, p10: 49.9, p50: 51.5, p90: 53.0, p97: 54.0),
+    ]
+
+    // MARK: Head Circumference Girls (cm)
+    static let headGirls: [PercentilePoint] = [
+        PercentilePoint(ageMonths: 0,  p3: 31.5, p10: 32.4, p50: 33.9, p90: 35.3, p97: 36.2),
+        PercentilePoint(ageMonths: 1,  p3: 34.3, p10: 35.2, p50: 36.5, p90: 38.0, p97: 38.9),
+        PercentilePoint(ageMonths: 2,  p3: 36.0, p10: 36.9, p50: 38.3, p90: 39.8, p97: 40.7),
+        PercentilePoint(ageMonths: 3,  p3: 37.2, p10: 38.1, p50: 39.5, p90: 41.0, p97: 41.9),
+        PercentilePoint(ageMonths: 4,  p3: 38.2, p10: 39.1, p50: 40.6, p90: 42.1, p97: 43.0),
+        PercentilePoint(ageMonths: 6,  p3: 39.7, p10: 40.7, p50: 42.2, p90: 43.7, p97: 44.6),
+        PercentilePoint(ageMonths: 9,  p3: 41.8, p10: 42.8, p50: 44.3, p90: 45.8, p97: 46.7),
+        PercentilePoint(ageMonths: 12, p3: 43.1, p10: 44.0, p50: 45.4, p90: 46.9, p97: 47.8),
+        PercentilePoint(ageMonths: 18, p3: 44.3, p10: 45.2, p50: 46.7, p90: 48.2, p97: 49.1),
+        PercentilePoint(ageMonths: 24, p3: 45.2, p10: 46.2, p50: 47.6, p90: 49.2, p97: 50.1),
+        PercentilePoint(ageMonths: 36, p3: 46.1, p10: 47.1, p50: 48.6, p90: 50.1, p97: 51.0),
+        PercentilePoint(ageMonths: 48, p3: 47.0, p10: 47.9, p50: 49.4, p90: 51.0, p97: 51.9),
+        PercentilePoint(ageMonths: 60, p3: 47.5, p10: 48.5, p50: 50.1, p90: 51.7, p97: 52.7),
     ]
 }
 
