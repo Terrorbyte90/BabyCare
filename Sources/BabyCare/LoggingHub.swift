@@ -15,6 +15,7 @@ struct LoggingHub: View {
     @State private var showSleepSheet = false
     @State private var showDiaperSheet = false
     @State private var showMedicineSheet = false
+    @State private var showDiaperExport = false
 
     // Active timer state
     @State private var feedingTimerRunning = false
@@ -99,12 +100,23 @@ struct LoggingHub: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: LogGraphs()) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(LinearGradient.pinkPurple)
+                    HStack(spacing: DS.s3) {
+                        Button {
+                            showDiaperExport = true
+                        } label: {
+                            Image(systemName: "doc.text.magnifyingglass")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(LinearGradient.tealMint)
+                        }
+                        .accessibilityLabel("Exportera blöjlogg till läkare")
+
+                        NavigationLink(destination: LogGraphs()) {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(LinearGradient.pinkPurple)
+                        }
+                        .accessibilityLabel("Visa statistik")
                     }
-                    .accessibilityLabel("Visa statistik")
                 }
             }
         }
@@ -128,6 +140,9 @@ struct LoggingHub: View {
         }
         .sheet(isPresented: $showMedicineSheet) {
             MedicineLogSheet()
+        }
+        .sheet(isPresented: $showDiaperExport) {
+            DiaperExportView()
         }
     }
 

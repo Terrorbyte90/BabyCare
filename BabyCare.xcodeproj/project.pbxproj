@@ -59,6 +59,7 @@
 		AABB000000000324 /* MilestoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000424 /* MilestoneView.swift */; };
 		AABB000000000325 /* ToothTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000425 /* ToothTrackingView.swift */; };
 		AABB000000000326 /* TemperatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000426 /* TemperatureView.swift */; };
+		AABB000000000327 /* DiaperExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000427 /* DiaperExportView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -129,6 +130,7 @@
 		AABB000000000424 /* MilestoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestoneView.swift; sourceTree = "<group>"; };
 		AABB000000000425 /* ToothTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToothTrackingView.swift; sourceTree = "<group>"; };
 		AABB000000000426 /* TemperatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureView.swift; sourceTree = "<group>"; };
+		AABB000000000427 /* DiaperExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaperExportView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				AABB000000000424 /* MilestoneView.swift */,
 				AABB000000000425 /* ToothTrackingView.swift */,
 				AABB000000000426 /* TemperatureView.swift */,
+			AABB000000000427 /* DiaperExportView.swift */,
 			);
 			name = Sources;
 			path = Sources/BabyCare;
@@ -402,6 +405,7 @@
 				AABB000000000324 /* MilestoneView.swift in Sources */,
 				AABB000000000325 /* ToothTrackingView.swift in Sources */,
 				AABB000000000326 /* TemperatureView.swift in Sources */,
+			AABB000000000327 /* DiaperExportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
