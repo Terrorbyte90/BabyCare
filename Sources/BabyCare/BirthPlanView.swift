@@ -101,9 +101,6 @@ struct BirthPlanView: View {
             .sheet(isPresented: $showAddItemSheet) {
                 addItemSheet
             }
-            .onAppear {
-                ensurePlanExists()
-            }
         }
     }
 
