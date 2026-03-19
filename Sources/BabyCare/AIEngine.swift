@@ -100,7 +100,10 @@ struct AIEngine {
             sum + Int(log.endDate.timeIntervalSince(log.startDate) / 60)
         })
 
-        guard recentMinutes > 0 else { return nil }
+        // Nollsömn är den allvarligaste anomalin — rapportera alltid om baseline finns
+        if recentMinutes == 0 {
+            return "Ingen registrerad sömn de senaste 24 timmarna. Om du är orolig, kontakta 1177."
+        }
         let dropFraction = (baseline - recentMinutes) / baseline
 
         if dropFraction >= 0.30 {

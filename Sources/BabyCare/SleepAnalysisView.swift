@@ -23,9 +23,22 @@ struct SleepAnalysisView: View {
         AIEngine.anomalyDetected(logs: sleepLogs, ageInDays: ageInDays)
     }
 
+    /// Senaste sömnsession som startade inom det förväntade wake window — indikerar pågående sömn
     private var activeSleepSession: SleepLog? {
-        // In this model, SleepLog always has endDate, so we look for most recent
-        nil
+        let wakeWindow = WakeWindowCalculator.wakeWindow(forAgeInDays: ageInDays)
+        let maxSessionSeconds = Double(wakeWindow.maximum) * 60
+        let now = Date()
+        return sleepLogs.first { log in
+            let elapsed = now.timeIntervalSince(log.startDate)
+            return elapsed >= 0 && elapsed <= maxSessionSeconds
+        }
+    }
+
+    private var wakeWindowMinutesRemaining: Int? {
+        guard let session = activeSleepSession else { return nil }
+        let wakeTime = WakeWindowCalculator.nextWakeTime(from: session.startDate, ageInDays: ageInDays)
+        let remaining = Int(wakeTime.timeIntervalSince(Date()) / 60)
+        return remaining > 0 ? remaining : 0
     }
 
     private var sevenDayData: [DailySleepBar] {
@@ -59,6 +72,25 @@ struct SleepAnalysisView: View {
             // Anomaly warning
             if let warning = anomalyWarning {
                 anomalyBanner(text: warning)
+            }
+
+            // Wake window-indikator
+            if let minutes = wakeWindowMinutesRemaining {
+                HStack {
+                    Image(systemName: "moon.zzz.fill")
+                        .foregroundColor(Color("appPurple"))
+                    if minutes == 0 {
+                        Text("\(user?.babyName ?? "Barnet") bör vakna snart")
+                            .font(.subheadline).bold()
+                    } else {
+                        Text("\(user?.babyName ?? "Barnet") bör vakna om ca \(minutes) min")
+                            .font(.subheadline).bold()
+                    }
+                    Spacer()
+                }
+                .padding(DS.s3)
+                .background(Color("appSurface2"))
+                .cornerRadius(12)
             }
 
             // Scorecard
