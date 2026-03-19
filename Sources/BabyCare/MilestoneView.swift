@@ -38,6 +38,12 @@ struct MilestoneView: View {
                                 onDelete: { deleteMilestone(milestone) }
                             )
                         }
+
+                        ForumExcerptView(
+                            threads: ForumData.threads(for: .utvecklingMilstolpar),
+                            title: "I forum"
+                        )
+                        .padding(.horizontal, DS.s4)
                         .padding(.bottom, 80)
                     }
                 }

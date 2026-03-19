@@ -94,6 +94,11 @@ struct VaccinationView: View {
                     ForEach(groupedEntries, id: \.0.rawValue) { group, entries in
                         sectionCard(group: group, entries: entries)
                     }
+
+                    ForumExcerptView(
+                        threads: ForumData.threads(for: .nyfodda),
+                        title: "I forum"
+                    )
                 }
                 .padding(.horizontal, DS.s4)
                 .padding(.vertical, DS.s4)

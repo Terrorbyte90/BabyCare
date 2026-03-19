@@ -277,6 +277,47 @@ struct ForumThreadCard: View {
     }
 }
 
+// MARK: - Forum Excerpt View
+
+struct ForumExcerptView: View {
+    let threads: [ForumThread]
+    let title: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DS.s3) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.appTextSec)
+                    .textCase(.uppercase)
+                    .tracking(0.4)
+                Spacer()
+            }
+
+            VStack(spacing: DS.s2) {
+                ForEach(threads.prefix(2)) { thread in
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: DS.s2) {
+                            Text(thread.title)
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(Color.appText)
+                                .lineLimit(2)
+                            Text(thread.summary)
+                                .font(.system(size: 11))
+                                .foregroundStyle(Color.appTextSec)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+            }
+
+            Text("Se fler i Community →")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Color.appBlue)
+        }
+    }
+}
+
 // MARK: - Preview
 
 #Preview {

@@ -98,6 +98,12 @@ struct SleepAnalysisView: View {
 
             // 7-day bar chart
             sevenDayChartCard
+
+            // Forum excerpt
+            ForumExcerptView(
+                threads: ForumData.threads(for: .somnRutiner),
+                title: "I forum"
+            )
         }
     }
 
