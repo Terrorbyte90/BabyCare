@@ -55,6 +55,10 @@
 		AABB000000000320 /* VaccinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000420 /* VaccinationView.swift */; };
 		AABB000000000321 /* BirthPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000421 /* BirthPlanView.swift */; };
 		AABB000000000322 /* BabyNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000422 /* BabyNamesView.swift */; };
+		AABB000000000323 /* SolidFoodView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000423 /* SolidFoodView.swift */; };
+		AABB000000000324 /* MilestoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000424 /* MilestoneView.swift */; };
+		AABB000000000325 /* ToothTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000425 /* ToothTrackingView.swift */; };
+		AABB000000000326 /* TemperatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000426 /* TemperatureView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -121,6 +125,10 @@
 		AABB000000000420 /* VaccinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaccinationView.swift; sourceTree = "<group>"; };
 		AABB000000000421 /* BirthPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthPlanView.swift; sourceTree = "<group>"; };
 		AABB000000000422 /* BabyNamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyNamesView.swift; sourceTree = "<group>"; };
+		AABB000000000423 /* SolidFoodView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolidFoodView.swift; sourceTree = "<group>"; };
+		AABB000000000424 /* MilestoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MilestoneView.swift; sourceTree = "<group>"; };
+		AABB000000000425 /* ToothTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToothTrackingView.swift; sourceTree = "<group>"; };
+		AABB000000000426 /* TemperatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -210,6 +218,10 @@
 				AABB000000000420 /* VaccinationView.swift */,
 				AABB000000000411 /* StoriesView.swift */,
 				AABB000000000412 /* WeekByWeekView.swift */,
+				AABB000000000423 /* SolidFoodView.swift */,
+				AABB000000000424 /* MilestoneView.swift */,
+				AABB000000000425 /* ToothTrackingView.swift */,
+				AABB000000000426 /* TemperatureView.swift */,
 			);
 			name = Sources;
 			path = Sources/BabyCare;
@@ -386,6 +398,10 @@
 				AABB000000000312 /* WeekByWeekView.swift in Sources */,
 				AABB000000000321 /* BirthPlanView.swift in Sources */,
 				AABB000000000322 /* BabyNamesView.swift in Sources */,
+				AABB000000000323 /* SolidFoodView.swift in Sources */,
+				AABB000000000324 /* MilestoneView.swift in Sources */,
+				AABB000000000325 /* ToothTrackingView.swift in Sources */,
+				AABB000000000326 /* TemperatureView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
