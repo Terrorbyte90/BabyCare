@@ -53,6 +53,8 @@
 		AABB00000000031E /* BodySymptomTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041E /* BodySymptomTrackerView.swift */; };
 		AABB00000000031F /* VaccinationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041F /* VaccinationData.swift */; };
 		AABB000000000320 /* VaccinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000420 /* VaccinationView.swift */; };
+		AABB000000000321 /* BirthPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000421 /* BirthPlanView.swift */; };
+		AABB000000000322 /* BabyNamesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000422 /* BabyNamesView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -117,6 +119,8 @@
 		AABB00000000041E /* BodySymptomTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodySymptomTrackerView.swift; sourceTree = "<group>"; };
 		AABB00000000041F /* VaccinationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaccinationData.swift; sourceTree = "<group>"; };
 		AABB000000000420 /* VaccinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaccinationView.swift; sourceTree = "<group>"; };
+		AABB000000000421 /* BirthPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthPlanView.swift; sourceTree = "<group>"; };
+		AABB000000000422 /* BabyNamesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyNamesView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -162,6 +166,8 @@
 				AABB000000000419 /* AIEngine.swift */,
 				AABB000000000100 /* AboutView.swift */,
 				AABB000000000101 /* BabyCareApp.swift */,
+				AABB000000000421 /* BirthPlanView.swift */,
+				AABB000000000422 /* BabyNamesView.swift */,
 				AABB000000000103 /* CalendarView.swift */,
 				AABB000000000401 /* ChildrenStories.swift */,
 				AABB000000000402 /* CompareView.swift */,
@@ -378,6 +384,8 @@
 				AABB000000000320 /* VaccinationView.swift in Sources */,
 				AABB000000000311 /* StoriesView.swift in Sources */,
 				AABB000000000312 /* WeekByWeekView.swift in Sources */,
+				AABB000000000321 /* BirthPlanView.swift in Sources */,
+				AABB000000000322 /* BabyNamesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

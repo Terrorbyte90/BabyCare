@@ -180,6 +180,12 @@ struct WeekByWeekView: View {
                 source: data.forumSection.source
             ))
             .staggerAppear(index: 8)
+
+            // 1177 link
+            Link("Läs mer på 1177.se", destination: URL(string: "https://www.1177.se/gravid/om-graviditeten/graviditeten-vecka-for-vecka/")!)
+                .font(.system(size: 13))
+                .foregroundStyle(Color.appBlue)
+                .padding(.top, DS.s2)
         }
     }
 
