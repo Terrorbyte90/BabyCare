@@ -75,11 +75,17 @@ struct LoggingHub: View {
                                 .staggerAppear(index: 2)
                         }
 
+                        // Sömnanalys — AI-baserad scorecard och regressionsvariningar
+                        if let _ = user?.babyBirthDate {
+                            SleepAnalysisView()
+                                .staggerAppear(index: 3)
+                        }
+
                         dailySummarySection
-                            .staggerAppear(index: 3)
+                            .staggerAppear(index: 4)
 
                         timelineSection
-                            .staggerAppear(index: 4)
+                            .staggerAppear(index: 5)
 
                         Color.clear.frame(height: 90)
                     }
