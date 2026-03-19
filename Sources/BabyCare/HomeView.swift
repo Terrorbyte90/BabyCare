@@ -1532,6 +1532,8 @@ struct DSSheet<Content: View>: View {
     var canSave: Bool = true
     @ViewBuilder let content: () -> Content
 
+    @State private var didSave = false
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -1554,10 +1556,16 @@ struct DSSheet<Content: View>: View {
                         .foregroundStyle(Color.appTextSec)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Spara") { onSave() }
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(canSave ? Color.appPink : Color.appTextTert)
-                        .disabled(!canSave)
+                    Button("Spara") {
+                        didSave = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { didSave = false }
+                        onSave()
+                    }
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(canSave ? Color.appPink : Color.appTextTert)
+                    .disabled(!canSave)
+                    .scaleEffect(didSave ? 1.08 : 1.0)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: didSave)
                 }
             }
         }

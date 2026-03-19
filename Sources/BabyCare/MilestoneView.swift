@@ -8,6 +8,7 @@ struct MilestoneView: View {
     @Query(sort: \Milestone.date, order: .reverse) private var milestones: [Milestone]
 
     @State private var showAddSheet = false
+    @State private var showConfetti = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -65,11 +66,13 @@ struct MilestoneView: View {
             .padding(.trailing, DS.s4)
             .padding(.bottom, DS.s4)
         }
+        .overlay(ConfettiView(isShowing: $showConfetti))
         .navigationTitle("Milstolpar")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showAddSheet) {
             AddMilestoneSheet { title, category, date, notes, photoData in
                 addMilestone(title: title, category: category, date: date, notes: notes, photo: photoData)
+                showConfetti = true
             }
         }
     }
@@ -275,6 +278,48 @@ struct AddMilestoneSheet: View {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: - Confetti View
+
+struct ConfettiView: View {
+    @Binding var isShowing: Bool
+
+    private let colors: [Color] = [.appGreen, .appBlue, .appPurple, .appOrange, .appWarmYellow]
+    @State private var particles: [(id: Int, x: CGFloat, y: CGFloat, color: Color, rotation: Double)] = []
+
+    var body: some View {
+        ZStack {
+            if isShowing {
+                ForEach(particles, id: \.id) { p in
+                    Circle()
+                        .fill(p.color)
+                        .frame(width: 8, height: 8)
+                        .position(x: p.x, y: p.y)
+                        .rotationEffect(.degrees(p.rotation))
+                }
+            }
+        }
+        .onChange(of: isShowing) { _, showing in
+            if showing {
+                spawnParticles()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    isShowing = false
+                    particles = []
+                }
+            }
+        }
+    }
+
+    private func spawnParticles() {
+        particles = (0..<20).map { i in
+            (id: i,
+             x: CGFloat.random(in: 50...300),
+             y: CGFloat.random(in: 100...400),
+             color: colors[i % colors.count],
+             rotation: Double.random(in: 0...360))
         }
     }
 }
