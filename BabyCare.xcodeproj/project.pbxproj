@@ -64,6 +64,7 @@
 		AABB000000000329 /* GuideData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000429 /* GuideData.swift */; };
 		AABB00000000032A /* ForumData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000042A /* ForumData.swift */; };
 		AABB00000000032B /* ForumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000042B /* ForumView.swift */; };
+		AABB00000000032C /* ArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000042C /* ArticleView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -139,6 +140,7 @@
 		AABB000000000429 /* GuideData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideData.swift; sourceTree = "<group>"; };
 		AABB00000000042A /* ForumData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumData.swift; sourceTree = "<group>"; };
 		AABB00000000042B /* ForumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumView.swift; sourceTree = "<group>"; };
+		AABB00000000042C /* ArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 			children = (
 				AABB000000000428 /* ArticleData.swift */,
 			AABB000000000429 /* GuideData.swift */,
+				AABB00000000042C /* ArticleView.swift */,
 				AABB000000000419 /* AIEngine.swift */,
 				AABB000000000100 /* AboutView.swift */,
 				AABB000000000101 /* BabyCareApp.swift */,
@@ -368,6 +371,7 @@
 			files = (
 				AABB000000000328 /* ArticleData.swift in Sources */,
 			AABB000000000329 /* GuideData.swift in Sources */,
+				AABB00000000032C /* ArticleView.swift in Sources */,
 				AABB000000000319 /* AIEngine.swift in Sources */,
 				AABB000000000200 /* AboutView.swift in Sources */,
 				AABB000000000201 /* BabyCareApp.swift in Sources */,
