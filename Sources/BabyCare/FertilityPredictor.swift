@@ -50,6 +50,7 @@ struct FertilityPredictor {
     }
 
     static func cyclePhase(dayOfCycle: Int, cycleLength: Int) -> CyclePhase {
+        guard dayOfCycle >= 1 else { return .menstruation }
         let window = fertilityWindow(cycleLength: cycleLength)
         switch dayOfCycle {
         case 1...5:
@@ -67,6 +68,7 @@ struct FertilityPredictor {
 
     static func cyclePhase(for date: Date, lastPeriodStart: Date, cycleLength: Int) -> CyclePhase {
         let dayOfCycle = Calendar.current.dateComponents([.day], from: lastPeriodStart, to: date).day ?? 0
+        guard dayOfCycle >= 0 else { return .menstruation }
         let adjustedDay = (dayOfCycle % cycleLength) + 1
         return cyclePhase(dayOfCycle: adjustedDay, cycleLength: cycleLength)
     }
