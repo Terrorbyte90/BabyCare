@@ -91,6 +91,23 @@ struct ContractionTimerView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: DS.s5) {
+                        // BB-varning
+                        if ContractionAnalyzer.isTimeToGoToHospital(contractions: completedContractions) {
+                            HStack(spacing: DS.s3) {
+                                Image(systemName: "car.fill")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(.white)
+                                Text("Dags att åka till BB!")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(.white)
+                                Spacer()
+                            }
+                            .padding(DS.s4)
+                            .background(Color.appRed)
+                            .clipShape(RoundedRectangle(cornerRadius: DS.radius))
+                            .staggerAppear(index: 0)
+                        }
+
                         // Phase indicator
                         phaseIndicatorCard
                             .staggerAppear(index: 0)
@@ -651,6 +668,45 @@ private struct EnhancedContractionRow: View {
             return "\(s / 3600)h \((s % 3600) / 60)m"
         }
         return s >= 60 ? "\(s / 60)m \(s % 60)s" : "\(s)s"
+    }
+}
+
+// MARK: - Contraction Analyzer
+
+struct ContractionAnalyzer {
+    /// 5-1-1 regel: kontraktioner var 5:e min, 1 min långa, sedan 1 timme
+    static func isTimeToGoToHospital(contractions: [ContractionLog]) -> Bool {
+        guard contractions.count >= 6 else { return false }
+        let recent = contractions.sorted { $0.startTime > $1.startTime }.prefix(6)
+
+        // Genomsnittlig varaktighet >= 55 sekunder
+        let durations: [TimeInterval] = recent.compactMap { c in
+            guard let end = c.endTime else { return nil }
+            return end.timeIntervalSince(c.startTime)
+        }
+        guard !durations.isEmpty else { return false }
+        let avgDuration = durations.reduce(0, +) / Double(durations.count)
+        guard avgDuration >= 55 else { return false }
+
+        // Genomsnittligt intervall <= 6 minuter
+        let sorted = recent.sorted { $0.startTime < $1.startTime }
+        var intervals: [TimeInterval] = []
+        for i in 1..<sorted.count {
+            intervals.append(sorted[i].startTime.timeIntervalSince(sorted[i-1].startTime))
+        }
+        guard !intervals.isEmpty else { return false }
+        let avgInterval = intervals.reduce(0, +) / Double(intervals.count)
+        return avgInterval <= 360
+    }
+
+    static func averageInterval(contractions: [ContractionLog]) -> TimeInterval? {
+        guard contractions.count >= 2 else { return nil }
+        let sorted = contractions.sorted { $0.startTime < $1.startTime }
+        var intervals: [TimeInterval] = []
+        for i in 1..<sorted.count {
+            intervals.append(sorted[i].startTime.timeIntervalSince(sorted[i-1].startTime))
+        }
+        return intervals.reduce(0, +) / Double(intervals.count)
     }
 }
 
