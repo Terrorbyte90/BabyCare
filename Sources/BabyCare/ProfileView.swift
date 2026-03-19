@@ -357,6 +357,25 @@ struct ProfileView: View {
 
                     DSRowDivider()
 
+                    // Notiser — detaljvy
+                    NavigationLink(destination: NotificationSettingsView()) {
+                        HStack(spacing: DS.s3) {
+                            IconBadge(icon: "bell.badge.fill", gradient: .orangePink, size: 36)
+                            Text("Notiser")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundStyle(Color.appText)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextTert)
+                        }
+                        .padding(.horizontal, DS.s4)
+                        .padding(.vertical, DS.s3 + 2)
+                    }
+                    .buttonStyle(.plain)
+
+                    DSRowDivider()
+
                     // Nattläge
                     settingsToggleRow(
                         icon: "moon.fill",
