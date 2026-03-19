@@ -42,9 +42,11 @@
 		AABB000000000313 /* CycleDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000413 /* CycleDay.swift */; };
 		AABB000000000314 /* NewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000414 /* NewModels.swift */; };
 		AABB000000000315 /* WakeWindowCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000415 /* WakeWindowCalculator.swift */; };
+		AABB000000000316 /* FertilityPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000416 /* FertilityPredictor.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
+		BBCC000000000208 /* FertilityPredictorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000108 /* FertilityPredictorTests.swift */; };
 		BBCC000000000202 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000010D /* Models.swift */; };
 		BBCC000000000203 /* PregnancyWeekData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000040F /* PregnancyWeekData.swift */; };
 		BBCC000000000204 /* KnowledgeBaseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000010B /* KnowledgeBaseData.swift */; };
@@ -90,10 +92,12 @@
 		AABB000000000413 /* CycleDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleDay.swift; sourceTree = "<group>"; };
 		AABB000000000414 /* NewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewModels.swift; sourceTree = "<group>"; };
 		AABB000000000415 /* WakeWindowCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeWindowCalculator.swift; sourceTree = "<group>"; };
+		AABB000000000416 /* FertilityPredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FertilityPredictor.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
 		BBCC000000000107 /* WakeWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeWindowTests.swift; sourceTree = "<group>"; };
+		BBCC000000000108 /* FertilityPredictorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FertilityPredictorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,7 @@
 				AABB000000000414 /* NewModels.swift */,
 				AABB00000000010E /* OnboardingView.swift */,
 				AABB000000000415 /* WakeWindowCalculator.swift */,
+				AABB000000000416 /* FertilityPredictor.swift */,
 				AABB00000000040E /* PregnancyDashboard.swift */,
 				AABB00000000040F /* PregnancyWeekData.swift */,
 				AABB00000000010F /* ProfileView.swift */,
@@ -180,6 +185,7 @@
 			children = (
 				BBCC000000000101 /* BabyCareTests.swift */,
 				BBCC000000000107 /* WakeWindowTests.swift */,
+				BBCC000000000108 /* FertilityPredictorTests.swift */,
 			);
 			name = Tests;
 			path = Tests/BabyCareTests;
@@ -313,6 +319,7 @@
 				AABB000000000314 /* NewModels.swift in Sources */,
 				AABB00000000020E /* OnboardingView.swift in Sources */,
 				AABB000000000315 /* WakeWindowCalculator.swift in Sources */,
+				AABB000000000316 /* FertilityPredictor.swift in Sources */,
 				AABB00000000030E /* PregnancyDashboard.swift in Sources */,
 				AABB00000000030F /* PregnancyWeekData.swift in Sources */,
 				AABB00000000020F /* ProfileView.swift in Sources */,
@@ -328,6 +335,7 @@
 			files = (
 				BBCC000000000201 /* BabyCareTests.swift in Sources */,
 				BBCC000000000207 /* WakeWindowTests.swift in Sources */,
+				BBCC000000000208 /* FertilityPredictorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -32,7 +32,7 @@ struct FertilityDashboard: View {
         return max(1, min(day, cycleLength))
     }
 
-    private var cyclePhase: CyclePhase {
+    private var cyclePhase: DashboardCyclePhase {
         guard let day = currentCycleDay else { return .unknown }
         let ovulationDay = cycleLength - 14
         let fertileStart = ovulationDay - 5
@@ -507,7 +507,7 @@ struct FertilityDashboard: View {
 
 // MARK: - Cycle Phase
 
-private enum CyclePhase {
+private enum DashboardCyclePhase {
     case menstruation
     case follicular
     case fertile
