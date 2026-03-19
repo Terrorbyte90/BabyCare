@@ -64,7 +64,10 @@ extension Course {
         Course.forstaAretsUtveckling,
         Course.amningGuide,
         Course.forlossningsForberedelse,
-        Course.bebisenForstaAret
+        Course.bebisenForstaAret,
+        Course.fertilitetKropp,
+        Course.babySomn,
+        Course.livetSomNyForalder
     ]
     static var allCourses: [Course] { all }
 }
@@ -3289,5 +3292,1184 @@ extension Course {
         ],
         targetAudience: "Föräldrar med barn 0-12 månader",
         estimatedWeeks: 5
+    )
+}
+
+// MARK: - Course 9: Fertilitet & Kropp
+
+extension Course {
+    static let fertilitetKropp = Course(
+        id: "fertility_body",
+        title: "Fertilitet & Kropp",
+        subtitle: "Förstå din fertilitet",
+        description: "En grundlig kurs om hur kroppen fungerar under försök att bli gravid. Lär dig om menscykeln, det fertila fönstret, mätmetoder och hur livsstil påverkar fertiliteten — med stöd för hela resan.",
+        icon: "heart.circle.fill",
+        gradient: LinearGradient(colors: [Color(hex: "F43F5E"), Color(hex: "FB7185")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "fb-1",
+                title: "Menscykeln och hormoner",
+                subtitle: "Din cykels fyra faser",
+                icon: "waveform.path",
+                introduction: """
+                Menscykeln är långt mer än bara mensen — det är ett komplext hormonellt orkesterverk i fyra distinkta faser. Varje fas påverkar din energi, humör, libido och kroppens beredskap för befruktning. Att förstå dessa faser är grunden för all fertilitetskunskap.
+
+                Östrogen, progesteron, LH och FSH samarbetar i ett precist mönster. När du lär dig känna igen kroppens signaler i varje fas kan du arbeta med din cykel snarare än mot den — och få en mycket tydligare bild av vad som händer varje månad.
+
+                I den här modulen går vi igenom alla fyra faser, de viktigaste hormonerna och vad du kan förvänta dig av din kropp under cykeln.
+                """,
+                keyPoints: [
+                    "Cykelns fyra faser: menstruation, follikulär, ovulation och lutealfas",
+                    "FSH stimulerar äggmognaden i follikulärfasen",
+                    "LH-toppen triggar ovulationen — vanligtvis mitt i cykeln",
+                    "Progesteron dominerar lutealfasen och förbereder livmodern",
+                    "En 'normal' cykel är 21–35 dagar — stor variation är vanlig"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Emma har alltid haft oregelbundna cykler på 26–33 dagar och undrar om det är ett problem.",
+                        wrongApproach: "Anta att oregelbundenhet alltid betyder hormonella problem och bli orolig.",
+                        rightApproach: "Förstå att variation på upp till 7–9 dagar fortfarande kan vara normal. Börja spåra cykeln i 3 månader för att se mönster och ta sedan upp det med en gynekolog om variationen fortsätter.",
+                        explanation: "En enstaka oregelbunden cykel är sällan ett tecken på problem. Tre månaders spårning ger ett mycket mer informativt underlag för samtal med vården."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Starta din cykelkalender",
+                    description: "Börja spåra din cykel och märk ut de fyra faserna varje dag under en hel cykel.",
+                    steps: [
+                        "Notera cykeldagens nummer varje morgon (dag 1 = mens börjar)",
+                        "Markera: mensfas (dag 1–5), follikulärfas (dag 6–13), ovulation (dag 14±), lutealfas (dag 15–28)",
+                        "Skriv kort om energi och humör varje dag (1–5 i skala)",
+                        "Notera eventuella fysiska symtom: ömma bröst, midjeont, mellanblödning",
+                        "Jämför tre cykler och se om du hittar dina egna mönster"
+                    ],
+                    duration: "2–3 minuter dagligen i en hel cykel"
+                ),
+                reflectionQuestions: [
+                    "Vilken fas i cykeln känner du dig starkast och mest energifull?",
+                    "Har du märkt av PMS-symtom i lutealfasen? Vad hjälper dig?",
+                    "Hur länge har din cykel vanligtvis varit — är det konsekvent?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Många som börjar spåra sin cykel berättar om hur det förändrar deras självkännedom.",
+                    consensus: "Att faktiskt förstå sin cykel — inte bara perioden — beskrivs som en ögonöppnare. Många önskar de fått lära sig detta tidigare.",
+                    quotes: [
+                        "\"Jag är 28 år och visste inte att ovulationen händer bara en dag. Trodde det pågick hela veckan.\" – Sofia",
+                        "\"Sedan jag förstår cykeln har jag slutat kämpa mot mitt humör. Jag vet nu varför dag 24 alltid är svår.\" – Anna",
+                        "\"Appen hjälpte mig se att min lutealfas bara är 9 dagar — det är för kort. Nu vet jag vad jag ska fråga läkaren om.\" – Karin"
+                    ],
+                    source: "Baserat på reproduktiv fysiologi och Taking Charge of Your Fertility (Weschler)"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "fb-2",
+                title: "Det fertila fönstret",
+                subtitle: "Sex dagar som förändrar allt",
+                icon: "calendar.circle.fill",
+                introduction: """
+                Det fertila fönstret är de dagar i cykeln då graviditet är möjlig — och det är kortare än de flesta tror. Ett ägg lever bara 12–24 timmar efter ovulationen, men spermier kan överleva upp till fem dagar i livmoderhalsen. Det innebär ett möjligt fönster på upp till sex dagar per cykel.
+
+                Att identifiera ditt fertila fönster handlar om att kombinera flera tecken: cervixsekret, basal kroppstemperatur och eventuell LH-mätning. Inget av dessa tecken är perfekt ensamt, men tillsammans ger de en stark signal.
+
+                Många par försöker för sällan eller vid fel tidpunkt. Att förstå det fertila fönstret ökar chanserna markant utan att det behöver bli stressigt.
+                """,
+                keyPoints: [
+                    "Det fertila fönstret är 5–6 dagar per cykel — upp till 5 dagar före ovulationen",
+                    "Äggviteliknande cervixsekret signalerar att du snart är i ditt fönster",
+                    "Spermier överlever 3–5 dagar i rätt miljö — börja försöka när sekretet förändras",
+                    "Ovulationstest (LH-test) fångar LH-toppen 24–36 timmar före ägglossningen",
+                    "Regelbundet sex var 2–3 dag under fönstret ger bäst chanser"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Mia och hennes partner försöker bara på dag 14 eftersom de hört att ovulation alltid sker då.",
+                        wrongApproach: "Låsa sig vid dag 14 som universell ovulationsdag.",
+                        rightApproach: "Förstå att dag 14 är ett genomsnitt för en 28-dagarscykel. Mia bör spåra sitt cervixsekret och använda LH-test för att hitta sin personliga ovulationstidpunkt.",
+                        explanation: "Ovulation varierar enormt mellan individer och cykler. Att förlita sig på en fast dag minskar chanserna avsevärt om din cykel avviker från genomsnittet."
+                    ),
+                    CourseExample(
+                        scenario: "Lisa sparar upp sig för att försöka exakt på ovulationsdagen, tänkande att det ger störst chans.",
+                        wrongApproach: "Vänta med sex tills LH-toppen är bekräftad.",
+                        rightApproach: "Börja ha sex när äggviteliknande cervixsekret uppträder — det kan vara 3–5 dagar före ovulationen. Fortsätt varannan dag tills basal temperaturen stiger.",
+                        explanation: "Eftersom ägget lever kort tid och spermier lever längre, ger sex FÖRE ovulationen faktiskt bättre chanser än att vänta tills exakt på dagen."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Cervixsekret-dagbok",
+                    description: "Lär dig läsa ditt cervixsekret för att identifiera det fertila fönstret.",
+                    steps: [
+                        "Kontrollera sekretet varje morgon — torka med toalettpapper före toalettbesöket",
+                        "Notera: torrt, kremigt/vitt, lottionsliknande, eller äggviteliknande (klar och elastisk)",
+                        "Äggviteliknande sekret = du är i eller nära det fertila fönstret",
+                        "Markera i din kalender och jämför med din cykeldag",
+                        "Gör detta i 2 cykler för att se ditt personliga mönster"
+                    ],
+                    duration: "2 minuter dagligen"
+                ),
+                reflectionQuestions: [
+                    "Har du märkt förändringar i ditt sekret under cykeln tidigare — utan att veta varför?",
+                    "Hur känns tanken på att aktivt spåra fertiliteten — befriande eller stressig?",
+                    "Pratar du och din partner öppet om timing och försök?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Erfarenheter från par som lärt sig identifiera det fertila fönstret:",
+                    consensus: "De flesta som börjar spåra aktivt berättar att de känt sig mer i kontroll. Många blev förvånade över hur tidigt i cykeln det fertila fönstret kom för dem.",
+                    quotes: [
+                        "\"Vi försökte i 8 månader på 'fel' dagar. En vecka efter att jag lärde mig om cervixsekret blev jag gravid.\" – Petra",
+                        "\"LH-testerna tog bort en del av mysteriet och hjälpte oss ha sex vid rätt tidpunkt utan att känna press varje dag.\" – Marcus & Johanna",
+                        "\"Jag är glad att jag lärde mig detta — men det är viktigt att inte bli besatt av det heller.\" – Elin"
+                    ],
+                    source: "Baserat på fertilitetsövervakning enligt Fertility Awareness Method"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "fb-3",
+                title: "BBT och LH-mätning",
+                subtitle: "Verktyg för exakt spårning",
+                icon: "thermometer.medium",
+                introduction: """
+                Basal kroppstemperatur (BBT) och LH-mätning är två kraftfulla verktyg som kompletterar varandra. BBT-mätning bekräftar att ovulation har skett — temperaturen stiger 0,2–0,4°C efter ägglossningen och håller sig förhöjd under lutealfasen. LH-test förutsäger ovulation 24–36 timmar i förväg.
+
+                Tillsammans med cervixsekret ger dessa tre tecken — ibland kallade "symptotermala metoden" — en heltäckande bild av cykeln. Det kräver lite rutin och disciplin, men belöningen är en djup förståelse för din unika fertilitetsprofil.
+
+                Det är viktigt att förstå att BBT mäter i efterhand och LH-test mäter i förväg. De fyller alltså helt olika funktioner och är starkast när de används tillsammans.
+                """,
+                keyPoints: [
+                    "BBT mäts direkt vid uppvaknade, innan du ens sätter dig upp",
+                    "Temperaturen stiger 0,2–0,4°C dagen efter ovulation",
+                    "BBT bekräftar att ovulation skett — den förutsäger inte",
+                    "LH-test är positivt 24–36 timmar FÖRE ovulationen",
+                    "Sjukdom, alkohol och sömnbrist påverkar BBT-resultaten"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Sara mäter sin temperatur men glömde ta den en dag och är förvirrad av grafen.",
+                        wrongApproach: "Kasta hela cykeln och börja om.",
+                        rightApproach: "Markera det saknade värdet och tolka grafen med det i åtanke. En mätvärde har lite inverkan på helheten — leta efter det tydliga temperaturskiftet.",
+                        explanation: "BBT-grafer är sällan perfekta. Det övergripande mönstret — en tydlig temperaturstegring — är viktigare än enstaka avvikelser."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Starta BBT-mätning",
+                    description: "Sätt upp rutinen för daglig BBT-mätning och börja bygga din temperaturkurva.",
+                    steps: [
+                        "Köp ett BBT-termometer (mäter till 0,1 graders noggrannhet)",
+                        "Lägg termometern på nattduksbordet — använd den INNAN du lyfter huvud från kudden",
+                        "Mät varje morgon vid samma tid (±30 minuter)",
+                        "Notera temperaturen direkt i en app eller på papper",
+                        "Markera när mensen börjar, när sekretet förändras, och när temperaturen stiger",
+                        "Fortsätt minst 2 cykler för att se ett mönster"
+                    ],
+                    duration: "2 minuter varje morgon"
+                ),
+                reflectionQuestions: [
+                    "Verkar rutinen med BBT-mätning hanterbar för dig — eller stressar den dig?",
+                    "Har du sett en tydlig temperaturstegring i din graf?",
+                    "Hur kombinerar du BBT med andra fertilitetsmetoder?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Erfarenheter med BBT och LH-testning:",
+                    consensus: "BBT-spårning beskrivs som tidskrävande men lärorikt. Många berättar att det tog 2–3 cykler innan mönstret blev tydligt. LH-test upplevs som enklare att börja med.",
+                    quotes: [
+                        "\"BBT-grafen blev mitt smarta sätt att bekräfta att jag faktiskt ovulerar. Det var ovärderlig information.\" – Therese",
+                        "\"Jag kombinerar LH-strip och BBT — LH ger mig förvarning och BBT bekräftar. Det funkar perfekt för mig.\" – Rebecka",
+                        "\"Det tog tre månader innan min graf började se 'rätt' ut. Ha tålamod med processen.\" – Frida"
+                    ],
+                    source: "Baserat på symptotermala metoden och Taking Charge of Your Fertility"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "fb-4",
+                title: "Livsstil och fertilitet",
+                subtitle: "Hur dina vanor påverkar chanserna",
+                icon: "leaf.fill",
+                introduction: """
+                Fertilitet är inte enbart genetik — livsstilsfaktorer har en dokumenterad påverkan på både äggkvalitet, spermiekvalitet och hormonbalans. Den goda nyheten är att många av dessa faktorer är påverkbara. Förändringar i kost, träning, sömn och stressnivå kan göra en mätbar skillnad på relativt kort tid.
+
+                Det handlar inte om att vara perfekt eller följa en strikt regim. Forskningen pekar på att moderata, hållbara förändringar — snarare än extrema insatser — ger bäst resultat. Och kom ihåg: det gäller båda partnerna. Spermiekvalitet påverkas lika mycket av livsstil som äggkvalitet.
+
+                I den här modulen tittar vi på de faktorer som faktiskt har vetenskapligt stöd — utan att ge efter för kvacksalveri eller orealistiska löften.
+                """,
+                keyPoints: [
+                    "Rökning skadar äggkvalitet, spermier och hormonbalans — sluta om möjligt",
+                    "BMI utanför normalintervallet (18,5–25) påverkar ovulationen negativt",
+                    "Extrem träning kan störa menscykeln — måttlig rörelse är optimal",
+                    "Folsyra (400–800 mcg) är det mest dokumenterade kosttillskottet för fertilitet",
+                    "Spermier tar 72 dagar att produceras — manlig livsstil spelar lika stor roll"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Jonas dricker 15–20 glas alkohol per vecka och paret försöker bli gravida.",
+                        wrongApproach: "Fokusera bara på kvinnans livsstil eftersom det är hon som bär graviditeten.",
+                        rightApproach: "Informera Jonas om att alkohol direkt försämrar spermiekvalitet, testosteronnivåer och rörlighet. Forskning visar att manlig alkoholkonsumtion på denna nivå signifikant minskar befruktningschanserna.",
+                        explanation: "Manlig fertilitet är lika viktig som kvinnlig. Spermier bildas under 72 dagar — förändringar i livsstil syns i spermieprover efter ca 3 månader."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Fertilitetsvänlig veckoplan",
+                    description: "En veckas fokus på de livsstilsfaktorer som har störst påverkan.",
+                    steps: [
+                        "Måndag: Börja ta folsyra (båda partners, om möjligt)",
+                        "Tisdag: Byt ut en alkoholfri dag — notera hur det känns",
+                        "Onsdag: 30 minuters promenad — måttlig träning gynnar fertilitet",
+                        "Torsdag: Sömnfokus — lägg dig 30 minuter tidigare",
+                        "Fredag: Kostgranskning — ät fler grönsaker och fullkorn",
+                        "Helgen: Stressreduktion — en aktivitet du vet hjälper dig koppla av"
+                    ],
+                    duration: "En vecka"
+                ),
+                reflectionQuestions: [
+                    "Vilken livsstilsfaktor tror du har störst påverkan på dig personligen?",
+                    "Har du och din partner diskuterat livsstilsförändringar inför försöken?",
+                    "Vad är mest realistiskt för er att förändra just nu?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Livsstilsförändringar under TTC — gemensamma erfarenheter:",
+                    consensus: "De flesta berättar att livsstilsförändringar under TTC kändes meningsfulla oavsett om de hade direkt effekt. Känslan av att göra något aktivt hjälpte mot ångesten att vänta.",
+                    quotes: [
+                        "\"Vi slutade dricka alkohol båda två. Det blev oväntat ett bra sätt att hantera stressen av TTC — vi var ett team.\" – Sara & Johan",
+                        "\"Jag la på 5 kilo för att mitt BMI var lite lågt. Min cykel blev mer regelbunden direkt.\" – Lena",
+                        "\"Folsyran tog jag i 6 månader innan vi lyckades. Vet inte om den hjälpte men det kändes bra.\" – Maria"
+                    ],
+                    source: "WHO, Läkemedelsverket, American Society for Reproductive Medicine"
+                ),
+                readingTimeMinutes: 11
+            ),
+            CourseModule(
+                id: "fb-5",
+                title: "När det tar tid — nästa steg",
+                subtitle: "Vad gäller och när söka hjälp",
+                icon: "clock.arrow.circlepath",
+                introduction: """
+                För de flesta par tar det flera månader att bli gravida — och det är helt normalt. Statistiskt sett uppnår ungefär 85 % av par graviditet inom ett år av regelbundna försök. Men månader av negativa tester kan ta på krafterna, och det är viktigt att veta när det är läge att söka professionell hjälp.
+
+                Riktlinjerna är tydliga: om du är under 35 och försökt i ett år utan resultat, är det dags att kontakta vården. Om du är 35 eller äldre gäller sex månader. Och vid kända riskfaktorer — oregelbundna cykler, endometrios, tidigare STI eller manliga faktorer — kan det vara värt att söka hjälp tidigare.
+
+                Att söka hjälp är inte ett misslyckande — det är ett aktivt val att ta kontroll. Utredning ger svar, och svar ger möjligheter.
+                """,
+                keyPoints: [
+                    "85 % av par uppnår graviditet inom 12 månader av regelbundna försök",
+                    "Under 35 år: sök hjälp efter 12 månaders försök utan resultat",
+                    "35 år eller äldre: sök hjälp efter 6 månader",
+                    "Kända riskfaktorer: oregelbunden cykel, endometrios, PCOS — sök tidigare",
+                    "Första steget är vanligtvis hormontester och spermieprov — relativt enkelt"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Anna, 32, har försökt i 14 månader. Hennes läkare sa 'fortsätt försöka, det tar tid'.",
+                        wrongApproach: "Acceptera det och vänta ytterligare ett år.",
+                        rightApproach: "Be om en remiss till gynekolog eller fertilitetsläkare. Vid 12+ månaders försök utan graviditet har du rätt att kräva en utredning. Ta med en lista på cykeldata och spårning du gjort.",
+                        explanation: "En allmänläkare är inte alltid uppdaterad på fertilitetsvård. Att vara självhävdande och begära remiss är helt befogat efter 12 månaders försök."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Förbered ditt läkarbesök",
+                    description: "Sammanfatta din fertilitetsspårning och förbered frågor inför ett läkarbesök.",
+                    steps: [
+                        "Sammanfatta dina cykellängder de senaste 6 månaderna",
+                        "Anteckna eventuella symtom: oregelbundna blödningar, smärta, flödesproblem",
+                        "Skriv ner hur länge ni försökt och hur ofta",
+                        "Förbered 3–5 frågor du vill ha svar på",
+                        "Be din partner komma med — mannens hälsa undersöks lika viktigt"
+                    ],
+                    duration: "30 minuter förberedelse"
+                ),
+                reflectionQuestions: [
+                    "Hur hanterar du månader av väntan och osäkerhet?",
+                    "Har du och din partner samma inställning till när ni ska söka hjälp?",
+                    "Vad är dina största farhågor inför en eventuell utredning?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Erfarenheter från par som sökte hjälp:",
+                    consensus: "Att ta steget att söka hjälp beskrivs som en lättnad. Många ångrar att de väntade för länge. Utredningsfasen kan vara tuff men ger svar.",
+                    quotes: [
+                        "\"Väntade ett och ett halvt år med att söka hjälp. Hade vi gått ett år in hade vi sparat oss 6 månader av onödig väntan.\" – Helena",
+                        "\"Det kändes som ett misslyckande att söka IVF-hjälp. Nu ser jag det som det smartaste vi gjort.\" – Kristina & Peter",
+                        "\"Spermieprovet visade låg rörlighet. Det visste vi inte förrän vi utredde. Kände mig dum att vi inte kollat det tidigare.\" – Markus"
+                    ],
+                    source: "SFOG (Svensk förening för obstetrik och gynekologi), 1177 Vårdguiden"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "fb-6",
+                title: "Emotionell hälsa under TTC",
+                subtitle: "Hålla sig hel när det är svårt",
+                icon: "brain.head.profile",
+                introduction: """
+                Att försöka bli gravid utan att lyckas kan vara en av de emotionellt mest påfrestande upplevelserna ett par genomgår. Ångesten inför ett nytt test, sorgen när mensen kommer igen, stressen i relationen — det är verkliga och tunga känslor som ofta underskattas av omgivningen.
+
+                Forskning visar att stress inte orsakar infertilitet, men kronisk stress påverkar hormonbalansen. Ännu viktigare: psykisk ohälsa under TTC-perioden är vanlig och tar inte hand om sig själv. Du förtjänar stöd.
+
+                I den här modulen pratar vi om hur du kan ta hand om dig emotionellt, kommunicera med din partner, och när det kan vara rätt att söka professionellt psykologstöd.
+                """,
+                keyPoints: [
+                    "Ångest och depression är vanligare under TTC än vad folk pratar om",
+                    "Stress orsakar inte infertilitet men påverkar hormonbalansen negativt",
+                    "Kommunikation med partner är avgörande — ni kan ha helt olika hanteringsstrategier",
+                    "Socialt stöd — vänner, grupper, terapi — är dokumenterat hjälpsamt",
+                    "Det är okej att ta pauser från aktiv TTC-försökning för din mentala hälsa"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Lena vill prata om TTC-processen med sin man varje dag, men han stänger av och vill 'inte ta hem jobbet'.",
+                        wrongApproach: "Tolka hans tystnad som ointresse eller att han inte bryr sig.",
+                        rightApproach: "Förstå att par hanterar emotionell stress på fundamentalt olika sätt. Komma överens om 'TTC-fria' dagar och dedikerade samtalstider — det ger båda kontroll.",
+                        explanation: "Olikheter i kommunikationsstilar är bland de vanligaste relationsstressorerna under TTC. Att sätta upp strukturer för när ni pratar om det hjälper båda."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Parsamtal om TTC-resan",
+                    description: "Ett strukturerat samtal med din partner för att stämma av emotionellt var ni befinner er.",
+                    steps: [
+                        "Välj ett neutralt tillfälle — inte precis efter ett negativt test",
+                        "Varje partner delar: 'En sak jag är tacksam för i vår resa'",
+                        "Varje partner delar: 'En sak jag finner svårast just nu'",
+                        "Diskutera: 'Hur kan jag stötta dig bättre?'",
+                        "Avsluta med ett konkret nästa steg ni tar tillsammans"
+                    ],
+                    duration: "30–45 minuter"
+                ),
+                reflectionQuestions: [
+                    "Hur mår du psykiskt under TTC-resan — har du ett ärligt svar på det?",
+                    "Har du berättat för din partner hur du faktiskt mår, eller håller du något tillbaka?",
+                    "Vilka aktiviteter eller rutiner hjälper dig att känna dig hel — utanför TTC-fokuset?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om den emotionella sidan av TTC:",
+                    consensus: "Det är den del av TTC som är minst synlig men mest påfrestande. Många berättar att terapin eller stödgruppen var den viktigaste insatsen under hela resan.",
+                    quotes: [
+                        "\"Alla frågar om det 'fungerar' — ingen frågar hur du mår. Det är ensamt.\" – Maja",
+                        "\"Jag sökte KBT-terapi efter 18 månader av TTC. Det räddade mitt förhållande.\" – Cecilia",
+                        "\"Vi tog en tre-månaders paus från aktivt försökande. Det var det bästa vi gjorde — vi fick tillbaka oss själva.\" – Tobias & Eva"
+                    ],
+                    source: "Psykologisk forskning om infertilitetsrelaterad stress, KBT-baserad coping"
+                ),
+                readingTimeMinutes: 10
+            )
+        ],
+        targetAudience: "TTC",
+        estimatedWeeks: 4
+    )
+}
+
+// MARK: - Course 10: Babysömn 0–12 månader
+
+extension Course {
+    static let babySomn = Course(
+        id: "baby_sleep",
+        title: "Babysömn 0–12 månader",
+        subtitle: "Bygg hälsosamma sömnvanor",
+        description: "En komplett guide till babysömn från nyfödd till ett-åring. Lär dig vad som är normalt, hur du skapar hållbara sömnrutiner och hur du navigerar regressioner och övergångar med trygghet.",
+        icon: "moon.zzz.fill",
+        gradient: LinearGradient(colors: [Color(hex: "4F46E5"), Color(hex: "818CF8")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "bs-1",
+                title: "Nyföddsömn — normalt och förväntat",
+                subtitle: "Förväntningarna som gör skillnad",
+                icon: "moon.stars.fill",
+                introduction: """
+                Nyfödda sover mycket — upp till 16–18 timmar per dygn — men sällan mer än 2–3 timmar i sträck. Detta är helt biologiskt normalt och handlar om magsäckens lilla storlek, det höga kaloriberäkningsbehovet och sömncykelns struktur. Att förvänta sig nattlångasömn de första veckorna skapar onödig frustration.
+
+                Nyföddsömn är kaotisk och oförutsägbar — och det är meningen. Bebisens dygnsrytm är inte inbyggd från början utan formas gradvis under de första 3–4 månaderna. Din roll är att tillhandahålla en trygg sömnmiljö och responsivt stöd, inte att programmera ett schema.
+
+                Att förstå vad som faktiskt är normalt hjälper dig att vila i kaos snarare än att kämpa mot det.
+                """,
+                keyPoints: [
+                    "Nyfödda sover 16–18 timmar per dygn i korta pass om 2–3 timmar",
+                    "Dygnsrytm etableras inte förrän vid 3–4 månaders ålder",
+                    "REM-sömn utgör 50 % av nyföddsömnen — viktig för hjärnutveckling",
+                    "Hungersignaler vaknar var 2–3 timme — nattmatning är biologiskt nödvändig",
+                    "Safe sleep: rygg, fast madrass, ingen lös sängklädsel under 12 månader"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Leila, 3 veckor gammal, vaknar var 90:e minut på natten och hennes föräldrar tror att något är fel.",
+                        wrongApproach: "Söka efter sömnmetoder för att 'träna' bebisen att sova längre.",
+                        rightApproach: "Förstå att 90 minuters sömncykler är normalt för en nyfödd och att täta uppvaknanden är biologiska behov. Fokusera på skiftesarbete med partner och vila när bebisen sover.",
+                        explanation: "Att försöka sömnträna en nyfödd är kontraproduktivt och potentiellt skadligt. De täta uppvaknandena är en skyddsmekanism, inte ett problem att lösa."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Skiftschema för de första veckorna",
+                    description: "Planera ett realistiskt sömnschema för er som par under de första intensiva veckorna.",
+                    steps: [
+                        "Dela upp natten i 'tidigt' (21:00–02:00) och 'sent' (02:00–07:00) pass",
+                        "En förälder har ansvaret per pass — den andra sover oavbrutet",
+                        "Rotera varje natt eller varannan natt beroende på amning/pumpning",
+                        "Håll ett enkelt schema skrivet — det minskar nattliga diskussioner",
+                        "Utvärdera schemat efter en vecka och justera"
+                    ],
+                    duration: "Planering: 20 minuter. Genomförande: 4–8 veckor"
+                ),
+                reflectionQuestions: [
+                    "Hur förberedda var ni på hur lite ni skulle sova de första veckorna?",
+                    "Vilket stöd har ni runt er — kan ni be om avlastning?",
+                    "Hur hanterar ni frustrationen när ingenting fungerar och bebisen skriker?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om de första veckornas sömnkaos:",
+                    consensus: "Det allra vanligaste rådet från föräldrar längre fram är: 'Det går över'. De flesta beskriver vecka 4–8 som det tuffaste och att det vänder vid 3–4 månader.",
+                    quotes: [
+                        "\"Ingen berättade för mig att vi inte skulle sova de första månaderna. Hade jag vetat hade jag förberett mig mentalt.\" – Hanna",
+                        "\"Skiftschemat räddade oss. Vi visste att vi inte behövde klara av allt — bara vårt pass.\" – Jonas",
+                        "\"Vecka 6 var absolut mörkast. Vecka 12 sov hon 4 timmar i sträck och det kändes som ett mirakel.\" – Emma"
+                    ],
+                    source: "Karolinska Institutet, Normal infant sleep development, AAP Safe Sleep guidelines"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "bs-2",
+                title: "Wake windows och sömntecken",
+                subtitle: "Timing är allt",
+                icon: "clock.fill",
+                introduction: """
+                Wake windows — den tid bebisen är vaken mellan sömnpass — är ett av de viktigaste begreppen i babysömn. Lägger du bebisen för tidigt sover den inte. Lägger du den för sent är den övertröttad, och övertröttade bebisar sover paradoxalt nog sämre.
+
+                Varje åldersgrupp har ett specifikt fönster där sömn sätter sig naturligast. Kombinerat med sömnteckensavläsning — de tidiga signalerna på att bebisen börjar bli trött — kan du optimera timingen och minska sömnkampen.
+
+                Det handlar inte om att följa ett strikt schema, utan om att lära sig läsa din bebis och agera på rätt signaler i rätt tid.
+                """,
+                keyPoints: [
+                    "0–6 veckor: wake windows 45–60 minuter",
+                    "2–3 månader: 60–90 minuter",
+                    "4–6 månader: 1,5–2,5 timmar",
+                    "7–12 månader: 2–4 timmar (ökar gradvis)",
+                    "Tidiga sömntecken: stirrigt blick, gnidning av ögon, minskad aktivitet — inte gråt"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Gustav, 5 månader, kämpar vid läggdags — skriker och verkar inte trött trots att han vaknat för länge sedan.",
+                        wrongApproach: "Vänta tills han gäspar upprepade gånger innan du börjar sömnrutinen.",
+                        rightApproach: "Starta sömnrutinen baserat på wake window — ca 2 timmar efter att han vaknade. Tidiga sömntecken är subtila; gäspningar är ett sent tecken.",
+                        explanation: "Att vänta tills sent sömntecken som gäspningar dyker upp kan innebära att bebisen redan är övertröttad och att kortisol (stresshormon) stigit, vilket gör insomning svårare."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Sömnteckens-logg",
+                    description: "Observera och notera din bebis personliga sömntecken under 3 dagar.",
+                    steps: [
+                        "Sätt en timer på 10 minuter innan förväntat wake window-slut",
+                        "Observera bebisen noga: blick, aktivitet, humör",
+                        "Notera tre saker du märker AV att bebisen börjar bli trött",
+                        "Starta sömnrutinen vid dessa tidiga tecken — inte senare",
+                        "Utvärdera: somnade lättare om du agerade tidigare?"
+                    ],
+                    duration: "3 dagars observation"
+                ),
+                reflectionQuestions: [
+                    "Vilka är din bebis unika sömntecken — utöver gråten?",
+                    "Har du märkt att din bebis sover bättre på vissa tider?",
+                    "Hur reagerar bebisen om du lägger den för tidigt vs. för sent?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om wake windows och timing:",
+                    consensus: "Wake windows beskrivs som det mest praktiskt användbara konceptet för babysömn. Många berättar att bara det förändrade hela sömnsituationen.",
+                    quotes: [
+                        "\"Wake window-konceptet var en revolution. Vi hade lagt henne för tidigt varje gång.\" – Karin",
+                        "\"Jag lärde mig hennes blick — den lite frånvarande blicken. Det är mitt signal att börja vira in henne.\" – Pernilla",
+                        "\"Det är inte ett exakt schema — det är ett fönster. Den insikten tog bort stressen.\" – Lars"
+                    ],
+                    source: "Sleep Research Society, Taking Cara Babies, pediatrisk sömnforskning"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "bs-3",
+                title: "4-månaders regressionen",
+                subtitle: "Varför allt förändras",
+                icon: "exclamationmark.triangle.fill",
+                introduction: """
+                4-månaders regressionen är en av de mest dokumenterade och utmanande förändringarna i babysömn. Runt 3,5–5 månader genomgår hjärnan en mognadssprång: sömnarkitekturen förändras permanent från nyföddsömn till vuxenliknande sömnstadier. Det innebär fler uppvaknanden mellan cykler — och ett plötsligt slut på 'lång sömnstretch'.
+
+                Det är viktigt att förstå att detta inte är en regression som 'går tillbaka' till hur det var. Sömnmönstret har förändrats permanent. Det som däremot kan förändras är hur bebisen hanterar uppvakningarna — om den har sömnassociationer eller kan återinsomna själv.
+
+                Regressionen är ett tecken på neurologisk mognad, inte på att något är fel. Men det är också ett utmärkt tillfälle att börja bygga mer hållbara sömnstrukturer.
+                """,
+                keyPoints: [
+                    "Sömnarkitekturen ändras permanent vid 3,5–5 månader",
+                    "Fler uppvaknanden är normalt — problemet är sömnassociationer",
+                    "Sömnassociationer: det bebisen kräver vid varje uppvaknande för att återinsomna",
+                    "Vanliga asociationer: amning, nappning, bärande — inte dåliga i sig",
+                    "4-månaders regression är ett bra tillfälle att börja introduera sömnritual"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Max, 4,5 månader, vaknar 6–8 gånger per natt och kräver amning vid varje uppvaknande, trots att han väjer sig i 3 månader.",
+                        wrongApproach: "Tro att det handlar om hunger och börja erbjuda ersättning på natten.",
+                        rightApproach: "Förstå att amningen har blivit en sömnassociation — Max associerar insomning med amning och kräver det vid varje uppvakningscykel. Gradvis introducera alternativa sömnrutiner vid lättare uppvaknanden.",
+                        explanation: "Täta nattuppvaknanden vid denna ålder handlar sällan om hunger. Det handlar om sömnassociationer som formades när bebisen var yngre och som nu behöver gradvis förändras."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Kartlägg sömnassociationer",
+                    description: "Identifiera ditt barns nuvarande sömnassociationer och rangordna dem.",
+                    steps: [
+                        "Lista: vad gör du/sker vid varje insomningstillfälle? (amning, vagga, napp, bärande, musik)",
+                        "Lista: vad sker vid nattliga uppvaknanden? Är det samma mönster?",
+                        "Rangordna: vilka associationer är du redo att förändra?",
+                        "Välj EN association att gradvis förändra — börja med det enklaste",
+                        "Ge förändringen minst 5–7 nätter innan du utvärderar"
+                    ],
+                    duration: "Planering 20 minuter, genomförande 1–2 veckor"
+                ),
+                reflectionQuestions: [
+                    "Vilka sömnassociationer har ditt barn? Är du redo att förändra dem?",
+                    "Hur mår du som förälder mitt i regressionen — söker du stöd?",
+                    "Vad är din viktigaste prioritet: kortvarig sömn nu vs. långsiktig sömnförmåga?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om 4-månaders regressionen:",
+                    consensus: "Beskrivs konsekvent som en av de tuffaste perioderna. Vetskapen om att det är normalt och biologiskt hjälper, men tar inte bort tröttheten. Stöd från partner och omgivning är nyckeln.",
+                    quotes: [
+                        "\"Ingen varnade mig. Jag trodde att min bebis var sjuk när hon gick från 5-timmars sträckor till att vakna varje timme.\" – Ylva",
+                        "\"När jag förstod sömnassociations-konceptet klickade allt. Det handlar inte om mat, det handlar om vanor.\" – Markus",
+                        "\"Det tog 3 veckor men vi kom igenom det. Var snäll mot dig själv under den perioden.\" – Sofia"
+                    ],
+                    source: "Karolinska sömnforskning, Macall Gordon, sömnvetenskapen bakom sömnarkitektur"
+                ),
+                readingTimeMinutes: 11
+            ),
+            CourseModule(
+                id: "bs-4",
+                title: "Sömnritualer som fungerar",
+                subtitle: "Bygga en konsekvent sömnrutin",
+                icon: "moon.fill",
+                introduction: """
+                En sömnritual — en konsekvent sekvens av aktiviteter före sömn — är ett av de mest kraftfulla verktygen för babysömn. Ritualen signalerar till bebisens hjärna att sömn är på väg, och sänker arousalsnivån gradvis. Det behöver inte vara komplicerat: 15–20 minuter med samma aktiviteter i samma ordning räcker.
+
+                Forskning visar att bebisar och barn med konsekvent sömnritual somnar snabbare, sover längre och vaknar färre gånger på natten. Ritualen skapar förutsägbarhet — och förutsägbarhet är trygghet.
+
+                En effektiv sömnritual inkluderar visuella, auditiva och sensoriska signaler: dimma belysningen, samma musik eller vitt brus, bad eller massage, matning, sovbok eller sång.
+                """,
+                keyPoints: [
+                    "Konsekvent sömnritual minskar insomingstid och nattuppvaknanden",
+                    "15–20 minuters ritual är tillräcklig — mer är inte bättre",
+                    "Sekvensen är viktigare än enskilda aktiviteterna",
+                    "Dim belysning 30 minuter före sömn hjälper melatoninproduktionen",
+                    "Ritualen ska avslutas i sängplatsen — inte i dina armar"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Isabella, 7 månader, somnar alltid i mammas armar men vaknar och skriker när hon läggs ner.",
+                        wrongApproach: "Fortsätta hålla henne i armarna tills hon är djupt sovandes.",
+                        rightApproach: "Förändra ritualen gradvis: avsluta matning tidigare, lägg henne sömnig men vaken i sängen, placera handen på hennes mage. Ge henne möjligheten att avsluta insomnandet själv.",
+                        explanation: "Att lägga ner bebisen sömnig men vaken är grunden för att bebisen ska lära sig insomna i sängen. Det kallas 'drowsy but awake' och är en nyckelprincip i sömncoachning."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Designa er sömnritual",
+                    description: "Skapa en 15–20 minuters sömnritual anpassad till er familj.",
+                    steps: [
+                        "Välj start: när börjar ritualen? (t.ex. bad eller dimmad belysning)",
+                        "Välj 3–4 aktiviteter i fast ordning (t.ex. bad → massage → amning/mat → sång → säng)",
+                        "Välj ett ljudlandskap: vitt brus, naturljud eller tystnad",
+                        "Bestäm avslutningsfras: samma ord varje gång ('God natt, vi ses på morgonen')",
+                        "Håll ritualen konsekvent i 5–7 dagar och notera effekt"
+                    ],
+                    duration: "Planering 15 minuter, utvärdering efter 1 vecka"
+                ),
+                reflectionQuestions: [
+                    "Har ni en sömnritual idag? Hur konsekvent är den?",
+                    "Vilka delar av ritualen fungerar bra — vad kan ni bygga vidare på?",
+                    "Hur hanterar ni ritualen när ni är borta hemifrån eller rutinen bryts?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om sömnritualer och läggdagsrutiner:",
+                    consensus: "Konsistens betonas av alla. Att ha en rutin som fungerar även på bortaplan — bada hemma, ta med sin sova-musik — ger trygghet.",
+                    quotes: [
+                        "\"Det var inte aktiviteterna som var viktiga — det var att vi alltid gjorde dem i samma ordning. Hjärnan kopplar rätt.\" – Alexander",
+                        "\"Vitt brus förändrade allt. Vi är på 14 månader och fortfarande samma ljud.\" – Ida",
+                        "\"'Drowsy but awake' lät omöjligt i veckor. Sen plötsligt lade jag henne ner och hon stängde ögonen av sig själv. Det var magiskt.\" – Gunilla"
+                    ],
+                    source: "Pediatrisk sömnforskning, Dr Marc Weissbluth, American Academy of Sleep Medicine"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "bs-5",
+                title: "Nattavvänjning — metoder och timing",
+                subtitle: "Gradvis minska nattmatning",
+                icon: "arrow.down.circle.fill",
+                introduction: """
+                Nattavvänjning — att gradvis minska eller eliminera nattmatning — är ett av de mer komplexa besluten i babysömn, eftersom det rör sig om biologiska behov, sömnassociationer och föräldrarnas värderingar på en och samma gång. Det finns ingen universell tidpunkt för när det är 'rätt' att minska nattmatning.
+
+                De flesta barn kan klara sig utan nattmatning vid 6 månaders ålder ur medicinsk synvinkel, men det är en stor skillnad mot att de ska klara sig utan. Många barn ammas eller ges flaska på natten långt in i det andra levnadsåret — och det är helt normalt.
+
+                Det viktigaste är att skilja på hungersbaserade uppvaknanden och sömnassociationsbaserade. Gradvis avvänjning, med respekt för barnets signaler, är bättre än abrupt avslutning.
+                """,
+                keyPoints: [
+                    "Medicinsk nattfasta möjlig från ca 6 månader — men behöver inte innebära avvänjning",
+                    "Skilja på hunger och sömnassociation — mattning tar 20+ minuter vid riktig hunger",
+                    "Gradvis avvänjning: minska mängd eller varaktighet med 1–2 minuter per natt",
+                    "Pappor/partner kan ta nattuppvaknanden för att undvika amningsassociation",
+                    "Abrupt avslutning fungerar för vissa barn men är inte nödvändig"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Nora, 8 månader, ammar 4 gånger per natt men äter bara i 2–3 minuter vid varje tillfälle.",
+                        wrongApproach: "Tolka kort amning som att hon inte är hungry och stoppa omedelbart.",
+                        rightApproach: "Förstå att kort amning vid uppvaknande är ett tydligt sömnassociationstecken. Börja gradvis avvänjning: minska varje amning med 1 minut per natt, tills den är 0, och ersätt med annan lugning.",
+                        explanation: "Amning som bara varar 2–3 minuter vid varje uppvaknande handlar nästan alltid om sömnassociation, inte hunger. Gradvis minskning respekterar barnets behov av trygghet."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Nattavvänjningsplan",
+                    description: "Skapa en gradvis plan för att minska eller eliminera en nattmatning.",
+                    steps: [
+                        "Välj den nattmatning du vill börja avvänja (t.ex. 02:00-matningen)",
+                        "Notera nuvarande varaktighet (t.ex. 10 minuter)",
+                        "Minska med 2 minuter per natt: dag 1 = 8 min, dag 2 = 6 min...",
+                        "När matningen är < 2 minuter, ersätt med annan lugning (klapp, sång)",
+                        "Ge 3–5 nätter på varje steg — det ska gå långsamt"
+                    ],
+                    duration: "2–4 veckor gradvis process"
+                ),
+                reflectionQuestions: [
+                    "Är du redo att börja minska nattmatning — är det din önskan eller yttre tryck?",
+                    "Hur kommunicerar du och din partner kring nattuppvaknanden och ansvarsfördelning?",
+                    "Vad är ditt mål — helt nattfasta eller bara minska antalet uppvaknanden?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om nattavvänjning:",
+                    consensus: "Timing är personlig. Många berättar att yttre tryck ('vid det här laget borde...') skapade onödig stress. Att göra det på familjens villkor och i rätt takt ger bäst resultat.",
+                    quotes: [
+                        "\"Jag sa att jag skulle sluta nattamma vid 6 månader. Vi fortsatte till 14 månader och jag ångrar ingenting.\" – Birgitta",
+                        "\"Gradvis var nyckeln för oss. En matning i taget. Det tog 6 veckor men det var smärtfritt.\" – Niklas",
+                        "\"Pappan tog nattskiften en vecka. Det tog tre nätter och sedan sov han igenom. Jag hade väntat i ett år.\" – Marianne"
+                    ],
+                    source: "WHO amningsriktlinjer, Dr Jay Gordon Night Weaning, pediatrisk sömnforskning"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "bs-6",
+                title: "Tupplursövergångar",
+                subtitle: "Navigera förändrade tupplursbehov",
+                icon: "sun.max.fill",
+                introduction: """
+                Under det första levnadsåret minskar bebisens tupplursbehov successivt: från 4–5 korta tupplurer som nyfödd till 3, sedan 2, och slutligen mot 1 vid ca 12–18 månaders ålder. Varje övergång är en stor förändring som kräver justering av hela dygnsrytmen.
+
+                Tecken på att bebisen är redo för en tupplursövergång: konsekvent kortare tupplurer, svårt att somna vid sin vanliga tupplurtid, eller att läggdagssömnen påverkas negativt av sena tupplurer.
+
+                Att göra övergångarna för tidigt är ett vanligt misstag — övertröttad bebis ger kortare tupplurer och sämre nattsömn. Att vänta för länge ger sen sova-tid och nattuppvaknanden. Det gäller att hitta rätt fönster.
+                """,
+                keyPoints: [
+                    "3→2 tupplurer: vanligtvis vid 3–4 månader",
+                    "2→1 tupplur: vanligtvis vid 15–18 månader (inte 12 månader som många tror)",
+                    "Tidiga tecken: konsistenta kortare tupplurer, motstånd vid tupplurtid",
+                    "Övergångsfasen kan ta 2–4 veckor — förvänta dig röriga dagar",
+                    "Håll läggdags flexibelt: vid tunga tupplurdagar, flytta fram lite"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Hugo, 14 månader, kämpas mot eftermiddagstuppluren men är tydligt trött runt 14:00.",
+                        wrongApproach: "Tolka motståndet som att han inte behöver tuppluren och eliminera den omedelbart.",
+                        rightApproach: "Förstå att motstånd vid 14 månader inte nödvändigtvis signalerar 2→1-övergång (den sker typiskt vid 15–18 månader). Prova att justera tupplurtid eller sömnritual snarare än att eliminera.",
+                        explanation: "Att eliminera tuppluren för tidigt leder till kronisk övertrötthet. Motstånd vid tupplurtid kan ha många orsaker — timing, sömnassociationer, miljö — som kan åtgärdas utan att eliminera tuppluren."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Tupplursdagbok",
+                    description: "Spåra tupplursmönstret under en vecka för att avgöra om en övergång är aktuell.",
+                    steps: [
+                        "Notera varje tupplur: tid, varaktighet, hur länge det tog att somna",
+                        "Notera läggdagstid och -varaktighet på natten",
+                        "Notera barnets humör: trött, pigg, irritabel?",
+                        "Identifiera mönster: sover konsekvent kort? Motstånd konsekvent?",
+                        "Jämför med ålderstypiska förväntningar och besluta om timing"
+                    ],
+                    duration: "7 dagars observation"
+                ),
+                reflectionQuestions: [
+                    "Hur ser ditt barns nuvarande tupplursschema ut — stämmer det med ålderstypiskt mönster?",
+                    "Har du märkt förändringar i nattsömnen kopplad till tupplurerna?",
+                    "Hur anpassar ni er vardag kring tupplurerna — är det flexibelt eller strikt?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om tupplursövergångar:",
+                    consensus: "2→1-övergången beskrivs som svårast och mest utdragen. Att acceptera en rörig övergångsmånad utan att stressa ger bäst resultat.",
+                    quotes: [
+                        "\"Min svärmor sa att ett-åringen inte behöver tupplur. Det stämde inte — han behövde tupplur tills han var 2,5 år.\" – Stina",
+                        "\"Övergångsfasen med en tupplur om dagen tog tre veckor av kaos. Men när vi väl var igenom var schemat fantastiskt.\" – Björn",
+                        "\"Jag lärde mig att hålla läggdagen dynamisk under övergångar. 19:30 en dag, 18:30 nästa.\" – Annelie"
+                    ],
+                    source: "Sömnforskning om nap transitions, Taking Cara Babies, The Happy Sleeper"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "bs-7",
+                title: "Sömnregression vid 8–10 månader",
+                subtitle: "Separation och motorik förändrar sömnen",
+                icon: "person.2.fill",
+                introduction: """
+                Kring 8–10 månader sker en annan vanlig sömnregression, orsakad av två parallella utvecklingssprång: separationsångest och motorisk explosion. Bebisen lär sig krypa, resa sig och stå — färdigheter som övas intensivt, till och med på natten. Och separationsångesten gör att närheten till föräldrarna känns ännu viktigare.
+
+                Till skillnad från 4-månaders regressionen är denna mer tillfällig — vanligtvis 2–6 veckor. Men det kan ändå vara påfrestande eftersom bebisen nu är starkare, mer uttrycksfull och mer kapabel att eskalera när den inte får sin vilja igenom.
+
+                Nyckeln är att möta behovet av trygghet utan att bygga nya sömnassociationer som är svåra att avveckla.
+                """,
+                keyPoints: [
+                    "8–10 månaders regression drivs av separationsångest + motorisk utveckling",
+                    "Bebisen övar motoriska färdigheter aktivt — även mitt i natten",
+                    "Separationsprotester vid sänggaende är normala och förväntade",
+                    "Konsekvent avsked-ritual minskar separationsångesten",
+                    "Regressionen är tillfällig — 2–6 veckor vanligtvis"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Elsa, 9 månader, reser sig upp i sängen och skriker vid varje uppvaknande. Hon kan inte ligga ner av sig själv.",
+                        wrongApproach: "Gå in och lägga henne ner varje gång hon reser sig — vilket triggar omedelbart uppstigning igen.",
+                        rightApproach: "Hjälp henne lära sig att lägga sig ner under dagtid via övning. På natten: gå in, säg lugnt 'läggdags', hjälp henne ner en gång utan att lyfta upp henne, lämna rummet.",
+                        explanation: "Att lägga ner bebisen upprepade gånger vid varje uppvaknande förstärker mönstret. Att lära ut förmågan under dagtid ger bebisen verktyget att använda på natten."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Trygg avskedsritual",
+                    description: "Skapa en konsekvent och trygg avskedsrutin för sänggaendet.",
+                    steps: [
+                        "Välj ett avskedsfrases som ni alltid använder: 'Godnatt, vi ses på morgonen'",
+                        "Gör en fysisk signal: kyss, kram, klapp på madrassen",
+                        "Lämna rummet konsekvent — inte smyg ut när bebisen inte ser",
+                        "Om bebisen protesterar: vänta 1–2 minuter, gå in lugnt, upprepa frasen",
+                        "Håll samma rutin under hela regressionen — konsekvens ger trygghet"
+                    ],
+                    duration: "Dagligen under regressionsperioden"
+                ),
+                reflectionQuestions: [
+                    "Hur hanterar du separationsångesten — tar det på dina egna känslor?",
+                    "Vilka sömnassociationer är du beredd att acceptera under regressionen, och vilka vill du undvika?",
+                    "Hur stöttar du dig själv och din partner under en regressionsfas?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om 8–10 månaders regressionen:",
+                    consensus: "Den tillfälliga naturen av denna regression är tröstande. Det viktigaste rådet: håll rutinerna konsekvent och undvik att skapa nya sova-krav i desperation.",
+                    quotes: [
+                        "\"Hon reste sig upp och skrek i sängen i en vecka. Dag 8 lade hon sig ner av sig själv. Det gick faktiskt fort.\" – Helena",
+                        "\"Separationsångesten slog till även vid tupplurer. Det hjälpte att göra avskedet kort och konsekvent istället för lång och dröjande.\" – Viktor",
+                        "\"Vi missade ett nattuppvaknande en natt (sov igenom det) och gissade: han somnade om av sig själv. Det var en vändpunkt.\" – Julia"
+                    ],
+                    source: "Barns separationsångest och sömnforskning, Ainsworth anknytningsteori"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "bs-8",
+                title: "Sömn och separation",
+                subtitle: "Dagis, resor och rutinbrott",
+                icon: "house.fill",
+                introduction: """
+                Sömnrutiner testas hårt av verklighetens störningar: dagisinskolning, semesterresor, tidszonsbyten, sjukdom och sjukperioder. Barn som annars sover bra kan plötsligt vakna igen — och det är normalt.
+
+                Inskolning till dagis är en av de vanligaste triggarna för sömnregression hos barn under ett år. Den nya miljön, den ökade sociala stimuleringen och separationen aktiverar stressystemet — och sömnen påverkas ofta.
+
+                Det finns strategier för att minimera störningen och snabbt återupprätta rutiner efter ett uppehåll. Det viktigaste är att inte övertolka tillfälliga baksteg som permanenta förändringar.
+                """,
+                keyPoints: [
+                    "Dagisinskolning triggar ofta 1–4 veckors sömnförsämring",
+                    "Sjukdomsperioder kräver flexibilitet — rutinen återupptas när barnet är friskt",
+                    "Resor: ta med sömnmiljömarkörer (vitt brus, sova-leksak, sov-säck)",
+                    "Tidszoner: justera 15 minuter per dag för att minska jetlag",
+                    "Tillfälliga baksteg är normala — håll grundrutinen och det löser sig"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Familjen återvänder från semesterresa och sonen, 10 månader, sover plötsligt väldigt dåligt trots att han sov bra före resan.",
+                        wrongApproach: "Söka nya sömnlösningar och tro att allt måste börjas om.",
+                        rightApproach: "Återupprätta sömnritualen konsekvent från dag ett hemma. Håll normala tider. Förvänta dig 3–7 dagar av anpassning utan att ändra grundstrategin.",
+                        explanation: "Barn behöver tid att återanpassa sig efter rutinstörningar. Att hålla sig till den kända rutinen skickar signalen att normalläget är tillbaka — och anpassningen sker snabbare."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Sömnpaketet för resande",
+                    description: "Förbered en miniversion av sömnmiljön för resor och bortavistelser.",
+                    steps: [
+                        "Lista barnets sömnmarkörer: vitt brus? Sova-leksak? Sovsäck? Specifik filt?",
+                        "Packa dessa i ett dedikerat 'sömn-kit' för resor",
+                        "Håll ritualen identisk även på hotell eller hos morföräldrar",
+                        "Säkerhetskontrollera sovmiljön på nytt ställe (inga kuddar, rätt temperatur)",
+                        "Planera en buffert av lugn tid dagen efter ankomst"
+                    ],
+                    duration: "Förberedelse 30 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vad är de viktigaste sömnmarkörerna för ditt barn — vad måste alltid följa med?",
+                    "Hur reagerar du när sömnrutinen störs — håller du dig lugn och konsekvent?",
+                    "Vilka kommande händelser kan störa sömnen — hur förbereder ni er?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om sömnrutiner och störningar:",
+                    consensus: "De som lyckas hålla grundrutinen konsekvent trots störningar berättar att anpassningen alltid sker snabbare. De som avviker för länge märker att det tar längre tid att komma tillbaka.",
+                    quotes: [
+                        "\"Dagisstart var tufft i 3 veckor. Sedan sov hon som ett log igen. Det var en period — inte ett nytt normaltillstånd.\" – Camilla",
+                        "\"Vi reser med hela sömnkitet. Vitt brus-appen, sovsäcken, nallen. Det fungerar på hotell och hemma.\" – Daniel",
+                        "\"Sjukdomar är undantag. När barnet är friskt återgår vi till rutinen, oavsett hur många dåliga vanor vi fått under sjukperioden.\" – Ingela"
+                    ],
+                    source: "Pediatrisk sömnmedicin, sömnregressioner vid dagisstart, reseanpassning"
+                ),
+                readingTimeMinutes: 8
+            )
+        ],
+        targetAudience: "Föräldrar med baby 0–12 mån",
+        estimatedWeeks: 6
+    )
+}
+
+// MARK: - Course 11: Livet som ny förälder
+
+extension Course {
+    static let livetSomNyForalder = Course(
+        id: "new_parent_life",
+        title: "Livet som ny förälder",
+        subtitle: "Navigera det nya livet",
+        description: "En ärlig kurs om hur livet förändras när du blir förälder. Parrelationen, identiteten, ansvarsfördelningen och vägen tillbaka till dig själv — med verktyg för hela övergången.",
+        icon: "figure.2.and.child.holdinghands",
+        gradient: LinearGradient(colors: [Color(hex: "10B981"), Color(hex: "34D399")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "lnf-1",
+                title: "Parrelationen efter bebisen",
+                subtitle: "Relationens nya kartografi",
+                icon: "heart.text.square.fill",
+                introduction: """
+                Att bli förälder förändrar en parrelation fundamentalt — och forskning bekräftar det. En av de mest robusta fynden i familjeforskningen är att partnertillfredsställelsen minskar markant det första året efter ett barns födelse. Det är inte ert fel. Det är normalt. Och det kan bli bättre.
+
+                Förändringarna är många: sömnbrist, ansvarsfördelning, libido, identitetsförskjutning och förlorad 'vi-tid'. Många par hamnar i ett mönster av effektiv co-föräldraskap men tappar kontakten som partners. Att uppmärksamma det är första steget.
+
+                I den här modulen pratar vi om de vanligaste relationsstressorerna under det första föräldraåret och konkreta verktyg för att navigera dem utan att tappa varandra.
+                """,
+                keyPoints: [
+                    "Partnernöjdhet minskar det första föräldraskapsåret — men kan återhämta sig",
+                    "Sömnbrist förstärker konflikter och minskar empatikapacitet",
+                    "Ojämn ansvarsfördelning är den vanligaste stressorn i heterosexuella par",
+                    "Parpratsstunder — korta, regelbundna — är viktigare än sällsynta stora samtal",
+                    "Föräldrar som upprätthåller vänskap och skratt klarar sig bättre"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Hanna och Mikael bråkar allt mer om vem som 'gör mest'. Båda känner sig underskattas.",
+                        wrongApproach: "Hålla på med ömsesidig bokföring av uppgifter som bevis i diskussionen.",
+                        rightApproach: "Boka ett 'check-in'-samtal (utan bebis) och börja med vad varje person uppskattar hos den andre. Dela sedan ärligt: 'Jag känner mig överväldigad av...' Skapa en gemensam plan snarare än en rättegång.",
+                        explanation: "Relationer under stress behöver nyheter om att den andre ser och värderar dem. Att börja med uppskattning sänker försvarsberedskapen och öppnar för verklig kommunikation."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Veckocheck-in som par",
+                    description: "Ett 20-minutersformat för att stanna upp och stämma av som par en gång i veckan.",
+                    steps: [
+                        "Välj ett fast tillfälle: söndagskväll, fredagsfrukost, etc.",
+                        "Varje person: 'Något jag uppskattade hos dig den här veckan'",
+                        "Varje person: 'Något jag behöver mer av nästa vecka'",
+                        "Gemensamt: 'En sak vi kan göra tillsammans den här veckan — bara vi'",
+                        "Avsluta: 'Tack för att du är min partner i det här'"
+                    ],
+                    duration: "20 minuter, en gång per vecka"
+                ),
+                reflectionQuestions: [
+                    "Känner du att ni är partners eller mestadels medarbetare just nu?",
+                    "Vad var det som fick er att bli ett par — finns det fortfarande kvar?",
+                    "Vad behöver DU från relationen som du inte får just nu?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om parrelationen efter bebisen:",
+                    consensus: "Det mest gemensamma: båda tyckte att den andre inte förstod hur trötta de var. Att erkänna att tröttheten gör oss till sämre partners är ett viktigt steg.",
+                    quotes: [
+                        "\"Vi gick i parterapi när bebisen var 6 månader. Det räddade inte bara relationen — det förbättrade den.\" – Erik & Sandra",
+                        "\"Fredagskväll utan mobil och bebis varannan vecka. Det kostar ingenting och är värt allt.\" – Lina",
+                        "\"Det tog ett år innan vi log mot varandra igen och menade det. Men det kom tillbaka.\" – Thomas"
+                    ],
+                    source: "John Gottman Institute, forskning om parrelationer och föräldraskap"
+                ),
+                readingTimeMinutes: 11
+            ),
+            CourseModule(
+                id: "lnf-2",
+                title: "Postpartum — kropp och sinne",
+                subtitle: "Läkning, hormoner och psykisk hälsa",
+                icon: "bandage.fill",
+                introduction: """
+                Postpartumperioden — de fyra till tolv veckorna efter förlossningen — är en av de mest intensiva kroppsliga och psykologiska övergångarna en person kan genomgå. Kroppen läker från förlossningen, hormonerna störtdyker och den psykologiska realiteten av föräldraskap sjunker in.
+
+                Postpartum blues (stämningssvängningar och gråtmildhet de första dagarna) är normalt och drabbar upp till 80 % av alla föräldrar. Postpartum depression, som är mer allvarlig och varar längre, drabbar 10–15 % och kräver professionell hjälp. Det finns också postpartum ångest, OCD-liknande tankar och i sällsynta fall postpartum psykos.
+
+                Att veta vad som är normalt, när man ska söka hjälp, och hur man tar hand om sig under den här perioden är livsviktigt.
+                """,
+                keyPoints: [
+                    "Postpartum blues: normal, drabbar 80 %, klingar av inom 2 veckor",
+                    "PPD: drabbar 10–15 %, kräver stöd/behandling — söka hjälp är styrka",
+                    "PPD drabbar även pappor och icke-bärande partners",
+                    "Hormonstörtan efter förlossning är biologisk och inte ditt fel",
+                    "Sömnbrist förstärker alla psykiska symtom — stöd är inte lyx"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Maria, 3 veckor efter förlossning, gråter varje dag, kan inte njuta av bebisen och känner sig som en dålig mamma.",
+                        wrongApproach: "Tro att det är normalt postpartum blues och vänta ut det utan att söka hjälp.",
+                        rightApproach: "Söka kontakt med barnmorska, BVC eller husläkare direkt. Symtom som varar mer än 2 veckor och inkluderar inability att njuta av bebisen är tecken på PPD — inte svaghet, utan en sjukdom som kan behandlas.",
+                        explanation: "PPD behandlas framgångsrikt med terapi, medicinering eller kombinationen. Att söka hjälp tidigt förbättrar prognosen och är det bästa för både förälder och bebis."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Postpartum välmåendekoll",
+                    description: "Gör en ärlig självskattning varje vecka under de första 3 månaderna.",
+                    steps: [
+                        "Skriv ner svar på: Hur sover jag? Hur äter jag? Hur mår jag psykiskt (1–10)?",
+                        "Notera: Har jag några glädjestunder med bebisen idag?",
+                        "Notera: Har jag haft hjälp denna vecka — av någon?",
+                        "Flagga om: siffrorna är under 5 i tre dagar i rad, eller om du har negativa tankar om dig själv eller bebisen",
+                        "Vid flaggning: kontakta barnmorska, BVC eller din läkare"
+                    ],
+                    duration: "5 minuter dagligen"
+                ),
+                reflectionQuestions: [
+                    "Vet din partner och närstående hur du faktiskt mår — inte hur du ser ut att mår?",
+                    "Har du stödsystem runt dig — vem kan du ringa om det blir svårt?",
+                    "Vad är skillnaden för dig between trött och verkligen inte okej?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om postpartumupplevelsen:",
+                    consensus: "Ärligheten om PPD och hur vanligt det är tas emot med enorm lättnad. Många berättar att de lidit i onödan för att de trodde att de var ensamma.",
+                    quotes: [
+                        "\"Jag trodde att det var så man kände sig som mamma. Ingen sa till mig att det var PPD. Sökte hjälp 6 månader för sent.\" – Kristin",
+                        "\"Min man fick PPD — ingen berättade att det var möjligt. Han fick hjälp och det förändrade allt.\" – Jessica",
+                        "\"Barnmorskan ställde EPDS-frågan vid 6-veckorskontrollen. Att bara få frågan öppnade dörren.\" – Malin"
+                    ],
+                    source: "Socialstyrelsen, Edinburgh Postnatal Depression Scale, PPD-forskning"
+                ),
+                readingTimeMinutes: 11
+            ),
+            CourseModule(
+                id: "lnf-3",
+                title: "Att dela på ansvaret",
+                subtitle: "Rättvis och hållbar ansvarsfördelning",
+                icon: "scale.3d",
+                introduction: """
+                Ojämn ansvarsfördelning är en av de vanligaste och mest relationsskadliga stressorerna under det första föräldraåret. Forskning visar att heterosexuella par systematiskt underskattar den icke-bärande partnerns bidrag — och att den bärande partnern ofta tar på sig mer än planerat, gradvis och utan medvetna beslut.
+
+                Det handlar inte bara om vem som byter flest blöjor. Det handlar om det mentala lasset — att hålla i minnet vad som behöver göras, planeras, bokas, och tänkas på. Den osynliga koordineringen av familjelivet faller oproportionerligt på en person.
+
+                Att adressera ansvarsfördelningen proaktivt — innan det blivit ett problem — ger en starkare grund för hela föräldraperioden.
+                """,
+                keyPoints: [
+                    "Mental belastning är lika tung som fysisk arbetsbelastning",
+                    "Forskning: heterosexuella par glider mot traditionella könsroller vid barns födelse",
+                    "Konkret uppdelning är bättre än löften om 'hjälper till när du ber'",
+                    "Föräldraledighetsfördelning påverkar ansvarsbalansen långsiktigt",
+                    "Regelbunden omförhandling är nödvändig — livet förändras konstant"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Sara sköter allt planering — BVC-tider, vänners presenter, barnkläder, matinköp. Hennes partner 'hjälper till'.",
+                        wrongApproach: "Fortsätta det nuvarande systemet men klaga mer.",
+                        rightApproach: "Göra det osynliga arbetet synligt: skriva upp allt Sara håller i minnet och dela listan. Sedan fördela uppgifter (inte 'hjälp') — partnern äger specifika domäner fullt ut.",
+                        explanation: "Att 'äga' en uppgift innebär att ha ansvaret för att komma ihåg, planera och utföra den — inte att vänta på instruktioner. Delat ägarskap eliminerar koordineringsbördan."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Ansvarskarta för familjen",
+                    description: "Kartlägg och omfördela familjens arbetsbelastning transparent.",
+                    steps: [
+                        "Skriv ner ALLT ni gör för familjen under en vecka — inklusive planeringen",
+                        "Markera vem som gör vad idag",
+                        "Diskutera: är fördelningen rimlig? Vad tar mest energi?",
+                        "Omfördela: välj 2–3 uppgifter som byter ägare",
+                        "Ägarskap innebär: du tänker på det, planerar det, utför det — utan påminnelse"
+                    ],
+                    duration: "1 timmes gemensamt samtal"
+                ),
+                reflectionQuestions: [
+                    "Vad bär du på som din partner inte vet om — det osynliga arbetet?",
+                    "Hur hade du velat att ansvarsfördelningen såg ut — stämmer det med verkligheten?",
+                    "Vad skulle du behöva lämna över för att känna dig mer balanserad?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om ansvarsdelning och mental belastning:",
+                    consensus: "Det mentala lasset lyfts som det minst pratade om men tyngsta. Att namnge det förändrar dynamiken direkt. Konkret uppdelning av ägarskap — inte 'hjälp' — är nyckeln.",
+                    quotes: [
+                        "\"Jag lät min man se listan på allt jag håller i minnet. Han sa ingenting på länge. Sedan tog han över BVC och alla läkarbesök.\" – Mia",
+                        "\"Vi delade föräldraledigheten 50/50. Det jämnade ut ansvarsfördelningen på ett sätt ingenting annat kunnat göra.\" – Andreas",
+                        "\"Det är inte brist på vilja — det är osynlighet. När det osynliga görs synligt förändras allt.\" – Carolina"
+                    ],
+                    source: "Forskning om mental belastning, Eve Rodsky Fair Play, jämställdhetsstatistik SCB"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "lnf-4",
+                title: "Socialt liv med baby",
+                subtitle: "Navigera det sociala livet som ny förälder",
+                icon: "person.3.fill",
+                introduction: """
+                Socialt isolering är en av de minst pratade om men mest genomgripande förändringarna när man blir ny förälder. Det spontana social livet försvinner nästan över en natt. Vänner utan barn förstår inte riktigt. Vänner med barn är lika utmattade. Och många nya föräldrar beskriver en djup ensamhet mitt i ett rum fyllt av kärlek.
+
+                Att upprätthålla och bygga sociala kontakter efter barnets ankomst är inte lyx — det är en grundläggande del av mental hälsa. Och det kräver aktivt arbete, eftersom det spontana inte längre fungerar.
+
+                I den här modulen pratar vi om hur du navigerar befintliga vänskaper, hur du hittar din nya föräldratribé och hur du sätter realistiska förväntningar på sociala aktiviteter med baby.
+                """,
+                keyPoints: [
+                    "Social isolering drabbar 40–50 % av nya föräldrar, särskilt under föräldraledigheten",
+                    "Spontaniteten försvinner — social kontakt kräver nu aktiv planering",
+                    "Föräldragrupper via BVC är en av de mest effektiva motmedelerna",
+                    "Vänskaper som överlever föräldraskapets första år är extra starka",
+                    "Socialt stöd är dokumenterat skyddande mot PPD"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Marie ser sina barnfria vänner allt mer sällan sedan bebisens ankomst. De förstår inte varför hon alltid avbokar.",
+                        wrongApproach: "Ge upp vänskaperna och anta att de inte kan förstå.",
+                        rightApproach: "Kommunicera öppet: 'Jag saknar er jättemycket. Mitt liv ser annorlunda ut just nu. Kan vi hitta ett format som funkar — t.ex. ni kommer hem till oss på lördag förmiddag?' Möt dem halvvägs.",
+                        explanation: "Många vänskaper överlever föräldraskapets omvälvning om man kommunicerar ärligt om vad som hänt och aktivt hittar nya sätt att umgås. Tystnad och uteblivande tolkas som ointresse."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Sociala kontakter — inventering och plan",
+                    description: "Kartlägg ditt sociala nätverk och skapa en realistisk plan för att upprätthålla det.",
+                    steps: [
+                        "Lista dina tre viktigaste vänskaper/relationer utanför kärnfamiljen",
+                        "Notera: hur länge sedan pratade ni senast? Varför?",
+                        "Välj EN kontakt att återaktivera den här veckan — skicka ett enkelt meddelande",
+                        "Hitta ett forum för nya föräldrarelationer: BVC-grupp, promenadgrupp, online",
+                        "Boka in en social aktivitet per vecka — liten räcker (promenad, fika hemma)"
+                    ],
+                    duration: "Planering 20 minuter, aktivitet löpande"
+                ),
+                reflectionQuestions: [
+                    "Hur ensam känner du dig under föräldraledigheten — är det svårare än du väntat?",
+                    "Vilka vänskaper är viktigast för dig att bevara — vad gör du för dem?",
+                    "Har du hittat andra föräldrar att dela erfarenheter med?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om social isolering och nya kontakter:",
+                    consensus: "Den sociala isoleringen är en av de mest oväntat svåra delarna av tidig föräldraskap. BVC-gruppen lyfts konsekvent som en livlina.",
+                    quotes: [
+                        "\"BVC-gruppen är mina bästa vänner idag. Vi träffades i Aveny-korridoren när barnen var 3 veckor. Nu är de 3 år.\" – Sara",
+                        "\"Jag förlorade tre vänner till föräldraskapets krav. Och jag fick fem nya som förstår precis.\" – Tomas",
+                        "\"Den mest värdefulla saken jag gjort är promenadgruppen varje tisdag. En timme i friska luften med folk som förstår.\" – Annika"
+                    ],
+                    source: "Forskning om social isolering vid föräldraskap, WHO mental health guidelines"
+                ),
+                readingTimeMinutes: 9
+            ),
+            CourseModule(
+                id: "lnf-5",
+                title: "Tillbaka till jobbet",
+                subtitle: "Omställningen som många underskattar",
+                icon: "briefcase.fill",
+                introduction: """
+                Återgången till arbetslivet är en av de mest emotionellt laddade händelserna i det tidiga föräldraskapets landskap. För vissa är det en lättnad och ett välkommet identitetsskifte tillbaka. För andra är det en sorg — ett avsked från en intensiv tid med barnet. De flesta är en blandning.
+
+                Praktiska utmaningar är många: logistik med dagis och schema, anpassning av arbetstider, amning/pumpning på arbetsplatsen, sjukdagar som nu innebär logistikpusslet, och att orka prestera på jobbet trots sömnbrist.
+
+                Att förbereda sig mentalt och praktiskt — och att kommunicera öppet med arbetsgivaren om vad du behöver — gör en enorm skillnad.
+                """,
+                keyPoints: [
+                    "Återgång till jobbet är en stor identitetsövergång — tillåt dig tid att anpassa",
+                    "Planera de praktiska delarna i detalj: vem hämtar, vad händer vid sjukdom",
+                    "Kommunicera med arbetsgivaren om dina behov — inklusive amning",
+                    "Känslor av skuld är normala — du kan vara en god förälder OCH en god medarbetare",
+                    "Gradvis återgång (deltid) minskar chocken för alla parter"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Anna börjar jobba igen efter 12 månaders föräldraledighet. Hon gråter varje morgon på väg till jobbet.",
+                        wrongApproach: "Tro att tårarna betyder att hon gör fel val.",
+                        rightApproach: "Förstå att sorg vid övergången är normalt och inte ett tecken på att dagis är fel. Tillåt sig sörja övergången OCH skapa en ny ritual på morgonen som signalerar 'vi ses ikväll' — kram, ett lösenord, ett foto.",
+                        explanation: "Sorg vid återgång till jobbet är ett tecken på att det föräldraledighetsåret var värdefullt och kärleksfullt — inte att något är fel. Det klingas vanligtvis av efter 2–4 veckor."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Checklista för återgång till jobbet",
+                    description: "Förbered återgången i god tid med praktiska och emotionella perspektiv.",
+                    steps: [
+                        "Logistik: schema klart, dagisinskolning bokad, sjukdomsberedskapsplan med partner",
+                        "Arbetsplatskommunikation: meddela ev. behov (amning, flexibelt schema, gradvis återgång)",
+                        "Avskedsritual med barnet: ett tryggt och konsekvent avsked varje morgon",
+                        "Emotionell förberedelse: prata med partner om hur du tror det känns",
+                        "Plan för de första veckorna: vad gör du om det är svårare än förväntat?"
+                    ],
+                    duration: "Förberedelse 1–2 veckor innan start"
+                ),
+                reflectionQuestions: [
+                    "Ser du återgången till jobbet som positiv, negativ eller neutral — och varför?",
+                    "Vad oroar dig mest med återgången — praktiskt eller emotionellt?",
+                    "Vad behöver du från din partner och arbetsgivare för att det ska gå bra?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om återgången till jobbet:",
+                    consensus: "De flesta berättar att det var svårare än väntat den första veckan och enklare än väntat den fjärde. Planering och kommunikation lyfts som det mest hjälpsamma.",
+                    quotes: [
+                        "\"Jag gick tillbaka på 75 % de första tre månaderna. Det var det bästa beslutet vi tagit.\" – Cecilia",
+                        "\"Dagis-inskolning var hjärtskärande dag ett. Dag tio sprang han in utan att kolla om vi var kvar.\" – Martin",
+                        "\"Att prata med min chef om amningspauserna tog 5 minuter och hon var helt okej med det. Jag hade oroat mig i 2 månader.\" – Linda"
+                    ],
+                    source: "SCB föräldraledighetsstatistik, forskning om arbetsåtergång och föräldraidentitet"
+                ),
+                readingTimeMinutes: 10
+            ),
+            CourseModule(
+                id: "lnf-6",
+                title: "Hitta tillbaka till sig själv",
+                subtitle: "Identitet, intressen och eget utrymme",
+                icon: "person.fill.viewfinder",
+                introduction: """
+                Föräldraskap förändrar identiteten på djupet. Många nya föräldrar beskriver en känsla av att ha 'förlorat sig själv' — att all tid, energi och uppmärksamhet gått till barnet och att den person de var före bebisen känns avlägsen.
+
+                Att hitta tillbaka till sig själv handlar inte om att lämna föräldrarollen bakom sig — det handlar om att expandera identiteten snarare än att ersätta den. Du är fortfarande du. Du är nu också förälder. Båda kan finnas.
+
+                Forskning visar att föräldrar som upprätthåller egna intressen och eget utrymme mår bättre, är bättre partners och faktiskt är bättre föräldrar. Att ta hand om sig själv är inte egoistiskt — det är nödvändigt.
+                """,
+                keyPoints: [
+                    "Föräldraidentitetsomvälvning kallas 'matrescence' — en biologisk och psykologisk transformation",
+                    "Att behålla egna intressen är dokumenterat skyddande för mental hälsa",
+                    "Skuld vid eget utrymme är normalt — men bör inte hindra dig",
+                    "Barn mår bra av att se sina föräldrar ta hand om sig själva",
+                    "Börja smått: 30 minuter i veckan för något som är bara ditt"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "David tränade regelbundet före bebisen men har inte tränat en enda gång på 10 månader. Han mår sämre men känner sig skyldig att vara hemma på fritiden.",
+                        wrongApproach: "Offra träningen helt och hållet för att vara en 'bra pappa'.",
+                        rightApproach: "Komma överens med partnern om 2 träningstillfällen per vecka — 45 minuter vardera. Partnern får motsvarande utrymme för något eget. Ingen behöver offra sig för att vara en bra förälder.",
+                        explanation: "Forskning visar att fysisk aktivitet är en av de starkaste buffrarna mot föräldraburnout. Att ge sig själv tillstånd att träna gör David till en mer energisk och närvande pappa, inte en sämre."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Hitta mitt utrymme — ett experiment",
+                    description: "Identifiera och inled ett återupptagande av något som är bara ditt.",
+                    steps: [
+                        "Lista: tre saker du gillade göra INNAN bebisen som du inte gör nu",
+                        "Välj ETT och gör det under 30–60 minuter inom de närmaste 7 dagarna",
+                        "Kommunicera med din partner: 'Jag behöver detta. Vad behöver du?'",
+                        "Boka in det i kalendern — det som inte bokas händer inte",
+                        "Reflektera efteråt: hur kändes det? Vad hände med skulden?"
+                    ],
+                    duration: "Planering 15 minuter, aktivitet 30–60 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vad saknar du mest från ditt liv innan föräldraskap?",
+                    "Tillåter du dig själv att ha tid som är bara din — och hur känns det?",
+                    "Vad vill du att ditt barn ska se när de ser dig ta hand om dig själv?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Om identitet och att hitta sig själv igen:",
+                    consensus: "Processen att hitta sig själv igen beskrivs som aktiv, inte passiv. Det händer inte av sig självt — du måste ta steget. Men när du gör det, är det transformativt.",
+                    quotes: [
+                        "\"Jag tog upp löpningen när min dotter var 8 månader. Det var den dagen jag kände att jag fortfarande var jag.\" – Petra",
+                        "\"Min terapeut sa: 'Du kan inte hälla ur en tom karaff.' Det förändrade hur jag tänker på att ta hand om mig.\" – Anna",
+                        "\"Jag börjar måla igen — bara en timme på söndagar. Min man tar bebisen. Det är min timme och det är helig.\" – Marie"
+                    ],
+                    source: "Matrescence-forskning (Dr Alexandra Sacks), föräldraburnout-forskning"
+                ),
+                readingTimeMinutes: 10
+            )
+        ],
+        targetAudience: "Nyblivna föräldrar",
+        estimatedWeeks: 4
     )
 }
