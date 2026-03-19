@@ -1250,6 +1250,158 @@ extension DuJustNuContent {
                 ],
                 source: "Föräldraforum & BVC-erfarenheter"
             )
+        ),
+
+        // MARK: 17. 5–6 år
+        DuJustNuContent(
+            id: "5-6-years",
+            ageLabel: "5–6 år",
+            ageMinDays: 1825,
+            ageMaxDays: 2189,
+            headline: "Snart förskoleklass!",
+            introduction: """
+            Ditt barn är nu fem–sex år och har genomgått en enorm resa sedan födseln. Den här perioden präglas av förväntan, nyfikenhet och en tydlig vilja att ta mer ansvar. Barnet frågar om allt, berättar långa historier och har åsikter om i princip varje situation.
+
+            Socialt sett fördjupas vänskaperna. Barnet förstår mer om lojalitet, orättvisa och gruppdynamik. Det kan vara tufft att navigera – inte alla kompisar är snälla hela tiden, och barnet börjar lära sig hantera konflikter.
+
+            Förskoleklassen väntar vid horisonten. Det är en stor övergång, full av möjligheter. Förbered barnet lugnt – utan att skapa för höga förväntningar. Det viktigaste är att barnet vet att du finns där.
+            """,
+            whatBabyDoes: [
+                "Skriver bokstäver och enkla ord självständigt",
+                "Räknar till 30+ och förstår enkla subtraktion",
+                "Berättar detaljerade historier med tydlig dramaturgi",
+                "Knyter sina skor (de flesta klarar det runt 5–6 år)",
+                "Förstår spel med regler och kan hantera att förlora (ibland)",
+                "Visar omsorg om yngre barn och djur"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Läsförberedelse", description: "Barnet förstår hur bokstäver och ljud hänger ihop. Många börjar läsa enkla ord. Det är en enorm kognitiv prestation!", icon: "textformat.abc"),
+                DuJustNuMilestone(title: "Regelförståelse", description: "Barnet förstår och följer regler i spel, lekar och sociala situationer. Kan förklara reglerna för andra.", icon: "checklist"),
+                DuJustNuMilestone(title: "Emotionell reglering", description: "Bättre på att hantera besvikelse och frustration. Inte perfekt – men bättre. Strategier börjar byggas.", icon: "heart.fill"),
+                DuJustNuMilestone(title: "Motorisk säkerhet", description: "Cyklar utan stödhjul, simmar enkelt, klättrar och hoppar med säkerhet. Kroppen lyder mer och mer.", icon: "bicycle")
+            ],
+            tips: [
+                DuJustNuTip(title: "Ge ansvar", body: "Barnet klarar nu riktiga uppgifter: duka bordet, sortera tvätten, mata husdjur. Ansvar ger stolthet och kompetens.", icon: "checkmark.circle.fill"),
+                DuJustNuTip(title: "Prata om skolan positivt", body: "Berätta om roliga saker som händer i skolan. Undvik att förbereda barnet på svårigheter som kanske inte ens uppstår.", icon: "graduationcap.fill"),
+                DuJustNuTip(title: "Läs varje kväll", body: "Kvällsläsning är fortfarande guld – nu kan ni läsa lite mer utmanande böcker. Alfons Åberg, Muminböckerna, Pettson.", icon: "book.fill"),
+                DuJustNuTip(title: "5-årskontrollen på BVC", body: "Om ni inte gjort den ännu – boka 5-årskontrollen. Syn, hörsel, motorik och socialt granskas inför skolstart.", icon: "cross.case.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Kompissorg och utanförskap",
+                    description: "Barnet kan uppleva att det inte får vara med, att bästa kompisen väljer bort det, eller att det inte passar in i gruppen.",
+                    advice: "Lyssna och validera känslan. Problemlös tillsammans – 'Vad tror du du kan göra?'. Träna på sociala fraser: 'Får jag vara med?'"
+                ),
+                DuJustNuChallenge(
+                    title: "Övergångsångest inför skolan",
+                    description: "Barnet kan vara nervöst inför att börja förskoleklassen: nytt ställe, nya barn, ny rutin.",
+                    advice: "Besök skolan i förväg om möjligt. Hitta ett känt ansikte. Fokusera på det spännande. Var lugn själv – barn plockar upp förälderns oro."
+                ),
+                DuJustNuChallenge(
+                    title: "Tröttheten på eftermiddagen",
+                    description: "Barn som slutat sova middag kan bli väldigt trötta och lättirriterade sent på eftermiddagen.",
+                    advice: "En lugn stund utan skärm efter hämtning hjälper – kanske med en bok, ett pussel eller att bara ligga och vila. Middag lite tidigare kan också hjälpa."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Skriv egna böcker", description: "Låt barnet diktera en berättelse medan du skriver. Sedan illustrerar barnet den. Bind ihop till en bok. Stolthet för livet.", ageAppropriate: true),
+                DuJustNuActivity(title: "Laga middag tillsammans", description: "Barnet kan nu göra enkla rätter med hjälp – pannkakor, pasta, smörgåsar. Det är kemi, matte och självständighet i ett.", ageAppropriate: true),
+                DuJustNuActivity(title: "Naturutforskaren", description: "Ta med luppsförstoring, planschbok och anteckningsblock ut i naturen. Dokumentera insekter, växter och stenar. Vetenskap på riktigt!", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "10–13 timmar",
+                nightSleep: "10–12 timmar",
+                daySleep: "Nej",
+                wakeWindow: "Hela dagen",
+                naps: "Inga tupplurer – men en lugn vilostund kan hjälpa tröttniga eftermiddagar"
+            ),
+            feedingInfo: "Barnet äter det familjen äter och kan ha tydliga preferenser. Fortsätt bjuda på varierad kost utan press. Barnet kan nu vara med och planera veckans middagar, handla och laga mat. Det ökar matintresset och ger livsviktiga kunskaper.",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om 5–6-årsåldern:",
+                consensus: "Föräldrarna beskriver en period full av stolthet – barnet blir allt mer självständigt och roligt att umgås med. Skolstarten väcker blandade känslor.",
+                quotes: [
+                    "\"Han knöt skorna själv för första gången och jublade. Sedan grät jag i badrummet.\" – Peter, 38",
+                    "\"Vi läser Muminböckerna nu. Hon lyssnar intensivt och ställer frågor som gör mig eftertänksam.\" – Johanna, 35",
+                    "\"Skolstarten var nervöst för mig, inte för henne. Hon gick in utan att titta sig om.\" – Daniel, 40"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
+        ),
+
+        // MARK: 18. 6–7 år
+        DuJustNuContent(
+            id: "6-7-years",
+            ageLabel: "6–7 år",
+            ageMinDays: 2190,
+            ageMaxDays: 2554,
+            headline: "Skolan har börjat!",
+            introduction: """
+            Ditt barn har börjat skolan och stiger nu in i en helt ny fas av livet. Det är ett stort steg – för barnet och för dig. Skolan innebär nya krav, nya relationer och en ny typ av utmaning. Många barn blomstrar, andra kämpar. Båda är normala.
+
+            Läs- och skrivinlärningen är nu i full gång. Barnet kämpar med bokstavsljud, stavning och att förstå texter. Det kräver tålamod – men det klickar för de flesta barn under det första skolåret och känslan av att kunna läsa är obetalbar.
+
+            Som förälder är din viktigaste roll nu att finnas som en trygg hamn. Skolan kan vara ansträngande och barnet behöver laddas hemma. Lugn, lek och kärleksfull närvaro är fortfarande det viktigaste du kan ge.
+            """,
+            whatBabyDoes: [
+                "Läser enkla texter och meningar",
+                "Skriver korta meningar med mestadels korrekt stavning",
+                "Räknar till 100 och förstår tiotal och ental",
+                "Navigerar komplexa vänskaper med sina egna strategier",
+                "Kan sitta stilla och arbeta fokuserat i 15–20 minuter",
+                "Frågar om rättvisa, regler och varför saker är som de är"
+            ],
+            milestones: [
+                DuJustNuMilestone(title: "Läser självständigt", description: "Barnet kan läsa enkla böcker på egen hand. En enorm prestation som öppnar hela världen!", icon: "book.fill"),
+                DuJustNuMilestone(title: "Skrivförmåga", description: "Skriver korta texter, meddelanden och egna berättelser. Fantasin flödar genom pennan.", icon: "pencil"),
+                DuJustNuMilestone(title: "Kritiskt tänkande", description: "Barnet ifrågasätter, diskuterar och argumenterar. Det är inte trots – det är intelligens under utveckling.", icon: "questionmark.bubble.fill"),
+                DuJustNuMilestone(title: "Skolans sociala kod", description: "Barnet navigerar skolans hierarkier, vänskapsgrupper och klassrumskoder med ökad skicklighet.", icon: "person.3.fill")
+            ],
+            tips: [
+                DuJustNuTip(title: "Läs varje kväll – nu med barnet", body: "Läs om vartannat – du en sida, barnet en sida. Det bygger läsflyt, gemenskap och avslappning inför natten.", icon: "book.fill"),
+                DuJustNuTip(title: "Avkoppling efter skolan", body: "Barnet är mentalt trött efter en skoldag. Låt det leka fritt, gärna utomhus, utan krav på läxor direkt.", icon: "leaf.fill"),
+                DuJustNuTip(title: "Prata om skoldagen", body: "Fråga inte 'Hur var det i skolan?' – du får 'bra'. Fråga istället 'Vad var roligast idag?' eller 'Hände något konstigt?'", icon: "bubble.left.fill"),
+                DuJustNuTip(title: "Fira framsteg", body: "Uppmärksamma ansträngning, inte bara resultat. 'Du kämpade med det där – och du lyckades!' är mer motiverande än 'Vad duktig du är!'", icon: "star.fill")
+            ],
+            commonChallenges: [
+                DuJustNuChallenge(
+                    title: "Läsosäkerhet och jämförelse",
+                    description: "Barnet märker att andra klasskompisar läser snabbare eller sämre. Jämförelser kan skapa oro.",
+                    advice: "Betona att alla lär sig i sin takt. Fira varje litet framsteg. Kontakta läraren om du misstänker att barnet verkligen kämpar mer än jämnåriga."
+                ),
+                DuJustNuChallenge(
+                    title: "Trötthet och beteendeförsämring hemma",
+                    description: "Barnet kanske är snällt i skolan men exploderar hemma. Det är faktiskt ett gott tecken – hemma är tryggt nog att visa känslor.",
+                    advice: "Ha en lugn, förutsägbar rutin efter skolan. Mellanmål, fri lek, lugntid. Läxor sent på kvällen fungerar sällan – lägg dem tidigt eller skippa dem."
+                ),
+                DuJustNuChallenge(
+                    title: "Kompisar och utanförskap",
+                    description: "Skolans sociala liv kan vara hårt. Barn kan uteslutas, mobbas eller ha svårt att hitta sin plats.",
+                    advice: "Ha en öppen dialog om det sociala livet. Lär barnet konkreta strategier. Kontakta skolan tidigt om du misstänker mobbning – agera, vänta inte."
+                )
+            ],
+            activities: [
+                DuJustNuActivity(title: "Bibliotekskortet", description: "Låt barnet välja egna böcker på biblioteket. Äganderätten ökar läsmotivationen dramatiskt. Besök det regelbundet.", ageAppropriate: true),
+                DuJustNuActivity(title: "Experiment hemma", description: "Enkla vetenskapsexperiment: vulkan av bikarbonat och vinäger, växer fröet i bomull, vad händer med is i salt? Vetenskapens magi.", ageAppropriate: true),
+                DuJustNuActivity(title: "Husdjursansvar", description: "Om ni har husdjur – ge barnet ett riktigt ansvar: mata, borsta, ge vatten. Det bygger empati, ansvarskänsla och rutiner.", ageAppropriate: true)
+            ],
+            sleepInfo: DuJustNuSleepInfo(
+                totalHours: "9–12 timmar",
+                nightSleep: "9–11 timmar",
+                daySleep: "Nej",
+                wakeWindow: "Hela dagen",
+                naps: "Inga tupplurer – regelbunden läggdagsrutin viktigare än någonsin"
+            ),
+            feedingInfo: "Barnet äter familjens mat och har nu ofta tydliga favoriter och avsmak. Fortsätt bjuda på variation utan tvång. Mellanmål efter skolan är viktigt – hunger kan förklara mycket frustration och trötthet. Involvera barnet i matlagning och inköp.",
+            forumSection: DuJustNuForumSection(
+                intro: "Föräldrar om 6–7-årsåldern:",
+                consensus: "Föräldrarna beskriver stolthet och vemod i ett – barnet blir mer självständigt och behöver dig på ett nytt, mer diskret sätt.",
+                quotes: [
+                    "\"Han läste sin första bok ensam i sängen och vågade inte störa honom. Satt utanför dörren och lyssnade.\" – Sofia, 37",
+                    "\"Skolan var tuffare än vi trodde. Men läraren var underbar och vi fick bra hjälp.\" – Mikael, 42",
+                    "\"Hon frågade om döden på väg till skolan. Hann knappt ta ett klunk kaffe. Men det var ett bra samtal.\" – Åsa, 36"
+                ],
+                source: "Föräldraforum & BVC-erfarenheter"
+            )
         )
     ]
 }
