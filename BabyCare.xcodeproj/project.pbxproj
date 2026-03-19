@@ -51,6 +51,8 @@
 		AABB00000000031C /* CycleCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041C /* CycleCalendarView.swift */; };
 		AABB00000000031D /* SymptomsLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041D /* SymptomsLogView.swift */; };
 		AABB00000000031E /* BodySymptomTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041E /* BodySymptomTrackerView.swift */; };
+		AABB00000000031F /* VaccinationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000041F /* VaccinationData.swift */; };
+		AABB000000000320 /* VaccinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000420 /* VaccinationView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -58,6 +60,7 @@
 		BBCC000000000209 /* NotificationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000109 /* NotificationManagerTests.swift */; };
 		BBCC00000000020A /* AIEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC00000000010A /* AIEngineTests.swift */; };
 		BBCC00000000020B /* ContractionTimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC00000000010B /* ContractionTimerTests.swift */; };
+		BBCC00000000020C /* VaccinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC00000000010C /* VaccinationTests.swift */; };
 		BBCC000000000202 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000010D /* Models.swift */; };
 		BBCC000000000203 /* PregnancyWeekData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000040F /* PregnancyWeekData.swift */; };
 		BBCC000000000204 /* KnowledgeBaseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000010B /* KnowledgeBaseData.swift */; };
@@ -112,6 +115,8 @@
 		AABB00000000041C /* CycleCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleCalendarView.swift; sourceTree = "<group>"; };
 		AABB00000000041D /* SymptomsLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymptomsLogView.swift; sourceTree = "<group>"; };
 		AABB00000000041E /* BodySymptomTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodySymptomTrackerView.swift; sourceTree = "<group>"; };
+		AABB00000000041F /* VaccinationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaccinationData.swift; sourceTree = "<group>"; };
+		AABB000000000420 /* VaccinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaccinationView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -120,6 +125,7 @@
 		BBCC000000000109 /* NotificationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManagerTests.swift; sourceTree = "<group>"; };
 		BBCC00000000010A /* AIEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIEngineTests.swift; sourceTree = "<group>"; };
 		BBCC00000000010B /* ContractionTimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractionTimerTests.swift; sourceTree = "<group>"; };
+		BBCC00000000010C /* VaccinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaccinationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -194,6 +200,8 @@
 				AABB00000000041C /* CycleCalendarView.swift */,
 				AABB00000000041D /* SymptomsLogView.swift */,
 				AABB00000000041E /* BodySymptomTrackerView.swift */,
+				AABB00000000041F /* VaccinationData.swift */,
+				AABB000000000420 /* VaccinationView.swift */,
 				AABB000000000411 /* StoriesView.swift */,
 				AABB000000000412 /* WeekByWeekView.swift */,
 			);
@@ -219,6 +227,7 @@
 				BBCC000000000107 /* WakeWindowTests.swift */,
 				BBCC000000000108 /* FertilityPredictorTests.swift */,
 				BBCC000000000109 /* NotificationManagerTests.swift */,
+				BBCC00000000010C /* VaccinationTests.swift */,
 			);
 			name = Tests;
 			path = Tests/BabyCareTests;
@@ -365,6 +374,8 @@
 				AABB00000000031C /* CycleCalendarView.swift in Sources */,
 				AABB00000000031D /* SymptomsLogView.swift in Sources */,
 				AABB00000000031E /* BodySymptomTrackerView.swift in Sources */,
+				AABB00000000031F /* VaccinationData.swift in Sources */,
+				AABB000000000320 /* VaccinationView.swift in Sources */,
 				AABB000000000311 /* StoriesView.swift in Sources */,
 				AABB000000000312 /* WeekByWeekView.swift in Sources */,
 			);
@@ -380,6 +391,7 @@
 				BBCC000000000209 /* NotificationManagerTests.swift in Sources */,
 				BBCC00000000020A /* AIEngineTests.swift in Sources */,
 				BBCC00000000020B /* ContractionTimerTests.swift in Sources */,
+				BBCC00000000020C /* VaccinationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
