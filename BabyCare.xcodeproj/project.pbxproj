@@ -62,6 +62,8 @@
 		AABB000000000327 /* DiaperExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000427 /* DiaperExportView.swift */; };
 		AABB000000000328 /* ArticleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000428 /* ArticleData.swift */; };
 		AABB000000000329 /* GuideData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB000000000429 /* GuideData.swift */; };
+		AABB00000000032A /* ForumData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000042A /* ForumData.swift */; };
+		AABB00000000032B /* ForumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABB00000000042B /* ForumView.swift */; };
 		/* Test build files */
 		BBCC000000000201 /* BabyCareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000101 /* BabyCareTests.swift */; };
 		BBCC000000000207 /* WakeWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCC000000000107 /* WakeWindowTests.swift */; };
@@ -135,6 +137,8 @@
 		AABB000000000427 /* DiaperExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaperExportView.swift; sourceTree = "<group>"; };
 		AABB000000000428 /* ArticleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleData.swift; sourceTree = "<group>"; };
 		AABB000000000429 /* GuideData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideData.swift; sourceTree = "<group>"; };
+		AABB00000000042A /* ForumData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumData.swift; sourceTree = "<group>"; };
+		AABB00000000042B /* ForumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumView.swift; sourceTree = "<group>"; };
 		/* Test references */
 		BBCC000000000011 /* BabyCareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BabyCareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBCC000000000101 /* BabyCareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabyCareTests.swift; sourceTree = "<group>"; };
@@ -198,6 +202,8 @@
 				AABB000000000407 /* DuJustNuView.swift */,
 				AABB000000000408 /* FertilityDashboard.swift */,
 				AABB000000000409 /* ForumCard.swift */,
+			AABB00000000042A /* ForumData.swift */,
+			AABB00000000042B /* ForumView.swift */,
 				AABB00000000040A /* GrowthCharts.swift */,
 				AABB000000000109 /* HomeView.swift */,
 				AABB00000000010A /* JournalView.swift */,
@@ -379,6 +385,8 @@
 				AABB000000000307 /* DuJustNuView.swift in Sources */,
 				AABB000000000308 /* FertilityDashboard.swift in Sources */,
 				AABB000000000309 /* ForumCard.swift in Sources */,
+			AABB00000000032A /* ForumData.swift in Sources */,
+			AABB00000000032B /* ForumView.swift in Sources */,
 				AABB00000000030A /* GrowthCharts.swift in Sources */,
 				AABB000000000209 /* HomeView.swift in Sources */,
 				AABB00000000020A /* JournalView.swift in Sources */,
