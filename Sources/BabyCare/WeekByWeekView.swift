@@ -136,6 +136,10 @@ struct WeekByWeekView: View {
 
     private func weekContentView(_ data: PregnancyWeekContent) -> some View {
         VStack(spacing: DS.s5) {
+            // Fetal illustration
+            fetalIllustration(week: data.week)
+                .staggerAppear(index: 0)
+
             // Hero card with fetal info
             fetalHeroCard(data)
                 .staggerAppear(index: 1)
@@ -176,6 +180,35 @@ struct WeekByWeekView: View {
                 source: data.forumSection.source
             ))
             .staggerAppear(index: 8)
+        }
+    }
+
+    // MARK: - Fetal Illustration
+
+    @ViewBuilder
+    private func fetalIllustration(week: Int) -> some View {
+        let imageName = String(format: "foster_week_%02d", week)
+        if let uiImage = UIImage(named: imageName) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 200)
+                .cornerRadius(12)
+                .accessibilityLabel("Fosterillustration vecka \(week)")
+        } else {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color("appSurface2"))
+                .frame(height: 120)
+                .overlay(
+                    VStack(spacing: 8) {
+                        Image(systemName: "figure.2.and.child.holdinghands")
+                            .font(.system(size: 32))
+                            .foregroundColor(Color("appTextTert"))
+                        Text("Vecka \(week)")
+                            .font(.caption)
+                            .foregroundColor(Color("appTextTert"))
+                    }
+                )
         }
     }
 

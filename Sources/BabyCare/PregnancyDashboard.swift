@@ -13,6 +13,7 @@ struct PregnancyDashboard: View {
     @State private var showContractions = false
     @State private var showHospitalBag = false
     @State private var showWeekGuide = false
+    @State private var showSymptomTracker = false
 
     private var user: UserData? { userData.first }
 
@@ -106,6 +107,7 @@ struct PregnancyDashboard: View {
         .sheet(isPresented: $showContractions) { ContractionTimerView() }
         .sheet(isPresented: $showHospitalBag) { HospitalBagSheet() }
         .sheet(isPresented: $showWeekGuide) { WeekGuideSheet(week: clampedWeek) }
+        .sheet(isPresented: $showSymptomTracker) { BodySymptomTrackerView() }
         .preferredColorScheme(.dark)
     }
 
@@ -364,6 +366,14 @@ struct PregnancyDashboard: View {
                     HapticFeedback.light()
                     showWeekGuide = true
                 }
+            }
+
+            HStack(spacing: DS.s3) {
+                QuickActionButton(title: "Symptom idag", icon: "staroflife.fill", gradient: .warmGradient) {
+                    HapticFeedback.light()
+                    showSymptomTracker = true
+                }
+                Spacer()
             }
         }
     }
