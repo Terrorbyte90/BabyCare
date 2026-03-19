@@ -1,5 +1,54 @@
 import SwiftUI
 import SwiftData
+import AVFoundation
+
+// MARK: - Speech Player
+
+@MainActor
+class SpeechPlayer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    private let synthesizer = AVSpeechSynthesizer()
+    @Published var isPlaying = false
+    @Published var isPaused = false
+
+    override init() {
+        super.init()
+        synthesizer.delegate = self
+    }
+
+    func play(text: String) {
+        synthesizer.stopSpeaking(at: .immediate)
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: "sv-SE")
+        utterance.rate = 0.48
+        utterance.pitchMultiplier = 1.1
+        synthesizer.speak(utterance)
+        isPlaying = true
+        isPaused = false
+    }
+
+    func pause() {
+        synthesizer.pauseSpeaking(at: .word)
+        isPaused = true
+        isPlaying = false
+    }
+
+    func resume() {
+        synthesizer.continueSpeaking()
+        isPlaying = true
+        isPaused = false
+    }
+
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+        isPlaying = false
+        isPaused = false
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        isPlaying = false
+        isPaused = false
+    }
+}
 
 // MARK: - Stories View
 
@@ -337,6 +386,8 @@ struct StoryReaderView: View {
 
     let story: ChildrenStory
 
+    @StateObject private var player = SpeechPlayer()
+
     @State private var currentPage = 0
     @State private var fontSize: CGFloat = 20
     @State private var nightMode = false
@@ -453,6 +504,7 @@ struct StoryReaderView: View {
         }
         .navigationBarHidden(true)
         .preferredColorScheme(.dark)
+        .onDisappear { player.stop() }
         .overlay {
             if nightMode {
                 Color.orange.opacity(0.04)
@@ -618,8 +670,65 @@ struct StoryReaderView: View {
 
     // MARK: - Bottom Bar
 
+    // MARK: - Listening Controls
+
+    private var listeningBar: some View {
+        GlassCard(gradient: story.category.gradient) {
+            HStack(spacing: DS.s4) {
+                // Play / Pause button
+                Button {
+                    HapticFeedback.light()
+                    if player.isPlaying {
+                        player.pause()
+                    } else if player.isPaused {
+                        player.resume()
+                    } else {
+                        player.play(text: story.synopsis)
+                    }
+                } label: {
+                    Image(systemName: player.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                        .font(.system(size: 44, weight: .regular))
+                        .foregroundStyle(Color.appPurple)
+                        .contentTransition(.symbolEffect(.replace))
+                }
+                .accessibilityLabel(player.isPlaying ? "Pausa uppläsning" : "Starta uppläsning")
+
+                if player.isPlaying || player.isPaused {
+                    // Status text
+                    Text(player.isPlaying ? "Lyssnar..." : "Pausad")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(Color.appTextSec)
+
+                    Spacer()
+
+                    // Stop button
+                    Button {
+                        HapticFeedback.light()
+                        player.stop()
+                    } label: {
+                        Image(systemName: "stop.circle")
+                            .font(.system(size: 28, weight: .regular))
+                            .foregroundStyle(Color.appTextSec)
+                    }
+                    .accessibilityLabel("Stoppa uppläsning")
+                } else {
+                    Text("Lyssna på sagan")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(Color.appTextSec)
+
+                    Spacer()
+                }
+            }
+        }
+        .padding(.horizontal, DS.s4)
+        .padding(.top, DS.s2)
+    }
+
     private var bottomBar: some View {
         VStack(spacing: DS.s2) {
+            // Listening controls
+            listeningBar
+
             // Progress bar
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
