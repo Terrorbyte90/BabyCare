@@ -113,7 +113,8 @@ final class UserData {
 
     var babyAgeInMonths: Int? {
         guard let birth = babyBirthDate else { return nil }
-        return Calendar.current.dateComponents([.month], from: birth, to: Date()).month
+        let components = Calendar.current.dateComponents([.year, .month], from: birth, to: Date())
+        return (components.year ?? 0) * 12 + (components.month ?? 0)
     }
 
     var babyAgeString: String {

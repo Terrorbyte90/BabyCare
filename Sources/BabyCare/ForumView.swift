@@ -5,6 +5,7 @@ import SwiftUI
 struct ForumView: View {
     @State private var selectedCategory: ForumCategory? = nil
     @State private var searchText = ""
+    @State private var selectedThread: ForumThread?
 
     private var filteredThreads: [ForumThread] {
         let byCategory: [ForumThread]
@@ -38,7 +39,12 @@ struct ForumView: View {
                         } else {
                             LazyVStack(spacing: DS.s3) {
                                 ForEach(filteredThreads) { thread in
-                                    ForumThreadCard(thread: thread)
+                                    Button {
+                                        selectedThread = thread
+                                    } label: {
+                                        ForumThreadCard(thread: thread)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, DS.s4)
@@ -50,6 +56,9 @@ struct ForumView: View {
             .navigationTitle("Community")
             .navigationBarTitleDisplayMode(.large)
             .searchable(text: $searchText, prompt: "Sök trådar")
+            .sheet(item: $selectedThread) { thread in
+                ForumThreadDetailView(thread: thread)
+            }
         }
     }
 
@@ -166,7 +175,6 @@ private struct CategoryChip: View {
 
 struct ForumThreadCard: View {
     let thread: ForumThread
-    @State private var hasReacted = false
 
     var body: some View {
         GlassCard {
@@ -204,60 +212,20 @@ struct ForumThreadCard: View {
 
                     Spacer()
 
-                    // Source link
-                    if let urlString = thread.sourceURL, let url = URL(string: urlString) {
-                        Link(destination: url) {
-                            HStack(spacing: DS.s1) {
-                                Image(systemName: "arrow.up.right.square")
-                                    .font(.system(size: 11))
-                                Text("Källtråd")
-                                    .font(.system(size: 11, weight: .medium))
-                            }
-                            .foregroundStyle(Color.appBlue)
-                        }
-                    }
-
                     // Reactions count
                     HStack(spacing: 3) {
-                        Image(systemName: hasReacted ? "heart.fill" : "heart")
+                        Image(systemName: "heart")
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(hasReacted ? Color.appPink : Color.appTextSec)
-                        Text("\(thread.reactionsCount + (hasReacted ? 1 : 0))")
+                            .foregroundStyle(Color.appTextSec)
+                        Text("\(thread.reactionsCount)")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundStyle(Color.appTextSec)
                     }
 
-                    // "Hade samma problem" button
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            hasReacted.toggle()
-                            HapticFeedback.selection()
-                        }
-                    } label: {
-                        Text(hasReacted ? "Stämmer!" : "Hade samma")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(hasReacted ? Color.appPink : Color.appTextTert)
-                            .padding(.horizontal, DS.s2 + 1)
-                            .padding(.vertical, DS.s1)
-                            .background {
-                                Capsule()
-                                    .fill(
-                                        hasReacted
-                                            ? Color.appPink.opacity(0.15)
-                                            : Color.appSurface2
-                                    )
-                                    .overlay {
-                                        Capsule()
-                                            .strokeBorder(
-                                                hasReacted
-                                                    ? Color.appPink.opacity(0.4)
-                                                    : Color.appBorder,
-                                                lineWidth: 1
-                                            )
-                                    }
-                            }
-                    }
-                    .buttonStyle(.plain)
+                    // Chevron hint
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Color.appTextTert)
                 }
             }
         }
@@ -319,6 +287,103 @@ struct ForumExcerptView: View {
 }
 
 // MARK: - Preview
+
+// MARK: - Forum Thread Detail View
+
+struct ForumThreadDetailView: View {
+    let thread: ForumThread
+    @Environment(\.dismiss) private var dismiss
+
+    private func categoryColor(_ category: ForumCategory) -> Color {
+        switch category {
+        case .fertilitetTTC:          return Color.appPink
+        case .graviditet:             return Color.appPurple
+        case .forlossning:            return Color.appOrange
+        case .nyfodda:                return Color.appTeal
+        case .somnRutiner:            return Color.appIndigo
+        case .matAmning:              return Color.appGreen
+        case .utvecklingMilstolpar:   return Color.appWarmYellow
+        case .relationForaldraskap:   return Color.appBlue
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: DS.s5) {
+                        // Category badge
+                        HStack(spacing: DS.s1) {
+                            Image(systemName: thread.category.icon)
+                                .font(.system(size: 11, weight: .semibold))
+                            Text(thread.category.rawValue)
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .padding(.horizontal, DS.s3)
+                        .padding(.vertical, DS.s1 + 2)
+                        .foregroundStyle(categoryColor(thread.category))
+                        .background {
+                            Capsule()
+                                .fill(categoryColor(thread.category).opacity(0.12))
+                        }
+
+                        // Title
+                        Text(thread.title)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(Color.appText)
+                            .lineSpacing(4)
+
+                        // Full summary
+                        Text(thread.summary)
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color.appTextSec)
+                            .lineSpacing(6)
+
+                        // Reactions
+                        HStack(spacing: DS.s2) {
+                            Image(systemName: "heart")
+                                .font(.system(size: 14))
+                                .foregroundStyle(Color.appPink)
+                            Text("\(thread.reactionsCount) har gillat")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
+                        }
+
+                        // Source link
+                        if let urlString = thread.sourceURL, let url = URL(string: urlString) {
+                            Link(destination: url) {
+                                HStack(spacing: DS.s2) {
+                                    Image(systemName: "arrow.up.right.square.fill")
+                                        .font(.system(size: 16))
+                                    Text("Öppna källtråd")
+                                        .font(.system(size: 14, weight: .semibold))
+                                }
+                                .foregroundStyle(Color.appBlue)
+                                .padding(DS.s3)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.appBlue.opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                            }
+                        }
+
+                        Color.clear.frame(height: 60)
+                    }
+                    .padding(DS.s4)
+                }
+            }
+            .navigationTitle("Tråd")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Stäng") { dismiss() }
+                        .font(.system(size: 15, weight: .medium))
+                }
+            }
+        }
+    }
+}
 
 #Preview {
     ForumView()

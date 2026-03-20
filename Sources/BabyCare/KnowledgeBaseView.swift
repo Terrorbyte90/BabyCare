@@ -1,10 +1,24 @@
 import SwiftUI
+import SwiftData
 
 // MARK: - KnowledgeBaseView
 
 struct KnowledgeBaseView: View {
+    @Query private var userData: [UserData]
     @State private var selectedCategory: ArticleCategory? = nil
     @State private var searchText = ""
+
+    private var user: UserData? { userData.first }
+    private var phase: UserPhase { user?.phase ?? .parent }
+
+    // Returnerar den primärkategori som matchar nuvarande fas
+    private var phaseDefaultCategory: ArticleCategory? {
+        switch phase {
+        case .fertility:  return .fertility
+        case .pregnancy:  return .pregnancy
+        case .parent:     return nil  // Föräldrafafasen har bredare innehåll — visa allt
+        }
+    }
 
     private var filteredArticles: [Article] {
         var articles = Article.all
@@ -93,6 +107,20 @@ struct KnowledgeBaseView: View {
             }
         }
         .preferredColorScheme(.dark)
+        // Sätt standardkategori baserat på fas när vyn laddas för första gången
+        .onAppear {
+            if selectedCategory == nil, let defaultCat = phaseDefaultCategory {
+                selectedCategory = defaultCat
+            }
+        }
+        // Om fasen ändras (t.ex. via profil) — återställ till ny standardkategori
+        .onChange(of: phase) { _, newPhase in
+            if let defaultCat = phaseDefaultCategory {
+                selectedCategory = defaultCat
+            } else {
+                selectedCategory = nil
+            }
+        }
     }
 
     // MARK: - Filter Bar

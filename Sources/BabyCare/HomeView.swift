@@ -746,7 +746,7 @@ struct HomeView: View {
 
                         Spacer()
 
-                        Text("\(months) mån")
+                        Text(months >= 24 ? "\(months / 12) år \(months % 12 > 0 ? "\(months % 12) mån" : "")" : "\(months) mån")
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.55))
                             .padding(.horizontal, DS.s2 + 2)
@@ -781,8 +781,18 @@ struct HomeView: View {
             return "Bebisen kanske kryper, sitter eller drar sig upp. Babysäkra hemmet nu! Separationsångest kan börja visa sig."
         case 10...12:
             return "Snart ettåring! Första stegen kanske redan har tagits. Språket utvecklas snabbt med pekande och kanske ett första ord."
+        case 13...18:
+            return "Toddlern utforskar allt och testar gränser. Tydliga, kärleksfulla gränser hjälper. Utbrott är normalt – det är känsloreglering under uppbyggnad."
+        case 19...24:
+            return "Snart tvååring! Språket exploderar – nya ord varje dag. Fantasi och rollek blomstrar. Rutiner ger trygghet i en föränderlig värld."
+        case 25...36:
+            return "2-åringen är full av energi och kreativitet. 'Varför?'-frågorna är oändliga – svara med nyfikenhet. Biblioteket och naturen är perfekta utflykter."
+        case 37...48:
+            return "3-åringen lär sig samarbeta och ta instruktioner. Regellekar, sångstunder och fri lek utomhus stärker sociala och motoriska färdigheter."
+        case 49...60:
+            return "4-åringen förstår att andra kan tänka annorlunda och växer snabbt socialt. Uppmuntra berättande, ritande och rollek med kompisar."
         default:
-            return "Varje dag är ett nytt äventyr med ditt barn. Njut av stunderna och kom ihåg att du gör ett fantastiskt jobb som förälder."
+            return "Barnet växer och lär sig varje dag. Håll nyfikenheten vid liv, uppmuntra självständighet och njut av stunderna tillsammans."
         }
     }
 

@@ -55,10 +55,23 @@ class SpeechPlayer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
 struct StoriesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allProgress: [StoryProgress]
+    @Query private var userData: [UserData]
 
     @State private var selectedCategory: StoryCategory? = nil
     @State private var selectedAge: StoryAgeRange? = nil
     @State private var searchText = ""
+
+    private var user: UserData? { userData.first }
+
+    // Beräknar rekommenderad ålderskategori baserat på barnets ålder i månader
+    private var recommendedAgeRange: StoryAgeRange? {
+        guard let months = user?.babyAgeInMonths else { return nil }
+        switch months {
+        case 0...11:  return .baby
+        case 12...35: return .toddler
+        default:      return .preschool
+        }
+    }
 
     private var stories: [ChildrenStory] { ChildrenStory.all }
 
@@ -240,6 +253,13 @@ struct StoriesView: View {
     private var storyList: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: DS.s5) {
+                // Åldersbanner — visas om barnets ålder är känd och ingen åldersfilter är vald
+                if let recommended = recommendedAgeRange, selectedAge == nil, searchText.isEmpty {
+                    ageSuggestionBanner(recommended: recommended)
+                        .padding(.horizontal, DS.s4)
+                        .staggerAppear(index: 0)
+                }
+
                 if filteredStories.isEmpty {
                     DSEmptyState(
                         icon: "magnifyingglass",
@@ -275,6 +295,41 @@ struct StoriesView: View {
             .padding(.horizontal, DS.s4)
             .padding(.top, DS.s3)
         }
+    }
+
+    // Banner som föreslår rätt ålderskategori baserat på barnets ålder
+    private func ageSuggestionBanner(recommended: StoryAgeRange) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                selectedAge = recommended
+            }
+        } label: {
+            HStack(spacing: DS.s3) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.appPurple)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Anpassat för ditt barn")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+                    Text("Visa sagor för \(recommended.displayName)")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.appTextSec)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Color.appTextTert)
+            }
+            .padding(DS.s3)
+            .background(Color.appPurple.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm))
+            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm).stroke(Color.appPurple.opacity(0.2), lineWidth: 1))
+        }
+        .buttonStyle(ScaleButtonStyle())
     }
 
     private func storySection(title: String, stories: [ChildrenStory], index: Int) -> some View {

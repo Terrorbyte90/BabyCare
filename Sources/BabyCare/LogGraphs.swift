@@ -17,7 +17,8 @@ struct LogGraphs: View {
 
     private var babyAgeMonths: Int {
         guard let birth = user?.babyBirthDate else { return 3 }
-        return Calendar.current.dateComponents([.month], from: birth, to: Date()).month ?? 3
+        let components = Calendar.current.dateComponents([.year, .month], from: birth, to: Date())
+        return (components.year ?? 0) * 12 + (components.month ?? 0)
     }
 
     enum TimePeriod: String, CaseIterable {

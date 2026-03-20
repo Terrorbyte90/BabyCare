@@ -83,12 +83,29 @@ struct VaccinationView: View {
         }
     }
 
+    // Nästa vaccination som ännu inte givits och vars datum är framåt i tid (eller snart)
+    private var nextUpcomingVaccination: (entry: VaccinationEntry, date: Date)? {
+        guard let birth = babyBirthDate else { return nil }
+        let today = Calendar.current.startOfDay(for: Date())
+        return VaccinationData.schedule
+            .filter { givenMap[$0.id] != true }
+            .compactMap { entry -> (VaccinationEntry, Date)? in
+                guard let vacDate = Calendar.current.date(byAdding: .day, value: entry.ageInDays, to: birth) else { return nil }
+                return (entry, vacDate)
+            }
+            .filter { _, date in date >= today }
+            .sorted { $0.1 < $1.1 }
+            .first
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: DS.s4) {
                     if babyBirthDate == nil {
                         noBirthDateBanner
+                    } else if let next = nextUpcomingVaccination {
+                        nextVaccinationBanner(entry: next.entry, date: next.date)
                     }
 
                     ForEach(groupedEntries, id: \.0.rawValue) { group, entries in
@@ -134,6 +151,53 @@ struct VaccinationView: View {
             let status = await UNUserNotificationCenter.current().notificationSettings()
             notificationGranted = (status.authorizationStatus == .authorized)
         }
+    }
+
+    // MARK: - Next Vaccination Banner
+
+    private func nextVaccinationBanner(entry: VaccinationEntry, date: Date) -> some View {
+        let daysLeft = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: date).day ?? 0
+        let isSoon = daysLeft <= 14
+
+        return GlassCard(gradient: isSoon ? .orangePink : .blueIndigo) {
+            HStack(spacing: DS.s3) {
+                ZStack {
+                    Circle()
+                        .fill(isSoon ? Color.appOrange.opacity(0.2) : Color.appBlue.opacity(0.2))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: isSoon ? "exclamationmark.circle.fill" : "syringe.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(isSoon ? Color.appOrange : Color.appBlue)
+                }
+                .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: DS.s1) {
+                    Text(isSoon ? "Snart dags för vaccination!" : "Nästa vaccination")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Color.appText)
+
+                    Text(entry.vaccineName)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(isSoon ? Color.appOrange : Color.appBlue)
+
+                    HStack(spacing: DS.s1) {
+                        Text(date, format: .dateTime.day().month().year())
+                            .font(.caption)
+                            .foregroundStyle(Color.appTextSec)
+                        Text("·")
+                            .foregroundStyle(Color.appTextTert)
+                        Text(daysLeft == 0 ? "Idag" : "om \(daysLeft) dagar")
+                            .font(.caption.bold())
+                            .foregroundStyle(isSoon ? Color.appOrange : Color.appTextSec)
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(DS.s4)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Nästa vaccination: \(entry.vaccineName), \(date.formatted(.dateTime.day().month().year()))")
     }
 
     // MARK: - No birth date banner

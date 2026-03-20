@@ -1,5 +1,6 @@
 // Sources/BabyCare/SolidFoodView.swift
 import SwiftUI
+import SwiftData
 
 // MARK: - Models
 
@@ -38,9 +39,11 @@ struct SolidFoodEntry: Codable, Identifiable {
 
 struct SolidFoodView: View {
     @AppStorage("ljusglimt_solidFoodEntries") private var entriesJSON: String = "[]"
-    @AppStorage("babyBirthDate") private var babyBirthDateInterval: Double = 0
+    @Query private var userData: [UserData]
 
     @State private var showAddSheet = false
+
+    private var user: UserData? { userData.first }
 
     private var entries: [SolidFoodEntry] {
         guard let data = entriesJSON.data(using: .utf8),
@@ -50,14 +53,9 @@ struct SolidFoodView: View {
         return decoded
     }
 
-    private var babyBirthDate: Date? {
-        babyBirthDateInterval > 0 ? Date(timeIntervalSince1970: babyBirthDateInterval) : nil
-    }
-
+    // Hämtar barnets ålder i månader från SwiftData (korrekt beräkning)
     private var babyAgeMonths: Int? {
-        guard let birth = babyBirthDate else { return nil }
-        let comps = Calendar.current.dateComponents([.month], from: birth, to: Date())
-        return comps.month
+        user?.babyAgeInMonths
     }
 
     private var groupedEntries: [(FoodCategory, [SolidFoodEntry])] {

@@ -8,8 +8,33 @@ import SwiftData
 struct CoursesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allCourseProgress: [CourseProgress]
+    @Query private var userData: [UserData]
 
-    private var courses: [Course] { Course.all }
+    private var user: UserData? { userData.first }
+    private var phase: UserPhase { user?.phase ?? .parent }
+
+    // Sorterar kurser så att fas-relevanta kurser kommer överst
+    private var sortedCourses: [Course] {
+        Course.all.sorted { a, b in
+            let aRelevant = isRelevant(a, for: phase)
+            let bRelevant = isRelevant(b, for: phase)
+            if aRelevant == bRelevant { return false }
+            return aRelevant && !bRelevant
+        }
+    }
+
+    // Avgör om en kurs är primärt relevant för nuvarande fas
+    private func isRelevant(_ course: Course, for phase: UserPhase) -> Bool {
+        let audience = course.targetAudience.lowercased()
+        switch phase {
+        case .fertility:
+            return audience.contains("ttc") || audience.contains("fertilitet")
+        case .pregnancy:
+            return audience.contains("gravid") || audience.contains("förlossning") || audience.contains("amning")
+        case .parent:
+            return audience.contains("föräldrar") || audience.contains("baby") || audience.contains("barn") || audience.contains("nyblivna")
+        }
+    }
 
     private func progressFor(_ courseId: String) -> CourseProgress? {
         allCourseProgress.first { $0.courseId == courseId }
@@ -20,7 +45,7 @@ struct CoursesView: View {
             ZStack {
                 Color.appBg.ignoresSafeArea()
 
-                if courses.isEmpty {
+                if sortedCourses.isEmpty {
                     DSEmptyState(
                         icon: "book.closed.fill",
                         gradient: .blueIndigo,
@@ -30,13 +55,14 @@ struct CoursesView: View {
                 } else {
                     ScrollView(showsIndicators: false) {
                         LazyVStack(spacing: DS.s4) {
-                            ForEach(Array(courses.enumerated()), id: \.element.id) { idx, course in
+                            ForEach(Array(sortedCourses.enumerated()), id: \.element.id) { idx, course in
                                 NavigationLink {
                                     CourseDetailView(course: course)
                                 } label: {
                                     CourseCardView(
                                         course: course,
-                                        progress: progressFor(course.id)
+                                        progress: progressFor(course.id),
+                                        isRecommended: isRelevant(course, for: phase)
                                     )
                                 }
                                 .buttonStyle(ScaleButtonStyle())
@@ -64,6 +90,7 @@ struct CoursesView: View {
 private struct CourseCardView: View {
     let course: Course
     let progress: CourseProgress?
+    var isRecommended: Bool = false
 
     private var completedCount: Int {
         progress?.completedModuleIds.count ?? 0
@@ -98,10 +125,23 @@ private struct CourseCardView: View {
                     }
 
                     VStack(alignment: .leading, spacing: DS.s1) {
-                        Text(course.title)
-                            .font(.system(size: 17, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                            .lineLimit(2)
+                        HStack(spacing: DS.s2) {
+                            Text(course.title)
+                                .font(.system(size: 17, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                                .lineLimit(2)
+
+                            // Rekommenderad-badge visas om kursen matchar användarens fas
+                            if isRecommended && completedCount == 0 {
+                                Text("För dig")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 3)
+                                    .background(Color.white.opacity(0.25))
+                                    .clipShape(Capsule())
+                            }
+                        }
 
                         Text(course.subtitle)
                             .font(.system(size: 13, weight: .medium))
