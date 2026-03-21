@@ -23,6 +23,10 @@ struct CoursesView: View {
         }
     }
 
+    private var visibleCourses: [Course] {
+        sortedCourses.filter { isRelevant($0, for: phase) }
+    }
+
     // Avgör om en kurs är primärt relevant för nuvarande fas
     private func isRelevant(_ course: Course, for phase: UserPhase) -> Bool {
         let audience = course.targetAudience.lowercased()
@@ -45,17 +49,17 @@ struct CoursesView: View {
             ZStack {
                 Color.appBg.ignoresSafeArea()
 
-                if sortedCourses.isEmpty {
+                if visibleCourses.isEmpty {
                     DSEmptyState(
                         icon: "book.closed.fill",
                         gradient: .blueIndigo,
-                        title: "Kurser kommer snart",
-                        subtitle: "Vi förbereder spännande föräldrakurser åt dig. Håller på att ladda innehåll!"
+                        title: "Inga kurser för denna fas",
+                        subtitle: "Byt fas i profilen för att se kurser som matchar din nuvarande situation."
                     )
                 } else {
                     ScrollView(showsIndicators: false) {
                         LazyVStack(spacing: DS.s4) {
-                            ForEach(Array(sortedCourses.enumerated()), id: \.element.id) { idx, course in
+                            ForEach(Array(visibleCourses.enumerated()), id: \.element.id) { idx, course in
                                 NavigationLink {
                                     CourseDetailView(course: course)
                                 } label: {

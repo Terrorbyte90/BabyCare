@@ -9,8 +9,29 @@ struct WeekByWeekView: View {
 
     private var user: UserData? { userData.first }
 
-    private var currentWeek: Int {
-        user?.currentPregnancyWeek ?? 12
+    private var currentWeekForContent: Int? {
+        guard let week = user?.currentPregnancyWeek else { return nil }
+        return max(4, min(42, week))
+    }
+
+    private var displayWeek: Int? {
+        selectedWeek ?? currentWeekForContent
+    }
+
+    private var emptyState: (icon: String, title: String, subtitle: String) {
+        if user == nil {
+            return (
+                icon: "calendar.badge.plus",
+                title: "Ingen graviditet registrerad",
+                subtitle: "Lägg till din graviditet i profilen eller välj en vecka nedan för att bläddra bland innehållet."
+            )
+        }
+
+        return (
+            icon: "calendar",
+            title: "Välj en vecka",
+            subtitle: "Du kan välja en graviditetsvecka i listen ovan för att se rätt innehåll."
+        )
     }
 
     var body: some View {
@@ -25,14 +46,15 @@ struct WeekByWeekView: View {
                             .staggerAppear(index: 0)
 
                         // Content for selected week
-                        if let weekData = weekContent(for: selectedWeek ?? currentWeek) {
+                        if let week = displayWeek, let weekData = weekContent(for: week) {
                             weekContentView(weekData)
                         } else {
+                            let state = emptyState
                             DSEmptyState(
-                                icon: "calendar",
+                                icon: state.icon,
                                 gradient: .pregnancyGradient,
-                                title: "Vecka ej tillgänglig",
-                                subtitle: "Denna veckas innehåll laddas..."
+                                title: state.title,
+                                subtitle: state.subtitle
                             )
                         }
 
@@ -47,9 +69,13 @@ struct WeekByWeekView: View {
             .toolbarBackground(Color.appBg, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .onAppear {
-                if selectedWeek == nil {
-                    selectedWeek = currentWeek
+                if let currentWeekForContent {
+                    selectedWeek = currentWeekForContent
                 }
+            }
+            .onChange(of: currentWeekForContent) { _, newWeek in
+                guard let newWeek else { return }
+                selectedWeek = newWeek
             }
         }
     }
@@ -61,8 +87,8 @@ struct WeekByWeekView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DS.s2) {
                     ForEach(4...42, id: \.self) { week in
-                        let isSelected = (selectedWeek ?? currentWeek) == week
-                        let isCurrent = week == currentWeek
+                        let isSelected = displayWeek == week
+                        let isCurrent = currentWeekForContent == week
                         let trimester = week <= 12 ? 1 : (week <= 27 ? 2 : 3)
 
                         Button {
@@ -111,9 +137,11 @@ struct WeekByWeekView: View {
                 .padding(.horizontal, DS.s4)
             }
             .onAppear {
+                guard let currentWeekForContent else { return }
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     withAnimation {
-                        proxy.scrollTo(currentWeek, anchor: .center)
+                        proxy.scrollTo(currentWeekForContent, anchor: .center)
                     }
                 }
             }
@@ -202,13 +230,14 @@ struct WeekByWeekView: View {
                 .cornerRadius(12)
                 .accessibilityLabel("Fosterillustration vecka \(week)")
         } else {
+            let weekData = PregnancyWeekContent.forWeek(week)
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color("appSurface2"))
                 .frame(height: 120)
                 .overlay(
                     VStack(spacing: 8) {
-                        Image(systemName: "figure.2.and.child.holdinghands")
-                            .font(.system(size: 32))
+                        Text(weekData.sizeEmoji)
+                            .font(.system(size: 34))
                             .foregroundColor(Color("appTextTert"))
                         Text("Vecka \(week)")
                             .font(.caption)

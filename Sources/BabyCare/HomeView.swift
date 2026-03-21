@@ -174,13 +174,27 @@ struct HomeView: View {
 
     // MARK: - Fertility Content
 
+    private var hasFertilityCycleData: Bool {
+        user?.lastPeriodDate != nil && user?.menstrualCycleLength != nil
+    }
+
     @ViewBuilder
     private var fertilityContent: some View {
-        fertilityCycleDayCard
-            .staggerAppear(index: 1)
+        if hasFertilityCycleData {
+            fertilityCycleDayCard
+                .staggerAppear(index: 1)
 
-        fertilityFertileWindowCard
-            .staggerAppear(index: 2)
+            fertilityFertileWindowCard
+                .staggerAppear(index: 2)
+        } else {
+            DSEmptyState(
+                icon: "calendar.badge.exclamationmark",
+                gradient: .fertilityGradient,
+                title: "Cykeldata saknas",
+                subtitle: "Lägg till senaste mens och cykellängd i profilen för att få korrekt cykeldag och fertil prognos."
+            )
+            .staggerAppear(index: 1)
+        }
 
         fertilityQuickLogSection
             .staggerAppear(index: 3)
@@ -200,7 +214,7 @@ struct HomeView: View {
     // Cycle Day Indicator
     @ViewBuilder
     private var fertilityCycleDayCard: some View {
-        let cycleLength = user?.menstrualCycleLength ?? 28
+        let cycleLength = CycleLengthPolicy.sanitized(user?.menstrualCycleLength)
         let cycleDay = currentCycleDay
         let progress = Double(cycleDay) / Double(cycleLength)
 
@@ -252,14 +266,14 @@ struct HomeView: View {
     private var currentCycleDay: Int {
         guard let lastPeriod = user?.lastPeriodDate else { return 1 }
         let days = Calendar.current.dateComponents([.day], from: lastPeriod, to: Date()).day ?? 0
-        let cycleLen = user?.menstrualCycleLength ?? 28
+        let cycleLen = CycleLengthPolicy.sanitized(user?.menstrualCycleLength)
         let day = (days % cycleLen) + 1
         return max(1, min(day, cycleLen))
     }
 
     private var cyclePhaseText: String {
         let day = currentCycleDay
-        let cycleLen = user?.menstrualCycleLength ?? 28
+        let cycleLen = CycleLengthPolicy.sanitized(user?.menstrualCycleLength)
         let ovulationDay = cycleLen - 14
 
         if day <= 5 { return "Mens" }
@@ -271,7 +285,7 @@ struct HomeView: View {
     // Fertile Window Status
     @ViewBuilder
     private var fertilityFertileWindowCard: some View {
-        let cycleLen = user?.menstrualCycleLength ?? 28
+        let cycleLen = CycleLengthPolicy.sanitized(user?.menstrualCycleLength)
         let ovulationDay = cycleLen - 14
         let fertileStart = ovulationDay - 5
         let fertileEnd = ovulationDay + 1
@@ -409,10 +423,9 @@ struct HomeView: View {
     // Pregnancy Week Hero
     @ViewBuilder
     private var pregnancyHeroCard: some View {
-        if let user, let dueDate = user.dueDate {
-            let weeksPregnant = pregnancyWeek(dueDate: dueDate)
+        if let user, let dueDate = user.dueDate, let weeksPregnant = user.currentPregnancyWeek {
             let weeksLeft = max(0, 40 - weeksPregnant)
-            let progress = Double(weeksPregnant) / 40.0
+            let progress = user.pregnancyProgress ?? (Double(weeksPregnant) / 40.0)
 
             GradientCard(gradient: .pregnancyGradient) {
                 HStack(spacing: DS.s5) {
@@ -467,12 +480,6 @@ struct HomeView: View {
         }
     }
 
-    private func pregnancyWeek(dueDate: Date) -> Int {
-        let start = Calendar.current.date(byAdding: .weekOfYear, value: -40, to: dueDate) ?? dueDate
-        let w = Calendar.current.dateComponents([.weekOfYear], from: start, to: Date()).weekOfYear ?? 0
-        return max(4, min(w, 40))
-    }
-
     private func trimesterText(week: Int) -> String {
         switch week {
         case 0..<13:  return "Trimester 1"
@@ -484,9 +491,9 @@ struct HomeView: View {
     // Fetal Size Comparison
     @ViewBuilder
     private var pregnancyFetalSizeCard: some View {
-        if let user, let dueDate = user.dueDate {
-            let week = pregnancyWeek(dueDate: dueDate)
-            let content = PregnancyWeekContent.forWeek(week)
+        if let user, let week = user.currentPregnancyWeek {
+            let clampedWeek = max(4, min(42, week))
+            let content = PregnancyWeekContent.forWeek(clampedWeek)
 
             GlassCard(gradient: .pregnancyGradient) {
                 VStack(alignment: .leading, spacing: DS.s3) {
@@ -499,7 +506,7 @@ struct HomeView: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: DS.s1) {
-                                Text("Vecka \(week)")
+                                Text("Vecka \(clampedWeek)")
                                     .font(.system(size: 13, weight: .bold))
                                     .foregroundStyle(Color.appLavender)
 
@@ -525,9 +532,8 @@ struct HomeView: View {
     // Today's Tip
     @ViewBuilder
     private var pregnancyTipCard: some View {
-        if let user, let dueDate = user.dueDate {
-            let week = pregnancyWeek(dueDate: dueDate)
-            let content = PregnancyWeekContent.forWeek(week)
+        if let user, let week = user.currentPregnancyWeek {
+            let content = PregnancyWeekContent.forWeek(max(4, min(42, week)))
 
             VStack(spacing: DS.s3) {
                 DSSectionHeader(title: "Dagens tips")
@@ -615,10 +621,10 @@ struct HomeView: View {
     // Baby Age Hero
     @ViewBuilder
     private var parentBabyAgeCard: some View {
-        if let user, let birthDate = user.babyBirthDate {
-            let ageComponents = Calendar.current.dateComponents([.year, .month, .weekOfYear, .day], from: birthDate, to: Date())
-            let totalMonths = (ageComponents.year ?? 0) * 12 + (ageComponents.month ?? 0)
-
+        if let user,
+           let birthDate = user.babyBirthDate,
+           let totalMonths = user.babyAgeInMonths,
+           let totalWeeks = user.babyAgeInWeeks {
             GradientCard(gradient: .babyGradient) {
                 HStack(spacing: DS.s5) {
                     ZStack {
@@ -627,10 +633,10 @@ struct HomeView: View {
                             .frame(width: 90, height: 90)
 
                         VStack(spacing: 0) {
-                            Text(babyAgeValue(months: totalMonths, weeks: ageComponents.weekOfYear ?? 0))
+                            Text(babyAgeValue(months: totalMonths, weeks: totalWeeks))
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
-                            Text(babyAgeUnit(months: totalMonths, weeks: ageComponents.weekOfYear ?? 0))
+                            Text(babyAgeUnit(months: totalMonths, weeks: totalWeeks))
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(.white.opacity(0.6))
                                 .lineLimit(1)
@@ -714,8 +720,9 @@ struct HomeView: View {
     }
 
     private var todaySleepString: String {
-        let todayLogs = allSleepLogs.filter { Calendar.current.isDateInToday($0.startDate) }
-        let total = todayLogs.reduce(0.0) { $0 + $1.duration }
+        let total = allSleepLogs.reduce(0.0) { sum, log in
+            sum + log.overlappingDuration(on: Date())
+        }
         guard total > 0 else { return "—" }
         let h = Int(total) / 3600
         let m = (Int(total) % 3600) / 60
@@ -731,6 +738,15 @@ struct HomeView: View {
     private var parentDuJustNuCard: some View {
         if let user, let months = user.babyAgeInMonths {
             let tip = duJustNuTip(months: months)
+            let years = user.babyAgeYears ?? 0
+            let remainingMonths = user.babyAgeRemainingMonths ?? 0
+            let ageBadgeText: String = {
+                if years > 0 {
+                    if remainingMonths > 0 { return "\(years) år \(remainingMonths) mån" }
+                    return "\(years) år"
+                }
+                return "\(months) mån"
+            }()
 
             GradientCard(gradient: .babyGradient) {
                 VStack(alignment: .leading, spacing: DS.s3) {
@@ -746,7 +762,7 @@ struct HomeView: View {
 
                         Spacer()
 
-                        Text(months >= 24 ? "\(months / 12) år \(months % 12 > 0 ? "\(months % 12) mån" : "")" : "\(months) mån")
+                        Text(ageBadgeText)
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.55))
                             .padding(.horizontal, DS.s2 + 2)
@@ -1164,6 +1180,10 @@ struct AddSleepSheet: View {
     }
 
     private func save() {
+        guard endDate > startDate else {
+            HapticFeedback.light()
+            return
+        }
         let log = SleepLog(startDate: startDate, endDate: endDate, quality: quality, isNap: isNap)
         modelContext.insert(log)
         try? modelContext.save()

@@ -228,8 +228,7 @@ final class MockFirebaseService {
     }
 
     func sleepComparison(ageMonths: Int, actualSleepHours: Double) -> (average: Double, percentile: String, status: String) {
-        let closest = Self.sleepAverages.min(by: { abs($0.ageMonths - ageMonths) < abs($1.ageMonths - ageMonths) })
-        let avg = closest?.totalSleepHours ?? 14
+        let avg = interpolatedSleepMetric(ageMonths: ageMonths) { $0.totalSleepHours } ?? 14
         let diff = actualSleepHours - avg
 
         let percentile: String
@@ -266,13 +265,40 @@ final class MockFirebaseService {
     }
 
     func wakeWindowForAge(ageMonths: Int) -> Int {
-        let closest = Self.sleepAverages.min(by: { abs($0.ageMonths - ageMonths) < abs($1.ageMonths - ageMonths) })
-        return closest?.wakeWindowMinutes ?? 120
+        let value = interpolatedSleepMetric(ageMonths: ageMonths) { Double($0.wakeWindowMinutes) } ?? 120
+        return Int(value.rounded())
     }
 
     func numberOfNapsForAge(ageMonths: Int) -> Int {
-        let closest = Self.sleepAverages.min(by: { abs($0.ageMonths - ageMonths) < abs($1.ageMonths - ageMonths) })
-        return closest?.numberOfNaps ?? 2
+        let value = interpolatedSleepMetric(ageMonths: ageMonths) { Double($0.numberOfNaps) } ?? 2
+        return max(0, Int(value.rounded()))
+    }
+
+    private func interpolatedSleepMetric(
+        ageMonths: Int,
+        value: (SleepAverages) -> Double
+    ) -> Double? {
+        guard let first = Self.sleepAverages.first,
+              let last = Self.sleepAverages.last else { return nil }
+
+        if ageMonths <= first.ageMonths { return value(first) }
+        if ageMonths >= last.ageMonths { return value(last) }
+
+        guard let upperIndex = Self.sleepAverages.firstIndex(where: { $0.ageMonths >= ageMonths }) else {
+            return value(last)
+        }
+        if upperIndex == 0 { return value(first) }
+
+        let lower = Self.sleepAverages[upperIndex - 1]
+        let upper = Self.sleepAverages[upperIndex]
+
+        let span = Double(upper.ageMonths - lower.ageMonths)
+        guard span > 0 else { return value(lower) }
+
+        let progress = Double(ageMonths - lower.ageMonths) / span
+        let lowerValue = value(lower)
+        let upperValue = value(upper)
+        return lowerValue + (upperValue - lowerValue) * progress
     }
 
     // MARK: - Simulated "other users" stats for display

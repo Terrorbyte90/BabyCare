@@ -65,12 +65,30 @@ struct VaccinationView: View {
     @State private var noteText: String = ""
     @State private var notificationGranted: Bool = false
 
+    private var user: UserData? {
+        userData.first
+    }
+
     private var babyBirthDate: Date? {
-        userData.first?.babyBirthDate
+        user?.babyBirthDate
     }
 
     private var babyName: String {
-        userData.first?.babyName ?? "Bebis"
+        user?.babyName ?? "Bebis"
+    }
+
+    private var forumCategory: ForumCategory {
+        let months = user?.babyAgeInMonths ?? 0
+        switch months {
+        case ..<4:
+            return .nyfodda
+        case ..<12:
+            return .somnRutiner
+        case ..<36:
+            return .utvecklingMilstolpar
+        default:
+            return .relationForaldraskap
+        }
     }
 
     private var groupedEntries: [(AgeGroup, [VaccinationEntry])] {
@@ -113,7 +131,7 @@ struct VaccinationView: View {
                     }
 
                     ForumExcerptView(
-                        threads: ForumData.threads(for: .nyfodda),
+                        threads: ForumData.threads(for: forumCategory),
                         title: "I forum"
                     )
                 }

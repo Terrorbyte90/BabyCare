@@ -46,15 +46,10 @@ struct BirthPlanView: View {
     @State private var selectedCategory: BirthPlanCategory = .pain
     @State private var newItemTitle = ""
     @State private var pdfData: Data?
+    @State private var createdPlan: BirthPlan?
 
-    private var plan: BirthPlan {
-        if let existing = plans.first {
-            return existing
-        }
-        let newPlan = BirthPlan()
-        newPlan.itemsJSON = Self.defaultItemsJSON()
-        modelContext.insert(newPlan)
-        return newPlan
+    private var plan: BirthPlan? {
+        plans.first ?? createdPlan
     }
 
     var body: some View {
@@ -100,6 +95,9 @@ struct BirthPlanView: View {
             }
             .sheet(isPresented: $showAddItemSheet) {
                 addItemSheet
+            }
+            .task {
+                ensurePlanExists()
             }
         }
     }
@@ -197,14 +195,21 @@ struct BirthPlanView: View {
             }
 
             GlassCard {
-                TextEditor(text: Binding(
-                    get: { plan.notes ?? "" },
-                    set: { plan.notes = $0; plan.lastUpdated = Date() }
-                ))
-                .font(.system(size: 14))
-                .foregroundStyle(Color.appText)
-                .frame(minHeight: 100)
-                .scrollContentBackground(.hidden)
+                if let plan {
+                    TextEditor(text: Binding(
+                        get: { plan.notes ?? "" },
+                        set: { plan.notes = $0; plan.lastUpdated = Date() }
+                    ))
+                    .font(.system(size: 14))
+                    .foregroundStyle(Color.appText)
+                    .frame(minHeight: 100)
+                    .scrollContentBackground(.hidden)
+                } else {
+                    Text("Laddar plan...")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.appTextTert)
+                        .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
+                }
             }
         }
     }
@@ -246,19 +251,22 @@ struct BirthPlanView: View {
     // MARK: - Data helpers
 
     private func ensurePlanExists() {
-        if plans.isEmpty {
+        if plans.isEmpty && createdPlan == nil {
             let newPlan = BirthPlan()
             newPlan.itemsJSON = Self.defaultItemsJSON()
             modelContext.insert(newPlan)
+            createdPlan = newPlan
         }
     }
 
     private func loadItems() -> [BirthPlanItem] {
+        guard let plan else { return [] }
         guard let data = plan.itemsJSON.data(using: .utf8) else { return [] }
         return (try? JSONDecoder().decode([BirthPlanItem].self, from: data)) ?? []
     }
 
     private func saveItems(_ items: [BirthPlanItem]) {
+        guard let plan else { return }
         guard let data = try? JSONEncoder().encode(items),
               let json = String(data: data, encoding: .utf8) else { return }
         plan.itemsJSON = json
@@ -295,6 +303,7 @@ struct BirthPlanView: View {
     // MARK: - PDF Generation
 
     private func makePDF() -> Data? {
+        guard let plan else { return nil }
         let pageWidth: CGFloat = 595
         let pageHeight: CGFloat = 842
         let margin: CGFloat = 40

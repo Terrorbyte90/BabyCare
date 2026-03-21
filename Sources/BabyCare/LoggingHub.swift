@@ -32,7 +32,7 @@ struct LoggingHub: View {
     }
 
     private var todaySleepLogs: [SleepLog] {
-        sleepLogs.filter { Calendar.current.isDateInToday($0.startDate) }
+        sleepLogs.filter { $0.overlaps(day: Date()) }
     }
 
     private var todayDiapers: [DiaperLog] {
@@ -44,7 +44,7 @@ struct LoggingHub: View {
     }
 
     private var totalSleepToday: TimeInterval {
-        todaySleepLogs.reduce(0.0) { $0 + $1.duration }
+        todaySleepLogs.reduce(0.0) { $0 + $1.overlappingDuration(on: Date()) }
     }
 
     private var totalSleepString: String {
@@ -346,13 +346,11 @@ struct LoggingHub: View {
     /// 2. Senaste avslutade sömn → starttid för nästa vakefönster
     /// Logiken speglar Huckleberry SweetSpot-principen men är helt lokal.
 
-    private var somnFonsterPrediction: (nextNapWindow: Date, wakeWindowMinutes: Int, lastSleepEnd: Date?)? {
-        guard let birth = user?.babyBirthDate else { return nil }
-        let ageMonths = Calendar.current.dateComponents([.month], from: birth, to: Date()).month ?? 0
+    private var somnFonsterPrediction: (nextNapWindow: Date, wakeWindow: WakeWindow, lastSleepEnd: Date)? {
+        guard let ageInDays = user?.babyAgeInDays else { return nil }
+        guard WakeWindowCalculator.recommendedNaps(forAgeInDays: ageInDays) > 0 else { return nil }
 
-        // Åldersanpassat vakefönster
-        let wakeWindow = MockFirebaseService.shared.wakeWindowForAge(ageMonths: ageMonths)
-        guard wakeWindow > 0 else { return nil } // barn >18 månader behöver ej napptidsprediktion
+        let wakeWindow = WakeWindowCalculator.wakeWindow(forAgeInDays: ageInDays)
 
         // Hitta senaste avslutade sömnperiod (natt eller tupplur)
         let lastCompletedSleep = sleepLogs
@@ -360,16 +358,10 @@ struct LoggingHub: View {
             .sorted { $0.endDate > $1.endDate }
             .first
 
-        let windowStart: Date
-        if let last = lastCompletedSleep {
-            windowStart = last.endDate
-        } else {
-            // Ingen loggrad sömn — använd midnatt idag som fallback
-            windowStart = Calendar.current.startOfDay(for: Date())
-        }
+        guard let lastCompletedSleep else { return nil }
 
-        let nextNap = windowStart.addingTimeInterval(Double(wakeWindow) * 60)
-        return (nextNapWindow: nextNap, wakeWindowMinutes: wakeWindow, lastSleepEnd: lastCompletedSleep?.endDate)
+        let nextNap = lastCompletedSleep.endDate.addingTimeInterval(Double(wakeWindow.midpoint) * 60)
+        return (nextNapWindow: nextNap, wakeWindow: wakeWindow, lastSleepEnd: lastCompletedSleep.endDate)
     }
 
     private var somnFonsterSection: some View {
@@ -432,15 +424,13 @@ struct LoggingHub: View {
 
                         // Wake window info
                         HStack(spacing: DS.s4) {
-                            Label("\(prediction.wakeWindowMinutes) min vakefönster", systemImage: "sun.horizon.fill")
+                            Label("\(prediction.wakeWindow.displayString) vakenfönster", systemImage: "sun.horizon.fill")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundStyle(Color.appTextSec)
 
-                            if let lastEnd = prediction.lastSleepEnd {
-                                Label("Vaknade \(lastEnd.formatted(.dateTime.hour().minute()))", systemImage: "alarm")
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundStyle(Color.appTextSec)
-                            }
+                            Label("Vaknade \(prediction.lastSleepEnd.formatted(.dateTime.hour().minute()))", systemImage: "alarm")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
                         }
                         .lineLimit(1)
 
@@ -456,7 +446,7 @@ struct LoggingHub: View {
                         Image(systemName: "moon.zzz")
                             .font(.system(size: 22))
                             .foregroundStyle(Color.appTextTert)
-                        Text("Logga sömn för att få sömnfönster-prediktion")
+                        Text("Logga minst ett avslutat sömnpass för att få sömnfönster-prediktion")
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(Color.appTextSec)
                         Spacer()
@@ -486,7 +476,7 @@ struct LoggingHub: View {
 
             HStack(spacing: DS.s3) {
                 StatCard(
-                    title: "Matningar",
+                    title: "Mat",
                     value: "\(todayFeedings.count)",
                     icon: "drop.fill",
                     gradient: .orangePink
@@ -611,7 +601,7 @@ struct LoggingHub: View {
             }
             entries.append(TimelineEntry(
                 date: log.date,
-                title: "Matning",
+                title: "Mat",
                 subtitle: subtitle,
                 icon: log.type.icon,
                 gradient: .orangePink,
@@ -637,7 +627,7 @@ struct LoggingHub: View {
                 subtitle += " (\(size.displayName))"
             }
             if log.type == .bajs, let cons = log.stoolConsistency {
-                let labels = ["", "Mycket hård", "Hård", "Normal", "Lös", "Mycket lös"]
+                let labels = ["", "Diarré", "Lös", "Normal", "Hård", "Förstoppning"]
                 if cons >= 1 && cons <= 5 {
                     subtitle += " · \(labels[cons])"
                 }
@@ -680,7 +670,10 @@ struct FeedingLogSheet: View {
     @State private var side: FeedingSide = .left
     @State private var amount: String = ""
     @State private var note: String = ""
+    @State private var portionSize: String? = nil
     @State private var date = Date()
+
+    private let portionOptions = ["Lite", "Lagom", "Mycket"]
 
     // Timer
     @State private var localTimerRunning = false
@@ -689,7 +682,7 @@ struct FeedingLogSheet: View {
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        DSSheet(title: "Logga matning", onSave: save) {
+        DSSheet(title: "Logga mat", onSave: save) {
             VStack(spacing: DS.s5) {
                 // Type selector
                 VStack(alignment: .leading, spacing: DS.s2) {
@@ -739,26 +732,58 @@ struct FeedingLogSheet: View {
                     DSTextField(title: "Mängd (ml)", text: $amount, keyboard: .decimalPad)
 
                 case .solid:
-                    VStack(alignment: .leading, spacing: DS.s2) {
-                        Text("VAD ÅT BEBISEN?")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Color.appTextTert)
-                            .tracking(0.6)
+                    EmptyView()
+                }
 
-                        TextEditor(text: $note)
-                            .font(.system(size: 15))
-                            .foregroundStyle(Color.appText)
-                            .scrollContentBackground(.hidden)
-                            .frame(minHeight: 80)
-                            .padding(DS.s3)
-                            .background(Color.appSurface2)
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
-                            .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
+                // Portionsstorlek — för alla typer
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("MÄNGD")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
 
-                        Text("T.ex. morotspuré, banan, havregrynsgröt...")
-                            .font(.system(size: 11))
-                            .foregroundStyle(Color.appTextTert)
+                    HStack(spacing: DS.s2) {
+                        ForEach(portionOptions, id: \.self) { option in
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    portionSize = portionSize == option ? nil : option
+                                }
+                                HapticFeedback.selection()
+                            } label: {
+                                Text(option)
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(portionSize == option ? .white : Color.appTextSec)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, DS.s2 + 2)
+                                    .background(portionSize == option ? LinearGradient.orangePink : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom))
+                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                    .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(portionSize == option ? Color.clear : Color.appBorderMed, lineWidth: 1))
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                        }
                     }
+                }
+
+                // Kommentar — vad barnet åt (för alla typer)
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("VAD ÅT BARNET?")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    TextEditor(text: $note)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Color.appText)
+                        .scrollContentBackground(.hidden)
+                        .frame(minHeight: 70)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
+
+                    Text(feedingType == .solid ? "T.ex. morotspuré, banan, havregrynsgröt..." : "T.ex. bröstmjölk, ersättning, välling...")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Color.appTextTert)
                 }
             }
         }
@@ -887,7 +912,8 @@ struct FeedingLogSheet: View {
             duration: duration,
             side: feedingType == .breastfeeding ? side : nil,
             note: note.isEmpty ? nil : note,
-            foodNote: feedingType == .solid && !note.isEmpty ? note : nil
+            foodNote: feedingType == .solid && !note.isEmpty ? note : nil,
+            portionSize: portionSize
         )
         modelContext.insert(log)
         try? modelContext.save()
@@ -1011,6 +1037,10 @@ struct SleepLogSheet: View {
         }
 
         let finalEnd = isOngoing ? Date() : endTime
+        guard finalEnd > startTime else {
+            HapticFeedback.light()
+            return
+        }
 
         let log = SleepLog(
             startDate: startTime,
@@ -1151,7 +1181,7 @@ struct DiaperLogSheet: View {
                         }
 
                         HStack {
-                            Text("Mycket hård")
+                            Text("Diarré")
                                 .font(.system(size: 10))
                                 .foregroundStyle(Color.appTextTert)
                             Spacer()
@@ -1159,7 +1189,7 @@ struct DiaperLogSheet: View {
                                 .font(.system(size: 10))
                                 .foregroundStyle(Color.appTextTert)
                             Spacer()
-                            Text("Mycket lös")
+                            Text("Förstoppning")
                                 .font(.system(size: 10))
                                 .foregroundStyle(Color.appTextTert)
                         }
@@ -1189,21 +1219,21 @@ struct DiaperLogSheet: View {
 
     private func consistencyLabel(_ level: Int) -> String {
         switch level {
-        case 1: return "Mycket hård"
-        case 2: return "Hård"
+        case 1: return "Diarré"
+        case 2: return "Lös"
         case 3: return "Normal"
-        case 4: return "Lös"
-        case 5: return "Mycket lös"
+        case 4: return "Hård"
+        case 5: return "Förstoppning"
         default: return "Normal"
         }
     }
 
     private func consistencyColor(_ level: Int) -> Color {
         switch level {
-        case 1, 2: return .appOrange
-        case 3: return .appGreen
-        case 4, 5: return .appBlue
-        default: return .appGreen
+        case 1, 5: return .appOrange
+        case 2, 4: return .appBlue
+        case 3:    return .appGreen
+        default:   return .appGreen
         }
     }
 

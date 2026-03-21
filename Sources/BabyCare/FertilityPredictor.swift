@@ -1,6 +1,22 @@
 // Sources/BabyCare/FertilityPredictor.swift
 import Foundation
 
+enum CycleLengthPolicy {
+    static let min = 21
+    static let max = 45
+    static let fallback = 28
+
+    static func sanitized(_ value: Int?) -> Int {
+        guard let value else { return fallback }
+        return Swift.max(min, Swift.min(value, max))
+    }
+
+    static func validated(_ value: Int?) -> Int? {
+        guard let value, (min...max).contains(value) else { return nil }
+        return value
+    }
+}
+
 enum CyclePhase: String, CaseIterable, Equatable {
     case menstruation = "Mens"
     case follicular = "Follikelfas"
@@ -39,6 +55,7 @@ struct FertilityPredictor {
 
     /// Ogino-Knaus: firstFertile = cycleLength - 18, lastFertile = cycleLength - 11, peak = cycleLength - 14
     static func fertilityWindow(cycleLength: Int) -> FertilityWindow {
+        let cycleLength = CycleLengthPolicy.sanitized(cycleLength)
         let firstFertile = cycleLength - 18
         let lastFertile = cycleLength - 11
         let peak = cycleLength - 14
@@ -67,6 +84,7 @@ struct FertilityPredictor {
     }
 
     static func cyclePhase(for date: Date, lastPeriodStart: Date, cycleLength: Int) -> CyclePhase {
+        let cycleLength = CycleLengthPolicy.sanitized(cycleLength)
         let dayOfCycle = Calendar.current.dateComponents([.day], from: lastPeriodStart, to: date).day ?? 0
         guard dayOfCycle >= 0 else { return .menstruation }
         let adjustedDay = (dayOfCycle % cycleLength) + 1
@@ -74,7 +92,8 @@ struct FertilityPredictor {
     }
 
     static func nextPeriodDate(lastPeriodStart: Date, cycleLength: Int) -> Date {
-        Calendar.current.date(byAdding: .day, value: cycleLength, to: lastPeriodStart) ?? lastPeriodStart
+        let cycleLength = CycleLengthPolicy.sanitized(cycleLength)
+        return Calendar.current.date(byAdding: .day, value: cycleLength, to: lastPeriodStart) ?? lastPeriodStart
     }
 
     /// BBT confirmation: rise of ≥0.2°C above 3-day baseline
@@ -91,6 +110,7 @@ struct FertilityPredictor {
     }
 
     static func daysToOvulation(lastPeriodStart: Date, cycleLength: Int) -> Int {
+        let cycleLength = CycleLengthPolicy.sanitized(cycleLength)
         let window = fertilityWindow(cycleLength: cycleLength)
         let ovulationDate = Calendar.current.date(
             byAdding: .day, value: window.peakDay - 1, to: lastPeriodStart

@@ -19,33 +19,25 @@ struct PregnancyDashboard: View {
 
     // MARK: - Pregnancy Calculations
 
+    private var hasPregnancyData: Bool {
+        user?.dueDate != nil && user?.currentPregnancyWeek != nil
+    }
     private var dueDate: Date? { user?.dueDate }
-
-    private var daysPregnant: Int {
-        guard let due = dueDate else { return 0 }
-        let totalDays = 280
-        let daysUntilDue = Calendar.current.dateComponents([.day], from: Date(), to: due).day ?? 0
-        return max(0, totalDays - daysUntilDue)
-    }
-
-    private var weeksPregnant: Int { daysPregnant / 7 }
-    private var daysIntoWeek: Int { daysPregnant % 7 }
-
-    private var clampedWeek: Int { max(4, min(weeksPregnant, 40)) }
-
-    private var daysUntilDue: Int {
-        guard let due = dueDate else { return 0 }
-        return max(0, Calendar.current.dateComponents([.day], from: Date(), to: due).day ?? 0)
-    }
-
-    private var progress: Double { Double(weeksPregnant) / 40.0 }
+    private var daysPregnant: Int { user?.pregnancyDaysElapsed ?? 0 }
+    private var weeksPregnant: Int { user?.currentPregnancyWeek ?? 0 }
+    private var daysIntoWeek: Int { user?.currentPregnancyDay ?? 0 }
+    private var clampedWeek: Int { max(4, min(42, weeksPregnant)) }
+    private var daysUntilDue: Int { user?.pregnancyDaysUntilDue ?? 0 }
+    private var progress: Double { user?.pregnancyProgress ?? (Double(clampedWeek) / 40.0) }
 
     private var trimester: Int {
-        switch weeksPregnant {
-        case 0..<13: return 1
-        case 13..<27: return 2
-        default: return 3
-        }
+        user?.currentPregnancyTrimester ?? {
+            switch clampedWeek {
+            case 0..<13: return 1
+            case 13..<27: return 2
+            default: return 3
+            }
+        }()
     }
 
     private var trimesterString: String {
@@ -67,35 +59,45 @@ struct PregnancyDashboard: View {
             ZStack {
                 Color.appBg.ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: DS.s6) {
-                        heroCard
-                            .staggerAppear(index: 0)
+                if hasPregnancyData {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: DS.s6) {
+                            heroCard
+                                .staggerAppear(index: 0)
 
-                        trimesterIndicator
-                            .staggerAppear(index: 1)
+                            trimesterIndicator
+                                .staggerAppear(index: 1)
 
-                        fetalVisualization
-                            .staggerAppear(index: 2)
+                            fetalVisualization
+                                .staggerAppear(index: 2)
 
-                        weekHighlightsCard
-                            .staggerAppear(index: 3)
+                            weekHighlightsCard
+                                .staggerAppear(index: 3)
 
-                        quickActionsSection
-                            .staggerAppear(index: 4)
+                            quickActionsSection
+                                .staggerAppear(index: 4)
 
-                        if !upcomingAppointments.isEmpty {
-                            appointmentsSection
-                                .staggerAppear(index: 5)
+                            if !upcomingAppointments.isEmpty {
+                                appointmentsSection
+                                    .staggerAppear(index: 5)
+                            }
+
+                            forumSection
+                                .staggerAppear(index: 6)
+
+                            Color.clear.frame(height: 90)
                         }
-
-                        forumSection
-                            .staggerAppear(index: 6)
-
-                        Color.clear.frame(height: 90)
+                        .padding(.horizontal, DS.s4)
+                        .padding(.top, DS.s4)
                     }
+                } else {
+                    DSEmptyState(
+                        icon: "calendar.badge.exclamationmark",
+                        gradient: .pregnancyGradient,
+                        title: "Graviditetsvecka saknas",
+                        subtitle: "Lägg till beräknat datum i profilen för att visa korrekt vecka och innehåll."
+                    )
                     .padding(.horizontal, DS.s4)
-                    .padding(.top, DS.s4)
                 }
             }
             .navigationTitle("Du just nu")
@@ -129,7 +131,7 @@ struct PregnancyDashboard: View {
                                 .font(.system(size: 18, weight: .medium))
                                 .foregroundStyle(.white.opacity(0.7))
 
-                            Text("\(weeksPregnant)")
+                            Text("\(clampedWeek)")
                                 .font(.system(size: 48, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
                                 .contentTransition(.numericText())
@@ -282,7 +284,7 @@ struct PregnancyDashboard: View {
     // MARK: - Fetal Visualization
 
     private var fetalVisualization: some View {
-        FetalVisualizationView(week: weeksPregnant)
+        FetalVisualizationView(week: clampedWeek)
     }
 
     // MARK: - Week Highlights
@@ -477,7 +479,7 @@ private struct FetalVisualizationView: View {
     }
 
     private var weekEmoji: String {
-        Self.fetalEmoji(for: max(1, min(week, 40)))
+        Self.fetalEmoji(for: max(1, min(week, 42)))
     }
 
     // Gradient baserat på trimester

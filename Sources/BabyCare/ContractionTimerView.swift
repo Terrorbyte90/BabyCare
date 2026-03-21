@@ -676,27 +676,33 @@ private struct EnhancedContractionRow: View {
 struct ContractionAnalyzer {
     /// 5-1-1 regel: kontraktioner var 5:e min, 1 min långa, sedan 1 timme
     static func isTimeToGoToHospital(contractions: [ContractionLog]) -> Bool {
-        guard contractions.count >= 6 else { return false }
-        let recent = contractions.sorted { $0.startTime > $1.startTime }.prefix(6)
+        let completed = contractions
+            .filter { $0.endTime != nil }
+            .sorted { $0.startTime < $1.startTime }
+        guard completed.count >= 6 else { return false }
 
-        // Genomsnittlig varaktighet >= 55 sekunder
-        let durations: [TimeInterval] = recent.compactMap { c in
-            guard let end = c.endTime else { return nil }
-            return end.timeIntervalSince(c.startTime)
-        }
-        guard !durations.isEmpty else { return false }
+        // Titta på de senaste 12 värkarna för att få ett stabilt 5-1-1-underlag.
+        let recent = Array(completed.suffix(12))
+        guard let first = recent.first, let last = recent.last else { return false }
+
+        // "... i 1 timme": minst ~55 minuter mellan första och sista i fönstret.
+        let totalSpan = last.startTime.timeIntervalSince(first.startTime)
+        guard totalSpan >= 55 * 60 else { return false }
+
+        // "1": värklängd runt 1 minut.
+        let durations = recent.compactMap { $0.duration }
+        guard durations.count >= 6 else { return false }
         let avgDuration = durations.reduce(0, +) / Double(durations.count)
         guard avgDuration >= 55 else { return false }
 
-        // Genomsnittligt intervall <= 6 minuter
-        let sorted = recent.sorted { $0.startTime < $1.startTime }
+        // "5": intervall cirka var 5:e minut.
         var intervals: [TimeInterval] = []
-        for i in 1..<sorted.count {
-            intervals.append(sorted[i].startTime.timeIntervalSince(sorted[i-1].startTime))
+        for i in 1..<recent.count {
+            intervals.append(recent[i].startTime.timeIntervalSince(recent[i - 1].startTime))
         }
         guard !intervals.isEmpty else { return false }
         let avgInterval = intervals.reduce(0, +) / Double(intervals.count)
-        return avgInterval <= 360
+        return avgInterval <= 5 * 60
     }
 
     static func averageInterval(contractions: [ContractionLog]) -> TimeInterval? {

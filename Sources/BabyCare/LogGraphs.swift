@@ -15,10 +15,12 @@ struct LogGraphs: View {
 
     private var user: UserData? { userData.first }
 
-    private var babyAgeMonths: Int {
-        guard let birth = user?.babyBirthDate else { return 3 }
-        let components = Calendar.current.dateComponents([.year, .month], from: birth, to: Date())
-        return (components.year ?? 0) * 12 + (components.month ?? 0)
+    private var babyAgeMonths: Int? {
+        user?.babyAgeInMonths
+    }
+
+    private var babyAgeDays: Int? {
+        user?.babyAgeInDays
     }
 
     enum TimePeriod: String, CaseIterable {
@@ -242,52 +244,56 @@ struct LogGraphs: View {
             }
 
             // Comparison with averages
-            let feedComp = MockFirebaseService.shared.feedingComparison(
-                ageMonths: babyAgeMonths,
-                actualFeedingsPerDay: todayFeedingCount
-            )
-            GlassCard(gradient: .orangePink) {
-                VStack(alignment: .leading, spacing: DS.s3) {
-                    HStack(spacing: DS.s2) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(LinearGradient.orangePink)
-                        Text("Jämförelse med genomsnitt")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appText)
-                    }
-
-                    HStack(spacing: DS.s4) {
-                        VStack(spacing: DS.s1) {
-                            Text("\(todayFeedingCount)")
-                                .font(.system(size: 24, weight: .bold, design: .rounded))
+            if let ageMonths = babyAgeMonths {
+                let feedComp = MockFirebaseService.shared.feedingComparison(
+                    ageMonths: ageMonths,
+                    actualFeedingsPerDay: todayFeedingCount
+                )
+                GlassCard(gradient: .orangePink) {
+                    VStack(alignment: .leading, spacing: DS.s3) {
+                        HStack(spacing: DS.s2) {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(LinearGradient.orangePink)
+                            Text("Jämförelse med genomsnitt")
+                                .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(Color.appText)
-                            Text("Ditt barn idag")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(Color.appTextSec)
                         }
-                        .frame(maxWidth: .infinity)
 
-                        Rectangle()
-                            .fill(Color.appBorder)
-                            .frame(width: 1, height: 50)
+                        HStack(spacing: DS.s4) {
+                            VStack(spacing: DS.s1) {
+                                Text("\(todayFeedingCount)")
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.appText)
+                                Text("Ditt barn idag")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                            .frame(maxWidth: .infinity)
 
-                        VStack(spacing: DS.s1) {
-                            Text(String(format: "%.1f", feedComp.average))
-                                .font(.system(size: 24, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.appTextSec)
-                            Text("Genomsnitt")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(Color.appTextSec)
+                            Rectangle()
+                                .fill(Color.appBorder)
+                                .frame(width: 1, height: 50)
+
+                            VStack(spacing: DS.s1) {
+                                Text(String(format: "%.1f", feedComp.average))
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.appTextSec)
+                                Text("Genomsnitt")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                            .frame(maxWidth: .infinity)
                         }
-                        .frame(maxWidth: .infinity)
+
+                        Text(feedComp.status)
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.appTextSec)
+                            .lineSpacing(3)
                     }
-
-                    Text(feedComp.status)
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.appTextSec)
-                        .lineSpacing(3)
                 }
+            } else {
+                missingBirthDateState
             }
         }
     }
@@ -442,88 +448,91 @@ struct LogGraphs: View {
                 }
             }
 
-            // Wake window analysis
-            let wakeWindow = MockFirebaseService.shared.wakeWindowForAge(ageMonths: babyAgeMonths)
-            let expectedNaps = MockFirebaseService.shared.numberOfNapsForAge(ageMonths: babyAgeMonths)
+            if let ageMonths = babyAgeMonths, let ageDays = babyAgeDays {
+                // Wake window analysis
+                let wakeWindow = WakeWindowCalculator.wakeWindow(forAgeInDays: ageDays)
+                let expectedNaps = WakeWindowCalculator.recommendedNaps(forAgeInDays: ageDays)
 
-            HStack(spacing: DS.s3) {
-                StatCard(
-                    title: "Vakenfönstret",
-                    value: "\(wakeWindow) min",
-                    icon: "sun.max.fill",
-                    gradient: .orangePink,
-                    subtitle: "Rekommenderat"
-                )
+                HStack(spacing: DS.s3) {
+                    StatCard(
+                        title: "Vakenfönstret",
+                        value: wakeWindow.displayString,
+                        icon: "sun.max.fill",
+                        gradient: .orangePink,
+                        subtitle: "Rekommenderat"
+                    )
 
-                StatCard(
-                    title: "Tupplurer",
-                    value: "\(expectedNaps) st",
-                    icon: "moon.zzz.fill",
-                    gradient: .blueIndigo,
-                    subtitle: "Rekommenderat"
-                )
-            }
-
-            // Comparison with age averages
-            let todaySleepHours = sleepLogs
-                .filter { Calendar.current.isDateInToday($0.startDate) }
-                .reduce(0.0) { $0 + $1.duration } / 3600
-
-            let sleepComp = MockFirebaseService.shared.sleepComparison(
-                ageMonths: babyAgeMonths,
-                actualSleepHours: todaySleepHours
-            )
-
-            GlassCard(gradient: .blueIndigo) {
-                VStack(alignment: .leading, spacing: DS.s3) {
-                    HStack(spacing: DS.s2) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(LinearGradient.blueIndigo)
-                        Text("Jämförelse med genomsnitt")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Color.appText)
-                    }
-
-                    HStack(spacing: DS.s4) {
-                        VStack(spacing: DS.s1) {
-                            Text(String(format: "%.1fh", todaySleepHours))
-                                .font(.system(size: 24, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.appText)
-                            Text("Ditt barn idag")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(Color.appTextSec)
-                        }
-                        .frame(maxWidth: .infinity)
-
-                        Rectangle()
-                            .fill(Color.appBorder)
-                            .frame(width: 1, height: 50)
-
-                        VStack(spacing: DS.s1) {
-                            Text(String(format: "%.1fh", sleepComp.average))
-                                .font(.system(size: 24, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color.appTextSec)
-                            Text("Genomsnitt")
-                                .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(Color.appTextSec)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-
-                    Text(sleepComp.status)
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color.appTextSec)
-                        .lineSpacing(3)
-
-                    Text(sleepComp.percentile)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(sleepComp.percentile == "Genomsnitt" ? Color.appGreen : Color.appOrange)
-                        .padding(.horizontal, DS.s3)
-                        .padding(.vertical, 4)
-                        .background((sleepComp.percentile == "Genomsnitt" ? Color.appGreen : Color.appOrange).opacity(0.12))
-                        .clipShape(Capsule())
+                    StatCard(
+                        title: "Tupplurer",
+                        value: "\(expectedNaps) st",
+                        icon: "moon.zzz.fill",
+                        gradient: .blueIndigo,
+                        subtitle: "Rekommenderat"
+                    )
                 }
+
+                // Comparison with age averages
+                let todaySleepHours = sleepLogs
+                    .reduce(0.0) { $0 + $1.overlappingDuration(on: Date()) } / 3600
+
+                let sleepComp = MockFirebaseService.shared.sleepComparison(
+                    ageMonths: ageMonths,
+                    actualSleepHours: todaySleepHours
+                )
+
+                GlassCard(gradient: .blueIndigo) {
+                    VStack(alignment: .leading, spacing: DS.s3) {
+                        HStack(spacing: DS.s2) {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(LinearGradient.blueIndigo)
+                            Text("Jämförelse med genomsnitt")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+                        }
+
+                        HStack(spacing: DS.s4) {
+                            VStack(spacing: DS.s1) {
+                                Text(String(format: "%.1fh", todaySleepHours))
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.appText)
+                                Text("Ditt barn idag")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            Rectangle()
+                                .fill(Color.appBorder)
+                                .frame(width: 1, height: 50)
+
+                            VStack(spacing: DS.s1) {
+                                Text(String(format: "%.1fh", sleepComp.average))
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(Color.appTextSec)
+                                Text("Genomsnitt")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(Color.appTextSec)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+
+                        Text(sleepComp.status)
+                            .font(.system(size: 13))
+                            .foregroundStyle(Color.appTextSec)
+                            .lineSpacing(3)
+
+                        Text(sleepComp.percentile)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(sleepComp.percentile == "Genomsnitt" ? Color.appGreen : Color.appOrange)
+                            .padding(.horizontal, DS.s3)
+                            .padding(.vertical, 4)
+                            .background((sleepComp.percentile == "Genomsnitt" ? Color.appGreen : Color.appOrange).opacity(0.12))
+                            .clipShape(Capsule())
+                    }
+                }
+            } else {
+                missingBirthDateState
             }
         }
     }
@@ -632,6 +641,15 @@ struct LogGraphs: View {
 
     private var todayFeedingCount: Int {
         feedingLogs.filter { Calendar.current.isDateInToday($0.date) }.count
+    }
+
+    private var missingBirthDateState: some View {
+        DSEmptyState(
+            icon: "calendar.badge.exclamationmark",
+            gradient: .tealMint,
+            title: "Födelsedatum saknas",
+            subtitle: "Lägg till barnets födelsedatum i profilen för att visa åldersanpassad jämförelse."
+        )
     }
 
     private func hourDecimal(from date: Date) -> Double {

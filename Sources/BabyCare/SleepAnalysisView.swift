@@ -4,15 +4,14 @@ import SwiftData
 import Charts
 
 struct SleepAnalysisView: View {
-    @Environment(\.modelContext) private var modelContext
     @Query(sort: \SleepLog.startDate, order: .reverse) private var sleepLogs: [SleepLog]
     @Query private var userData: [UserData]
 
     private var user: UserData? { userData.first }
+    private var hasValidAge: Bool { user?.babyAgeInDays != nil }
 
     private var ageInDays: Int {
-        guard let birth = user?.babyBirthDate else { return 120 }
-        return Calendar.current.dateComponents([.day], from: birth, to: Date()).day ?? 120
+        user?.babyAgeInDays ?? 0
     }
 
     private var todayScorecard: SleepScorecard {
@@ -23,22 +22,28 @@ struct SleepAnalysisView: View {
         AIEngine.anomalyDetected(logs: sleepLogs, ageInDays: ageInDays)
     }
 
-    /// Senaste sömnsession som startade inom det förväntade wake window — indikerar pågående sömn
+    /// Aktiv sömnsession just nu (om barnet sover)
     private var activeSleepSession: SleepLog? {
-        let wakeWindow = WakeWindowCalculator.wakeWindow(forAgeInDays: ageInDays)
-        let maxSessionSeconds = Double(wakeWindow.maximum) * 60
         let now = Date()
         return sleepLogs.first { log in
-            let elapsed = now.timeIntervalSince(log.startDate)
-            return elapsed >= 0 && elapsed <= maxSessionSeconds
+            log.startDate <= now && log.endDate >= now
         }
     }
 
-    private var wakeWindowMinutesRemaining: Int? {
-        guard let session = activeSleepSession else { return nil }
-        let wakeTime = WakeWindowCalculator.nextWakeTime(from: session.startDate, ageInDays: ageInDays)
-        let remaining = Int(wakeTime.timeIntervalSince(Date()) / 60)
-        return remaining > 0 ? remaining : 0
+    private var nextSleepWindowMinutesRemaining: Int? {
+        guard activeSleepSession == nil else { return nil }
+        let lastCompletedSleep = sleepLogs
+            .filter { $0.endDate <= Date() }
+            .sorted { $0.endDate > $1.endDate }
+            .first
+        guard let lastCompletedSleep else { return nil }
+        let wakeWindow = WakeWindowCalculator.wakeWindow(forAgeInDays: ageInDays)
+        let nextWindow = lastCompletedSleep.endDate.addingTimeInterval(Double(wakeWindow.midpoint) * 60)
+        return Int(nextWindow.timeIntervalSince(Date()) / 60)
+    }
+
+    private var wakeWindowDisplay: String {
+        WakeWindowCalculator.wakeWindow(forAgeInDays: ageInDays).displayString
     }
 
     private var sevenDayData: [DailySleepBar] {
@@ -47,8 +52,12 @@ struct SleepAnalysisView: View {
         return (0..<7).reversed().compactMap { daysBack -> DailySleepBar? in
             guard let day = calendar.date(byAdding: .day, value: -daysBack, to: today),
                   let dayEnd = calendar.date(byAdding: .day, value: 1, to: day) else { return nil }
-            let dayLogs = sleepLogs.filter { $0.startDate >= day && $0.endDate <= dayEnd }
-            let minutes = dayLogs.reduce(0) { $0 + Int($1.endDate.timeIntervalSince($1.startDate) / 60) }
+            let minutes = sleepLogs.reduce(0) { sum, log in
+                let start = max(log.startDate, day)
+                let end = min(log.endDate, dayEnd)
+                guard end > start else { return sum }
+                return sum + Int(end.timeIntervalSince(start) / 60)
+            }
             let label = daysBack == 0 ? "Idag" : shortDayLabel(for: day)
             return DailySleepBar(date: day, label: label, minutes: minutes)
         }
@@ -63,47 +72,80 @@ struct SleepAnalysisView: View {
 
     var body: some View {
         VStack(spacing: DS.s4) {
-            // Regression warning banner
-            if WakeWindowCalculator.isSleepRegressionAge(ageInDays: ageInDays),
-               let regressionName = WakeWindowCalculator.regressionName(forAgeInDays: ageInDays) {
-                regressionBanner(name: regressionName)
-            }
-
-            // Anomaly warning
-            if let warning = anomalyWarning {
-                anomalyBanner(text: warning)
-            }
-
-            // Wake window-indikator
-            if let minutes = wakeWindowMinutesRemaining {
-                HStack {
-                    Image(systemName: "moon.zzz.fill")
-                        .foregroundColor(Color("appPurple"))
-                    if minutes == 0 {
-                        Text("\(user?.babyName ?? "Barnet") bör vakna snart")
-                            .font(.subheadline).bold()
-                    } else {
-                        Text("\(user?.babyName ?? "Barnet") bör vakna om ca \(minutes) min")
-                            .font(.subheadline).bold()
-                    }
-                    Spacer()
+            if hasValidAge {
+                // Regression warning banner
+                if WakeWindowCalculator.isSleepRegressionAge(ageInDays: ageInDays),
+                   let regressionName = WakeWindowCalculator.regressionName(forAgeInDays: ageInDays) {
+                    regressionBanner(name: regressionName)
                 }
-                .padding(DS.s3)
-                .background(Color("appSurface2"))
-                .cornerRadius(12)
+
+                // Anomaly warning
+                if let warning = anomalyWarning {
+                    anomalyBanner(text: warning)
+                }
+
+                if let activeSleepSession {
+                    let elapsed = max(0, Int(Date().timeIntervalSince(activeSleepSession.startDate) / 60))
+                    HStack {
+                        Image(systemName: "moon.zzz.fill")
+                            .foregroundColor(Color("appPurple"))
+                        Text("\(user?.babyName ?? "Barnet") sover nu (\(elapsed) min)")
+                            .font(.subheadline).bold()
+                        Spacer()
+                        Text("Pågår")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.appTextTert)
+                    }
+                    .padding(DS.s3)
+                    .background(Color("appSurface2"))
+                    .cornerRadius(12)
+                } else if let minutes = nextSleepWindowMinutesRemaining {
+                    HStack {
+                        Image(systemName: "sun.horizon.fill")
+                            .foregroundColor(Color.appOrange)
+                        if minutes <= 0 {
+                            Text("Sömnfönster är öppet nu")
+                                .font(.subheadline).bold()
+                        } else {
+                            Text("Nästa sömnfönster om ca \(minutes) min")
+                                .font(.subheadline).bold()
+                        }
+                        Spacer()
+                        Text(wakeWindowDisplay)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.appTextTert)
+                    }
+                    .padding(DS.s3)
+                    .background(Color("appSurface2"))
+                    .cornerRadius(12)
+                }
+
+                if anomalyWarning != nil {
+                    Text("Insikter bygger på loggad data och ska tolkas tillsammans med barnets signaler.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(Color.appTextTert)
+                        .padding(.horizontal, DS.s1)
+                }
+
+                // Scorecard
+                scorecardCard
+
+                // 7-day bar chart
+                sevenDayChartCard
+
+                // Forum excerpt
+                ForumExcerptView(
+                    threads: ForumData.threads(for: .somnRutiner),
+                    title: "I forum"
+                )
+            } else {
+                DSEmptyState(
+                    icon: "calendar.badge.exclamationmark",
+                    gradient: .blueIndigo,
+                    title: "Födelsedatum saknas",
+                    subtitle: "Lägg till barnets födelsedatum i profilen för att få sömnanalys med rätt ålder."
+                )
             }
-
-            // Scorecard
-            scorecardCard
-
-            // 7-day bar chart
-            sevenDayChartCard
-
-            // Forum excerpt
-            ForumExcerptView(
-                threads: ForumData.threads(for: .somnRutiner),
-                title: "I forum"
-            )
         }
     }
 
@@ -272,7 +314,6 @@ struct SleepAnalysisView: View {
                                         : LinearGradient(colors: [Color.appSurface3], startPoint: .top, endPoint: .bottom)
                                 )
                                 .frame(
-                                    width: .infinity,
                                     height: bar.minutes > 0
                                         ? max(4, CGFloat(bar.minutes) / CGFloat(maxMinutes) * 80)
                                         : 4

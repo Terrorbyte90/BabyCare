@@ -89,44 +89,138 @@ final class UserData {
         self.fertilityGoal = fertilityGoal
     }
 
-    // Computed properties
+    // Computed properties (single source of truth for vecka/ålder)
+    private var isPregnancyMode: Bool {
+        phase == .pregnancy || isPregnant
+    }
+
+    private var calendar: Calendar {
+        Calendar.current
+    }
+
+    private var todayStartOfDay: Date {
+        calendar.startOfDay(for: Date())
+    }
+
+    private var dueDateStartOfDay: Date? {
+        guard let dueDate else { return nil }
+        return calendar.startOfDay(for: dueDate)
+    }
+
+    var pregnancyStartDate: Date? {
+        guard isPregnancyMode, let due = dueDateStartOfDay else { return nil }
+        return calendar.date(byAdding: .day, value: -280, to: due)
+    }
+
+    var pregnancyDaysElapsed: Int? {
+        guard let start = pregnancyStartDate else { return nil }
+        let days = calendar.dateComponents([.day], from: start, to: todayStartOfDay).day ?? 0
+        return max(0, days)
+    }
+
+    var pregnancyDaysUntilDue: Int? {
+        guard isPregnancyMode, let due = dueDateStartOfDay else { return nil }
+        let days = calendar.dateComponents([.day], from: todayStartOfDay, to: due).day ?? 0
+        return max(0, days)
+    }
+
     var currentPregnancyWeek: Int? {
-        guard isPregnant, let due = dueDate else { return nil }
-        let totalDays = 280 // 40 weeks
-        let daysUntilDue = Calendar.current.dateComponents([.day], from: Date(), to: due).day ?? 0
-        let daysPregnant = totalDays - daysUntilDue
-        return max(1, daysPregnant / 7)
+        guard let days = pregnancyDaysElapsed else { return nil }
+        return max(4, min(42, days / 7))
     }
 
     var currentPregnancyDay: Int? {
-        guard isPregnant, let due = dueDate else { return nil }
-        let totalDays = 280
-        let daysUntilDue = Calendar.current.dateComponents([.day], from: Date(), to: due).day ?? 0
-        let daysPregnant = totalDays - daysUntilDue
-        return max(0, daysPregnant % 7)
+        guard let days = pregnancyDaysElapsed else { return nil }
+        return max(0, min(6, days % 7))
+    }
+
+    var currentPregnancyTrimester: Int? {
+        guard let week = currentPregnancyWeek else { return nil }
+        switch week {
+        case 0..<13: return 1
+        case 13..<27: return 2
+        default: return 3
+        }
+    }
+
+    var pregnancyProgress: Double? {
+        guard let days = pregnancyDaysElapsed else { return nil }
+        return min(max(Double(days) / 280.0, 0), 1)
+    }
+
+    private var birthDateStartOfDay: Date? {
+        guard let babyBirthDate else { return nil }
+        return calendar.startOfDay(for: babyBirthDate)
+    }
+
+    func babyAgeInDays(on date: Date) -> Int? {
+        guard let birth = birthDateStartOfDay else { return nil }
+        let target = calendar.startOfDay(for: date)
+        guard target >= birth else { return nil }
+        let days = calendar.dateComponents([.day], from: birth, to: target).day ?? 0
+        return max(0, days)
     }
 
     var babyAgeInDays: Int? {
-        guard let birth = babyBirthDate else { return nil }
-        return Calendar.current.dateComponents([.day], from: birth, to: Date()).day
+        babyAgeInDays(on: todayStartOfDay)
+    }
+
+    var babyAgeComponents: DateComponents? {
+        guard let birth = birthDateStartOfDay else { return nil }
+        guard todayStartOfDay >= birth else { return nil }
+        return calendar.dateComponents([.year, .month, .day], from: birth, to: todayStartOfDay)
+    }
+
+    func babyAgeInMonths(on date: Date) -> Int? {
+        guard let birth = birthDateStartOfDay else { return nil }
+        let target = calendar.startOfDay(for: date)
+        guard target >= birth else { return nil }
+
+        let components = calendar.dateComponents([.year, .month], from: birth, to: target)
+        return max(0, (components.year ?? 0) * 12 + (components.month ?? 0))
     }
 
     var babyAgeInMonths: Int? {
-        guard let birth = babyBirthDate else { return nil }
-        let components = Calendar.current.dateComponents([.year, .month], from: birth, to: Date())
-        return (components.year ?? 0) * 12 + (components.month ?? 0)
+        babyAgeInMonths(on: todayStartOfDay)
+    }
+
+    func babyAgeInWeeks(on date: Date) -> Int? {
+        guard let days = babyAgeInDays(on: date) else { return nil }
+        return max(0, days / 7)
+    }
+
+    var babyAgeInWeeks: Int? {
+        babyAgeInWeeks(on: todayStartOfDay)
+    }
+
+    var babyAgeYears: Int? {
+        babyAgeComponents?.year
+    }
+
+    var babyAgeRemainingMonths: Int? {
+        babyAgeComponents?.month
     }
 
     var babyAgeString: String {
         guard let days = babyAgeInDays else { return "" }
         if days < 14 { return "Nyfödd" }
-        if days < 30 { return "\(days / 7) veckor" }
-        let months = days / 30
-        if months < 12 { return "\(months) månader" }
-        let years = months / 12
-        let remainingMonths = months % 12
-        if remainingMonths == 0 { return "\(years) år" }
-        return "\(years) år \(remainingMonths) mån"
+
+        if days < 60 {
+            let weeks = max(1, days / 7)
+            return weeks == 1 ? "1 vecka" : "\(weeks) veckor"
+        }
+
+        guard let components = babyAgeComponents else { return "" }
+        let years = components.year ?? 0
+        let months = components.month ?? 0
+
+        if years == 0 {
+            if months <= 1 { return "1 månad" }
+            return "\(months) månader"
+        }
+
+        if months == 0 { return "\(years) år" }
+        return "\(years) år \(months) mån"
     }
 }
 
@@ -362,8 +456,9 @@ final class FeedingLog {
     var side: FeedingSide?
     var note: String?
     var foodNote: String? // Vad åt bebisen (fast föda)
+    var portionSize: String? // "Lite", "Lagom", "Mycket"
 
-    init(id: UUID = UUID(), date: Date = Date(), type: FeedingType, amount: Double? = nil, duration: TimeInterval? = nil, side: FeedingSide? = nil, note: String? = nil, foodNote: String? = nil) {
+    init(id: UUID = UUID(), date: Date = Date(), type: FeedingType, amount: Double? = nil, duration: TimeInterval? = nil, side: FeedingSide? = nil, note: String? = nil, foodNote: String? = nil, portionSize: String? = nil) {
         self.id = id
         self.date = date
         self.type = type
@@ -372,6 +467,7 @@ final class FeedingLog {
         self.side = side
         self.note = note
         self.foodNote = foodNote
+        self.portionSize = portionSize
     }
 }
 
@@ -428,6 +524,23 @@ final class SleepLog {
     }
 
     var duration: TimeInterval { endDate.timeIntervalSince(startDate) }
+
+    func overlappingDuration(in interval: DateInterval) -> TimeInterval {
+        let start = max(startDate, interval.start)
+        let end = min(endDate, interval.end)
+        guard end > start else { return 0 }
+        return end.timeIntervalSince(start)
+    }
+
+    func overlappingDuration(on day: Date, calendar: Calendar = .current) -> TimeInterval {
+        let startOfDay = calendar.startOfDay(for: day)
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return 0 }
+        return overlappingDuration(in: DateInterval(start: startOfDay, end: endOfDay))
+    }
+
+    func overlaps(day: Date, calendar: Calendar = .current) -> Bool {
+        overlappingDuration(on: day, calendar: calendar) > 0
+    }
 
     var durationString: String {
         let totalMinutes = Int(duration) / 60

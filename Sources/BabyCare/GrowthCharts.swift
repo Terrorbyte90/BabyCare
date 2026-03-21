@@ -16,10 +16,8 @@ struct GrowthCharts: View {
     private var user: UserData? { userData.first }
     private var isBoy: Bool { user?.babyGender != .female }
 
-    private var babyAgeMonths: Int {
-        guard let birth = user?.babyBirthDate else { return 0 }
-        let components = Calendar.current.dateComponents([.year, .month], from: birth, to: Date())
-        return (components.year ?? 0) * 12 + (components.month ?? 0)
+    private var babyAgeMonths: Int? {
+        user?.babyAgeInMonths
     }
 
     private var latestMeasurement: BabyMeasurement? {
@@ -69,14 +67,19 @@ struct GrowthCharts: View {
                         latestMeasurementCard
                             .staggerAppear(index: 1)
 
-                        chartSection
-                            .staggerAppear(index: 2)
+                        if user?.babyBirthDate == nil {
+                            missingBirthDateState
+                                .staggerAppear(index: 2)
+                        } else {
+                            chartSection
+                                .staggerAppear(index: 2)
 
-                        percentileSection
-                            .staggerAppear(index: 3)
+                            percentileSection
+                                .staggerAppear(index: 3)
 
-                        comparisonSection
-                            .staggerAppear(index: 4)
+                            comparisonSection
+                                .staggerAppear(index: 4)
+                        }
 
                         Color.clear.frame(height: 90)
                     }
@@ -239,7 +242,7 @@ struct GrowthCharts: View {
                 }
 
                 let refData = swedishRefForTab()
-                let maxMonth = max(Double(babyAgeMonths + 2), 12)
+                let maxMonth = max(Double((babyAgeMonths ?? 0) + 2), 12)
                 let filteredRef = refData.filter { $0.ageMonths <= Int(maxMonth) }
 
                 Chart {
@@ -305,10 +308,7 @@ struct GrowthCharts: View {
 
                     // Baby's measurements
                     ForEach(measurements, id: \.id) { m in
-                        let monthAge = measurementAgeMonths(m)
-                        let val = valueForMeasurement(m)
-
-                        if let val {
+                        if let monthAge = measurementAgeMonths(m), let val = valueForMeasurement(m) {
                             PointMark(
                                 x: .value("Manad", monthAge),
                                 y: .value("Varde", val)
@@ -479,53 +479,59 @@ struct GrowthCharts: View {
                             .foregroundStyle(Color.appText)
                     }
 
-                    let refDataForComparison = swedishRefForTab()
-                    let p50AtAge = refDataForComparison.min(by: { abs($0.ageMonths - babyAgeMonths) < abs($1.ageMonths - babyAgeMonths) })
+                    if let ageMonths = babyAgeMonths {
+                        let refDataForComparison = swedishRefForTab()
+                        let p50AtAge = refDataForComparison.min(by: { abs($0.ageMonths - ageMonths) < abs($1.ageMonths - ageMonths) })
 
-                    if let avg = p50AtAge {
-                        let avgVal = avg.p50
-                        let babyVal = currentBabyValue()
+                        if let avg = p50AtAge {
+                            let avgVal = avg.p50
+                            let babyVal = currentBabyValue()
 
-                        if let babyVal {
-                            HStack(spacing: DS.s4) {
-                                VStack(spacing: DS.s1) {
-                                    Text(String(format: "%.1f", babyVal))
-                                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                                        .foregroundStyle(Color.appText)
-                                    Text("Ditt barn")
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundStyle(Color.appTextSec)
-                                    Text(selectedTab.unit)
-                                        .font(.system(size: 10))
-                                        .foregroundStyle(Color.appTextTert)
+                            if let babyVal {
+                                HStack(spacing: DS.s4) {
+                                    VStack(spacing: DS.s1) {
+                                        Text(String(format: "%.1f", babyVal))
+                                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                                            .foregroundStyle(Color.appText)
+                                        Text("Ditt barn")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundStyle(Color.appTextSec)
+                                        Text(selectedTab.unit)
+                                            .font(.system(size: 10))
+                                            .foregroundStyle(Color.appTextTert)
+                                    }
+                                    .frame(maxWidth: .infinity)
+
+                                    Rectangle()
+                                        .fill(Color.appBorder)
+                                        .frame(width: 1, height: 60)
+
+                                    VStack(spacing: DS.s1) {
+                                        Text(String(format: "%.1f", avgVal))
+                                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                                            .foregroundStyle(Color.appTextSec)
+                                        Text("Genomsnitt (P50)")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundStyle(Color.appTextSec)
+                                        Text(selectedTab.unit)
+                                            .font(.system(size: 10))
+                                            .foregroundStyle(Color.appTextTert)
+                                    }
+                                    .frame(maxWidth: .infinity)
                                 }
-                                .frame(maxWidth: .infinity)
 
-                                Rectangle()
-                                    .fill(Color.appBorder)
-                                    .frame(width: 1, height: 60)
-
-                                VStack(spacing: DS.s1) {
-                                    Text(String(format: "%.1f", avgVal))
-                                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                                        .foregroundStyle(Color.appTextSec)
-                                    Text("Genomsnitt (P50)")
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundStyle(Color.appTextSec)
-                                    Text(selectedTab.unit)
-                                        .font(.system(size: 10))
-                                        .foregroundStyle(Color.appTextTert)
-                                }
-                                .frame(maxWidth: .infinity)
+                                let diff = babyVal - avgVal
+                                let diffSign = diff >= 0 ? "+" : ""
+                                Text("\(diffSign)\(String(format: "%.1f", diff)) \(selectedTab.unit) jämfört med genomsnittet")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(Color.appTextSec)
+                                    .lineSpacing(3)
                             }
-
-                            let diff = babyVal - avgVal
-                            let diffSign = diff >= 0 ? "+" : ""
-                            Text("\(diffSign)\(String(format: "%.1f", diff)) \(selectedTab.unit) jämfört med genomsnittet")
-                                .font(.system(size: 13))
-                                .foregroundStyle(Color.appTextSec)
-                                .lineSpacing(3)
                         }
+                    } else {
+                        Text("Lägg till barnets födelsedatum i profilen för korrekt åldersjämförelse.")
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.appTextSec)
                     }
 
                     Text("Referensvärden baserade på WHO:s tillväxtstandarder (WHO Child Growth Standards, 2006)")
@@ -546,8 +552,7 @@ struct GrowthCharts: View {
         var closestDist = CGFloat.infinity
 
         for m in measurements {
-            let monthAge = measurementAgeMonths(m)
-            guard let val = valueForMeasurement(m) else { continue }
+            guard let monthAge = measurementAgeMonths(m), let val = valueForMeasurement(m) else { continue }
 
             if let xPos = proxy.position(forX: monthAge),
                let yPos = proxy.position(forY: val) {
@@ -573,9 +578,17 @@ struct GrowthCharts: View {
 
     // MARK: - Helpers
 
-    private func measurementAgeMonths(_ m: BabyMeasurement) -> Double {
-        guard let birth = user?.babyBirthDate else { return 0 }
-        let days = Calendar.current.dateComponents([.day], from: birth, to: m.date).day ?? 0
+    private var missingBirthDateState: some View {
+        DSEmptyState(
+            icon: "calendar.badge.exclamationmark",
+            gradient: .blueIndigo,
+            title: "Födelsedatum saknas",
+            subtitle: "Lägg till barnets födelsedatum i profilen för att visa tillväxtkurvor med rätt ålder."
+        )
+    }
+
+    private func measurementAgeMonths(_ m: BabyMeasurement) -> Double? {
+        guard let days = user?.babyAgeInDays(on: m.date) else { return nil }
         return Double(days) / 30.44
     }
 
@@ -593,7 +606,8 @@ struct GrowthCharts: View {
     }
 
     private func computePercentile(measurement: BabyMeasurement) -> Double? {
-        let ageMonths = Int(measurementAgeMonths(measurement))
+        guard let monthAge = measurementAgeMonths(measurement) else { return nil }
+        let ageMonths = Int(monthAge)
         let service = MockFirebaseService.shared
 
         switch selectedTab {

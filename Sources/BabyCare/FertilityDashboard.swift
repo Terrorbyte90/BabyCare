@@ -19,7 +19,7 @@ struct FertilityDashboard: View {
     private var user: UserData? { userData.first }
 
     private var cycleLength: Int {
-        user?.menstrualCycleLength ?? 28
+        CycleLengthPolicy.sanitized(user?.menstrualCycleLength)
     }
 
     private var lastPeriodStart: Date? {

@@ -14,7 +14,30 @@ struct DuJustNuView: View {
     private var currentContent: DuJustNuContent? {
         guard let days = user?.babyAgeInDays else { return nil }
         return DuJustNuContent.allPeriods.first(where: { days >= $0.ageMinDays && days <= $0.ageMaxDays })
-            ?? DuJustNuContent.allPeriods.last
+    }
+
+    private var contentUnavailableState: (icon: String, title: String, subtitle: String) {
+        guard let user else {
+            return (
+                icon: "figure.child",
+                title: "Inget barn registrerat",
+                subtitle: "Lägg till ditt barns födelsedatum i profilen för att se åldersanpassat innehåll."
+            )
+        }
+
+        guard user.babyAgeInDays != nil else {
+            return (
+                icon: "calendar.badge.exclamationmark",
+                title: "Åldern saknas",
+                subtitle: "Lägg till ett födelsedatum för att visa rätt innehåll för barnets ålder."
+            )
+        }
+
+        return (
+            icon: "calendar",
+            title: "Ålder utanför innehållet",
+            subtitle: "Den här vyn täcker åldrarna 0–7 år. Kontrollera födelsedatumet eller lägg till mer åldersanpassat innehåll."
+        )
     }
 
     var body: some View {
@@ -59,11 +82,12 @@ struct DuJustNuView: View {
                         .padding(.top, DS.s2)
                     }
                 } else {
+                    let state = contentUnavailableState
                     DSEmptyState(
-                        icon: "figure.child",
+                        icon: state.icon,
                         gradient: .babyGradient,
-                        title: "Inget barn registrerat",
-                        subtitle: "Lägg till ditt barns födelsedatum i profilen för att se åldersanpassat innehåll."
+                        title: state.title,
+                        subtitle: state.subtitle
                     )
                 }
             }

@@ -41,10 +41,10 @@ struct WakeWindowCalculator {
 
     static func recommendedNaps(forAgeInDays days: Int) -> Int {
         switch days {
-        case 0..<84:    return 4
-        case 84..<182:  return 3
-        case 182..<365: return 2
-        case 365..<547: return 1
+        case 0..<84:     return 4
+        case 84..<182:   return 3
+        case 182..<365:  return 2
+        case 365..<1095: return 1
         default:        return 0
         }
     }

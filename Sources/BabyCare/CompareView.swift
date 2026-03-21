@@ -236,23 +236,21 @@ struct CompareView: View {
 
             // Baby's data
             ForEach(measurements.reversed(), id: \.id) { m in
-                let ageMonths = user?.babyBirthDate.flatMap { birth in
-                    Calendar.current.dateComponents([.month], from: birth, to: m.date).month
-                } ?? 0
+                if let ageMonths = user?.babyAgeInMonths(on: m.date) {
+                    PointMark(
+                        x: .value("Ålder", ageMonths),
+                        y: .value("Vikt", m.weight)
+                    )
+                    .foregroundStyle(Color.appPink)
+                    .symbolSize(40)
 
-                PointMark(
-                    x: .value("Ålder", ageMonths),
-                    y: .value("Vikt", m.weight)
-                )
-                .foregroundStyle(Color.appPink)
-                .symbolSize(40)
-
-                LineMark(
-                    x: .value("Ålder", ageMonths),
-                    y: .value("Vikt", m.weight)
-                )
-                .foregroundStyle(Color.appPink)
-                .lineStyle(StrokeStyle(lineWidth: 2))
+                    LineMark(
+                        x: .value("Ålder", ageMonths),
+                        y: .value("Vikt", m.weight)
+                    )
+                    .foregroundStyle(Color.appPink)
+                    .lineStyle(StrokeStyle(lineWidth: 2))
+                }
             }
         }
         .chartXAxisLabel("Ålder (månader)")
@@ -281,11 +279,12 @@ struct CompareView: View {
         VStack(alignment: .leading, spacing: DS.s4) {
             DSSectionHeader(title: "Sömn jämfört med andra barn")
 
-            if let ageMonths = user?.babyAgeInMonths {
+            if let ageMonths = user?.babyAgeInMonths,
+               let ageInDays = user?.babyAgeInDays {
                 let todaySleep = todaySleepHours
                 let comparison = service.sleepComparison(ageMonths: ageMonths, actualSleepHours: todaySleep)
-                let wakeWindow = service.wakeWindowForAge(ageMonths: ageMonths)
-                let naps = service.numberOfNapsForAge(ageMonths: ageMonths)
+                let wakeWindow = WakeWindowCalculator.wakeWindow(forAgeInDays: ageInDays)
+                let naps = WakeWindowCalculator.recommendedNaps(forAgeInDays: ageInDays)
 
                 // Stats cards
                 HStack(spacing: DS.s3) {
@@ -317,7 +316,7 @@ struct CompareView: View {
 
                         HStack(spacing: DS.s6) {
                             VStack(spacing: DS.s1) {
-                                Text("\(wakeWindow) min")
+                                Text(wakeWindow.displayString)
                                     .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(Color.appText)
                                 Text("Vakenfönster")
@@ -441,8 +440,9 @@ struct CompareView: View {
     }
 
     private var todaySleepHours: Double {
-        let todayLogs = sleepLogs.filter { Calendar.current.isDateInToday($0.startDate) }
-        let total = todayLogs.reduce(0.0) { $0 + $1.duration }
+        let total = sleepLogs.reduce(0.0) { sum, log in
+            sum + log.overlappingDuration(on: Date())
+        }
         return total / 3600
     }
 

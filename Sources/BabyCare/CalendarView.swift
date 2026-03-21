@@ -69,7 +69,7 @@ struct CalendarView: View {
                     date: selectedDate,
                     appointments: appointmentsForDate(selectedDate),
                     feedings: feedingLogs.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) },
-                    sleeps: sleepLogs.filter { Calendar.current.isDate($0.startDate, inSameDayAs: selectedDate) },
+                    sleeps: sleepLogs.filter { $0.overlaps(day: selectedDate) },
                     diapers: diaperLogs.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) },
                     measurements: measurements.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
                 )
@@ -217,7 +217,7 @@ struct CalendarView: View {
     private func hasAnyLogs(for date: Date) -> Bool {
         let cal = Calendar.current
         return feedingLogs.contains { cal.isDate($0.date, inSameDayAs: date) }
-            || sleepLogs.contains { cal.isDate($0.startDate, inSameDayAs: date) }
+            || sleepLogs.contains { $0.overlaps(day: date, calendar: cal) }
             || diaperLogs.contains { cal.isDate($0.date, inSameDayAs: date) }
             || measurements.contains { cal.isDate($0.date, inSameDayAs: date) }
     }
@@ -452,18 +452,20 @@ struct DayDetailSheet: View {
 
                         // Sleeps
                         if !sleeps.isEmpty {
-                            let totalSleep = sleeps.reduce(0.0) { $0 + $1.duration }
+                            let totalSleep = sleeps.reduce(0.0) { $0 + $1.overlappingDuration(on: date) }
                             let totalH = Int(totalSleep) / 3600
                             let totalM = (Int(totalSleep) % 3600) / 60
 
                             sectionBlock(title: "Sömn · Totalt \(totalH)h \(totalM)m", icon: "moon.fill", color: .appBlue) {
                                 ForEach(sleeps) { log in
+                                    let dayStart = Calendar.current.startOfDay(for: date)
+                                    let overlapStart = max(log.startDate, dayStart)
                                     logRow(
                                         icon: log.isNap ? "sun.and.horizon.fill" : "moon.fill",
                                         gradient: .blueIndigo,
                                         title: log.isNap ? "Tupplur" : "Sömn",
-                                        detail: log.durationString,
-                                        time: timeFormatter.string(from: log.startDate)
+                                        detail: durationString(log.overlappingDuration(on: date)),
+                                        time: timeFormatter.string(from: overlapStart)
                                     )
                                 }
                             }
@@ -529,6 +531,14 @@ struct DayDetailSheet: View {
         var detail = log.type.displayName
         if let size = log.diaperSize { detail += " · \(size.displayName)" }
         return detail
+    }
+
+    private func durationString(_ duration: TimeInterval) -> String {
+        let totalMinutes = max(0, Int(duration) / 60)
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+        if hours > 0 { return "\(hours)h \(minutes)m" }
+        return "\(minutes)m"
     }
 
     @ToolbarContentBuilder

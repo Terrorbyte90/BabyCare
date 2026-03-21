@@ -34,26 +34,26 @@ struct AIEngine {
         let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? referenceDate
 
         let todayLogs = logs.filter { log in
-            log.startDate >= dayStart && log.endDate <= dayEnd
+            log.endDate > dayStart && log.startDate < dayEnd
         }
 
         let totalMinutes = todayLogs.reduce(0) { sum, log in
-            sum + Int(log.endDate.timeIntervalSince(log.startDate) / 60)
+            sum + overlapMinutes(for: log, windowStart: dayStart, windowEnd: dayEnd)
         }
 
         let naps = todayLogs.filter { $0.isNap }
         let nightSleeps = todayLogs.filter { !$0.isNap }
 
         let nightMinutes = nightSleeps.reduce(0) { sum, log in
-            sum + Int(log.endDate.timeIntervalSince(log.startDate) / 60)
+            sum + overlapMinutes(for: log, windowStart: dayStart, windowEnd: dayEnd)
         }
 
         let longestStretch = todayLogs.map { log in
-            Int(log.endDate.timeIntervalSince(log.startDate) / 60)
+            overlapMinutes(for: log, windowStart: dayStart, windowEnd: dayEnd)
         }.max() ?? 0
 
-        let expectedTotal = recommendedTotalSleepMinutes(ageInDays: ageInDays)
-        let ageAppropriate = abs(totalMinutes - expectedTotal) < 90
+        let recommendedRange = recommendedTotalSleepRangeMinutes(ageInDays: ageInDays)
+        let ageAppropriate = recommendedRange.contains(totalMinutes)
 
         let regressionDetected = WakeWindowCalculator.isSleepRegressionAge(ageInDays: ageInDays)
         let regressionName = WakeWindowCalculator.regressionName(forAgeInDays: ageInDays)
@@ -79,34 +79,27 @@ struct AIEngine {
         for daysBack in 1...7 {
             let windowEnd = referenceDate.addingTimeInterval(-Double(daysBack) * 86400)
             let windowStart = windowEnd.addingTimeInterval(-86400)
-            // Filtera loggar vars starttid infaller inom fönstret
-            let periodLogs = logs.filter { log in
-                log.startDate >= windowStart && log.startDate <= windowEnd
-            }
-            let mins = periodLogs.reduce(0) { sum, log in
-                sum + Int(log.endDate.timeIntervalSince(log.startDate) / 60)
+            let mins = logs.reduce(0) { sum, log in
+                sum + overlapMinutes(for: log, windowStart: windowStart, windowEnd: windowEnd)
             }
             if mins > 0 { dailyMinutes.append(mins) }
         }
 
-        guard !dailyMinutes.isEmpty else { return nil }
-        let baseline = Double(dailyMinutes.reduce(0, +)) / Double(dailyMinutes.count)
+        guard dailyMinutes.count >= 4 else { return nil }
+        let baseline = median(dailyMinutes)
 
-        // Senaste 24 timmar: loggar vars starttid infaller sedan recentWindowStart
-        let recentLogs = logs.filter { log in
-            log.startDate >= recentWindowStart && log.startDate < referenceDate
-        }
-        let recentMinutes = Double(recentLogs.reduce(0) { sum, log in
-            sum + Int(log.endDate.timeIntervalSince(log.startDate) / 60)
+        let recentMinutes = Double(logs.reduce(0) { sum, log in
+            sum + overlapMinutes(for: log, windowStart: recentWindowStart, windowEnd: referenceDate)
         })
+        let absoluteDrop = baseline - recentMinutes
 
         // Nollsömn är den allvarligaste anomalin — rapportera alltid om baseline finns
-        if recentMinutes == 0 {
+        if recentMinutes == 0, baseline >= Double(minimumExpectedSleepMinutesForAlert(ageInDays: ageInDays)) {
             return "Ingen registrerad sömn de senaste 24 timmarna. Om du är orolig, kontakta 1177."
         }
-        let dropFraction = (baseline - recentMinutes) / baseline
+        let dropFraction = absoluteDrop / baseline
 
-        if dropFraction >= 0.30 {
+        if dropFraction >= 0.30, absoluteDrop >= 90 {
             return "Sömnen de senaste 24 timmarna är \(Int(dropFraction * 100))% under snittet. Om du är orolig, kontakta 1177."
         }
         return nil
@@ -125,14 +118,37 @@ struct AIEngine {
     // MARK: - Private helpers
 
     static func recommendedTotalSleepMinutes(ageInDays: Int) -> Int {
+        let range = recommendedTotalSleepRangeMinutes(ageInDays: ageInDays)
+        return (range.lowerBound + range.upperBound) / 2
+    }
+
+    static func recommendedTotalSleepRangeMinutes(ageInDays: Int) -> ClosedRange<Int> {
         switch ageInDays {
-        case 0..<84:     return 960   // 16h (0–3 mån)
-        case 84..<182:   return 870   // 14.5h (3–6 mån)
-        case 182..<365:  return 840   // 14h (6–12 mån)
-        case 365..<730:  return 810   // 13.5h (1–2 år)
-        case 730..<1095: return 750   // 12.5h (2–3 år)
-        case 1095..<1460: return 690  // 11.5h (3–4 år)
-        default:          return 630  // 10.5h (4–5+ år)
+        case 0..<120:     return 840...1020 // 14–17 h (0–3 mån)
+        case 120..<365:   return 720...960  // 12–16 h (4–11 mån)
+        case 365..<1095:  return 660...840  // 11–14 h (1–3 år)
+        case 1095..<2190: return 600...780  // 10–13 h (3–5 år)
+        default:          return 540...720  // 9–12 h (5+ år)
         }
+    }
+
+    private static func overlapMinutes(for log: SleepLog, windowStart: Date, windowEnd: Date) -> Int {
+        let start = max(log.startDate, windowStart)
+        let end = min(log.endDate, windowEnd)
+        guard end > start else { return 0 }
+        return Int(end.timeIntervalSince(start) / 60)
+    }
+
+    private static func minimumExpectedSleepMinutesForAlert(ageInDays: Int) -> Int {
+        recommendedTotalSleepRangeMinutes(ageInDays: ageInDays).lowerBound
+    }
+
+    private static func median(_ values: [Int]) -> Double {
+        let sorted = values.sorted()
+        let mid = sorted.count / 2
+        if sorted.count.isMultiple(of: 2) {
+            return Double(sorted[mid - 1] + sorted[mid]) / 2
+        }
+        return Double(sorted[mid])
     }
 }

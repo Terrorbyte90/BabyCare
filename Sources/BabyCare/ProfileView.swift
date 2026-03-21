@@ -227,6 +227,16 @@ struct ProfileView: View {
                             }
                         }
 
+                        if let gender = user.babyGender {
+                            if user.dueDate != nil { DSRowDivider() }
+                            profileRow(
+                                icon: "person.fill.questionmark",
+                                gradient: .pregnancyGradient,
+                                label: "Kön",
+                                value: gender.displayName
+                            )
+                        }
+
                     case .parent:
                         if let birthDate = user.babyBirthDate {
                             profileRow(
@@ -242,6 +252,16 @@ struct ProfileView: View {
                                 gradient: .babyGradient,
                                 label: "Ålder",
                                 value: user.babyAgeString.isEmpty ? "--" : user.babyAgeString
+                            )
+                        }
+
+                        if let gender = user.babyGender {
+                            if user.babyBirthDate != nil { DSRowDivider() }
+                            profileRow(
+                                icon: "person.fill.questionmark",
+                                gradient: .babyGradient,
+                                label: "Kön",
+                                value: gender.displayName
                             )
                         }
 
@@ -695,6 +715,17 @@ struct ProfileView: View {
 
     private func generateBVCSchedule(from birthDate: Date) {
         let cal = Calendar.current
+        var existingKeys: Set<String> = []
+
+        if let existingAppointments = try? modelContext.fetch(FetchDescriptor<Appointment>()) {
+            existingKeys = Set(
+                existingAppointments.map {
+                    let day = cal.startOfDay(for: $0.date).timeIntervalSince1970
+                    return "\($0.title)|\(Int(day))|\($0.type.rawValue)"
+                }
+            )
+        }
+
         let visits: [(title: String, component: Calendar.Component, value: Int)] = [
             ("BVC – Hembesök",      .day,   5),
             ("BVC – 1 vecka",       .day,   7),
@@ -714,6 +745,9 @@ struct ProfileView: View {
         for visit in visits {
             guard let visitDate = cal.date(byAdding: visit.component, value: visit.value, to: birthDate) else { continue }
             if visitDate >= cal.startOfDay(for: Date()) {
+                let key = "\(visit.title)|\(Int(cal.startOfDay(for: visitDate).timeIntervalSince1970))|\(AppointmentType.bvc.rawValue)"
+                guard !existingKeys.contains(key) else { continue }
+
                 let appt = Appointment(
                     date: visitDate,
                     title: visit.title,
@@ -721,6 +755,7 @@ struct ProfileView: View {
                     type: .bvc
                 )
                 modelContext.insert(appt)
+                existingKeys.insert(key)
             }
         }
         try? modelContext.save()
@@ -776,6 +811,24 @@ struct ProfileView: View {
 
             let bagItems = try modelContext.fetch(FetchDescriptor<HospitalBagItem>())
             bagItems.forEach { modelContext.delete($0) }
+
+            let milestonesV2 = try modelContext.fetch(FetchDescriptor<Milestone>())
+            milestonesV2.forEach { modelContext.delete($0) }
+
+            let temperatureLogs = try modelContext.fetch(FetchDescriptor<TemperatureLog>())
+            temperatureLogs.forEach { modelContext.delete($0) }
+
+            let babyTeeth = try modelContext.fetch(FetchDescriptor<BabyTooth>())
+            babyTeeth.forEach { modelContext.delete($0) }
+
+            let birthPlans = try modelContext.fetch(FetchDescriptor<BirthPlan>())
+            birthPlans.forEach { modelContext.delete($0) }
+
+            let babyNameSuggestions = try modelContext.fetch(FetchDescriptor<BabyNameSuggestion>())
+            babyNameSuggestions.forEach { modelContext.delete($0) }
+
+            let cycleDays = try modelContext.fetch(FetchDescriptor<CycleDay>())
+            cycleDays.forEach { modelContext.delete($0) }
 
             try modelContext.save()
             HapticFeedback.success()
@@ -913,12 +966,18 @@ struct ProfileSetupSheet: View {
     @State private var babyName = ""
     @State private var isPregnant = true
     @State private var dueDate = Date().addingTimeInterval(20 * 7 * 86400)
+    @State private var pregnancyWeek = 20
     @State private var babyBirthDate = Date()
+    @State private var babyAgeYears = 0
+    @State private var babyAgeMonths = 0
     @State private var weightString = ""
     @State private var heightString = ""
     @State private var units: UnitSystem = .metric
+    @State private var babyGender: Gender = .unknown
     @State private var hasBabyBirthDate = false
     @State private var selectedPhase: UserPhase = .pregnancy
+    @State private var syncingPregnancyFields = false
+    @State private var syncingParentAgeFields = false
 
     var body: some View {
         NavigationStack {
@@ -1012,9 +1071,11 @@ struct ProfileSetupSheet: View {
                             case .pregnancy:
                                 isPregnant = true
                                 hasBabyBirthDate = false
+                                syncPregnancyWeekFromDueDate()
                             case .parent:
                                 isPregnant = false
                                 hasBabyBirthDate = true
+                                syncAgeFieldsFromBirthDate()
                             }
                         }
                     } label: {
@@ -1069,6 +1130,33 @@ struct ProfileSetupSheet: View {
                         .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: dueDate) { _, _ in
+                            syncPregnancyWeekFromDueDate()
+                        }
+                }
+
+                GlassCard(gradient: .pregnancyGradient) {
+                    VStack(alignment: .leading, spacing: DS.s3) {
+                        Text("GRAVIDITETSVECKA")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color.appTextTert)
+                            .tracking(0.6)
+
+                        HStack {
+                            Text("Vecka \(pregnancyWeek)")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(Color.appText)
+
+                            Spacer()
+
+                            Stepper("", value: $pregnancyWeek, in: 4...42)
+                                .labelsHidden()
+                                .tint(.appPink)
+                        }
+                    }
+                }
+                .onChange(of: pregnancyWeek) { _, _ in
+                    syncDueDateFromPregnancyWeek()
                 }
             }
 
@@ -1090,9 +1178,89 @@ struct ProfileSetupSheet: View {
                         .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous).stroke(Color.appBorderMed, lineWidth: 1))
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: babyBirthDate) { _, _ in
+                            syncAgeFieldsFromBirthDate()
+                        }
+                }
+
+                GlassCard(gradient: .babyGradient) {
+                    VStack(alignment: .leading, spacing: DS.s3) {
+                        Text("ÅLDER")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color.appTextTert)
+                            .tracking(0.6)
+
+                        HStack(spacing: DS.s3) {
+                            HStack {
+                                Text("\(babyAgeYears) år")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(Color.appText)
+                                Spacer()
+                                Stepper("", value: $babyAgeYears, in: 0...12)
+                                    .labelsHidden()
+                                    .tint(.appBlue)
+                            }
+
+                            HStack {
+                                Text("\(babyAgeMonths) mån")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(Color.appText)
+                                Spacer()
+                                Stepper("", value: $babyAgeMonths, in: 0...11)
+                                    .labelsHidden()
+                                    .tint(.appBlue)
+                            }
+                        }
+
+                        Text("Tips och innehåll kommer visas för \(babyAgeYears) år \(babyAgeMonths) mån.")
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color.appTextSec)
+                    }
+                }
+                .onChange(of: babyAgeYears) { _, _ in
+                    syncBirthDateFromAgeFields()
+                }
+                .onChange(of: babyAgeMonths) { _, _ in
+                    syncBirthDateFromAgeFields()
                 }
 
                 DSTextField(title: "Bebisens namn (valfritt)", text: $babyName)
+            }
+
+            if selectedPhase == .pregnancy || selectedPhase == .parent {
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("KÖN")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        ForEach(Gender.allCases, id: \.self) { gender in
+                            Button {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                                    babyGender = gender
+                                }
+                            } label: {
+                                Text(gender.displayName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(babyGender == gender ? .white : Color.appTextSec)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, DS.s2 + 2)
+                                    .background(
+                                        babyGender == gender
+                                            ? LinearGradient.babyGradient
+                                            : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom)
+                                    )
+                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                            .stroke(babyGender == gender ? Color.clear : Color.appBorderMed, lineWidth: 1)
+                                    )
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                        }
+                    }
+                }
             }
         }
     }
@@ -1100,7 +1268,12 @@ struct ProfileSetupSheet: View {
     // MARK: - Logic
 
     private func loadExisting() {
-        guard let user else { return }
+        guard let user else {
+            syncPregnancyWeekFromDueDate()
+            syncAgeFieldsFromBirthDate()
+            return
+        }
+
         name = user.name
         babyName = user.babyName ?? ""
         isPregnant = user.isPregnant
@@ -1110,6 +1283,55 @@ struct ProfileSetupSheet: View {
         if let w = user.currentWeight { weightString = String(format: "%.1f", w) }
         if let h = user.height { heightString = String(format: "%.0f", h) }
         units = user.preferredUnits
+        babyGender = user.babyGender ?? .unknown
+        pregnancyWeek = max(4, min(42, user.currentPregnancyWeek ?? pregnancyWeek))
+        syncPregnancyWeekFromDueDate()
+        syncAgeFieldsFromBirthDate()
+    }
+
+    private func syncPregnancyWeekFromDueDate() {
+        guard selectedPhase == .pregnancy, !syncingPregnancyFields else { return }
+        syncingPregnancyFields = true
+        defer { syncingPregnancyFields = false }
+
+        let today = Calendar.current.startOfDay(for: Date())
+        let due = Calendar.current.startOfDay(for: dueDate)
+        let daysUntilDue = Calendar.current.dateComponents([.day], from: today, to: due).day ?? 0
+        let daysPregnant = max(0, 280 - daysUntilDue)
+        pregnancyWeek = max(4, min(42, daysPregnant / 7))
+    }
+
+    private func syncDueDateFromPregnancyWeek() {
+        guard selectedPhase == .pregnancy, !syncingPregnancyFields else { return }
+        syncingPregnancyFields = true
+        defer { syncingPregnancyFields = false }
+
+        let clampedWeek = max(4, min(42, pregnancyWeek))
+        let daysToDueDate = (40 - clampedWeek) * 7
+        let today = Calendar.current.startOfDay(for: Date())
+        dueDate = Calendar.current.date(byAdding: .day, value: daysToDueDate, to: today) ?? today
+    }
+
+    private func syncAgeFieldsFromBirthDate() {
+        guard selectedPhase == .parent, !syncingParentAgeFields else { return }
+        syncingParentAgeFields = true
+        defer { syncingParentAgeFields = false }
+
+        let today = Calendar.current.startOfDay(for: Date())
+        let birth = Calendar.current.startOfDay(for: babyBirthDate)
+        let components = Calendar.current.dateComponents([.year, .month], from: birth, to: today)
+        babyAgeYears = max(0, components.year ?? 0)
+        babyAgeMonths = max(0, min(11, components.month ?? 0))
+    }
+
+    private func syncBirthDateFromAgeFields() {
+        guard selectedPhase == .parent, !syncingParentAgeFields else { return }
+        syncingParentAgeFields = true
+        defer { syncingParentAgeFields = false }
+
+        let totalMonths = max(0, (babyAgeYears * 12) + babyAgeMonths)
+        let today = Calendar.current.startOfDay(for: Date())
+        babyBirthDate = Calendar.current.date(byAdding: .month, value: -totalMonths, to: today) ?? today
     }
 
     private func save() {
@@ -1123,6 +1345,7 @@ struct ProfileSetupSheet: View {
             existing.isPregnant = selectedPhase == .pregnancy
             existing.dueDate = selectedPhase == .pregnancy ? dueDate : nil
             existing.babyBirthDate = selectedPhase == .parent ? babyBirthDate : nil
+            existing.babyGender = selectedPhase == .fertility ? nil : babyGender
             existing.currentWeight = w
             existing.height = h
             existing.preferredUnits = units
@@ -1136,7 +1359,8 @@ struct ProfileSetupSheet: View {
                 babyBirthDate: selectedPhase == .parent ? babyBirthDate : nil,
                 currentWeight: w,
                 height: h,
-                preferredUnits: units
+                preferredUnits: units,
+                babyGender: selectedPhase == .fertility ? nil : babyGender
             )
             modelContext.insert(newUser)
         }

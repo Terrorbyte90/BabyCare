@@ -364,6 +364,8 @@ struct OnboardingView: View {
                     }
                 }
                 .buttonStyle(PrimaryButtonStyle(gradient: activeGradient, fullWidth: true))
+                .disabled(!detailsStepCanContinue)
+                .opacity(detailsStepCanContinue ? 1.0 : 0.45)
                 .padding(.top, DS.s2)
             }
             .padding(.horizontal, DS.s5)
@@ -390,6 +392,19 @@ struct OnboardingView: View {
         }
     }
 
+    private var enteredCycleLength: Int? {
+        Int(cycleLength.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    private var cycleLengthIsValid: Bool {
+        CycleLengthPolicy.validated(enteredCycleLength) != nil
+    }
+
+    private var detailsStepCanContinue: Bool {
+        guard selectedPhase == .fertility else { return true }
+        return cycleLengthIsValid
+    }
+
     // Fertility fields
     private var fertilityFields: some View {
         VStack(spacing: DS.s4) {
@@ -401,6 +416,13 @@ struct OnboardingView: View {
                 keyboard: .numberPad,
                 placeholder: "28"
             )
+
+            if !cycleLength.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !cycleLengthIsValid {
+                Text("Ange en cykellängd mellan \(CycleLengthPolicy.min) och \(CycleLengthPolicy.max) dagar.")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(Color.appRed)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
             dateField(
                 label: "SENASTE MENSENS STARTDATUM",
@@ -699,6 +721,7 @@ struct OnboardingView: View {
 
     private func finishOnboarding() {
         let phase = selectedPhase ?? .pregnancy
+        let sanitizedCycleLength = CycleLengthPolicy.validated(enteredCycleLength) ?? CycleLengthPolicy.fallback
 
         let babyName: String? = {
             switch phase {
@@ -708,14 +731,19 @@ struct OnboardingView: View {
             }
         }()
 
+        let dueDate: Date? = {
+            guard phase == .pregnancy else { return nil }
+            return estimatedDueDate(fromPregnancyWeek: pregnancyWeek)
+        }()
+
         let user = UserData(
             name: userName,
             babyName: babyName,
             phase: phase,
             isPregnant: phase == .pregnancy,
-            dueDate: nil,
+            dueDate: dueDate,
             babyBirthDate: phase == .parent ? babyBirthDate : nil,
-            menstrualCycleLength: phase == .fertility ? Int(cycleLength) : nil,
+            menstrualCycleLength: phase == .fertility ? sanitizedCycleLength : nil,
             lastPeriodDate: phase == .fertility ? lastPeriodDate : nil,
             fertilityGoal: phase == .fertility ? .tryingToConceive : nil
         )
@@ -726,6 +754,13 @@ struct OnboardingView: View {
         withAnimation(.easeInOut(duration: 0.4)) {
             onboardingComplete = true
         }
+    }
+
+    private func estimatedDueDate(fromPregnancyWeek week: Int) -> Date {
+        let clampedWeek = max(4, min(42, week))
+        let today = Calendar.current.startOfDay(for: Date())
+        let daysToDueDate = (40 - clampedWeek) * 7
+        return Calendar.current.date(byAdding: .day, value: daysToDueDate, to: today) ?? today
     }
 }
 

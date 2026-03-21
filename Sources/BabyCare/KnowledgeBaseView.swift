@@ -11,6 +11,21 @@ struct KnowledgeBaseView: View {
     private var user: UserData? { userData.first }
     private var phase: UserPhase { user?.phase ?? .parent }
 
+    private var allowedCategoriesForPhase: Set<ArticleCategory> {
+        switch phase {
+        case .fertility:
+            return [.fertility]
+        case .pregnancy:
+            return [.pregnancy]
+        case .parent:
+            return [.sleep, .feeding, .growth, .health, .development, .parentHealth]
+        }
+    }
+
+    private var availableCategories: [ArticleCategory] {
+        ArticleCategory.allCases.filter { allowedCategoriesForPhase.contains($0) }
+    }
+
     // Returnerar den primärkategori som matchar nuvarande fas
     private var phaseDefaultCategory: ArticleCategory? {
         switch phase {
@@ -21,7 +36,7 @@ struct KnowledgeBaseView: View {
     }
 
     private var filteredArticles: [Article] {
-        var articles = Article.all
+        var articles = Article.all.filter { allowedCategoriesForPhase.contains($0.category) }
         if let cat = selectedCategory {
             articles = articles.filter { $0.category == cat }
         }
@@ -109,12 +124,18 @@ struct KnowledgeBaseView: View {
         .preferredColorScheme(.dark)
         // Sätt standardkategori baserat på fas när vyn laddas för första gången
         .onAppear {
+            if let selectedCategory, !allowedCategoriesForPhase.contains(selectedCategory) {
+                self.selectedCategory = nil
+            }
             if selectedCategory == nil, let defaultCat = phaseDefaultCategory {
                 selectedCategory = defaultCat
             }
         }
         // Om fasen ändras (t.ex. via profil) — återställ till ny standardkategori
         .onChange(of: phase) { _, newPhase in
+            if let selectedCategory, !allowedCategoriesForPhase.contains(selectedCategory) {
+                self.selectedCategory = nil
+            }
             if let defaultCat = phaseDefaultCategory {
                 selectedCategory = defaultCat
             } else {
@@ -139,7 +160,7 @@ struct KnowledgeBaseView: View {
                     }
                 }
 
-                ForEach(ArticleCategory.allCases, id: \.self) { category in
+                ForEach(availableCategories, id: \.self) { category in
                     CategoryPill(
                         title: category.rawValue,
                         icon: category.icon,

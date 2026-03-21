@@ -36,4 +36,12 @@ final class WakeWindowTests: XCTestCase {
     func test_sleepRegression_atRandom_isNotDetected() {
         XCTAssertFalse(WakeWindowCalculator.isSleepRegressionAge(ageInDays: 50))
     }
+
+    func test_recommendedNaps_forTwoYears_isOne() {
+        XCTAssertEqual(WakeWindowCalculator.recommendedNaps(forAgeInDays: 730), 1)
+    }
+
+    func test_recommendedNaps_forFourYears_isZero() {
+        XCTAssertEqual(WakeWindowCalculator.recommendedNaps(forAgeInDays: 1460), 0)
+    }
 }
