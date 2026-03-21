@@ -94,6 +94,56 @@ final class BabyCareTests: XCTestCase {
         XCTAssertEqual(months, 6)
     }
 
+    func testShouldShowLaborCTANarSenGraviditet() {
+        let dueDate = Calendar.current.date(byAdding: .day, value: 14, to: Date())!
+        let user = UserData(phase: .pregnancy, isPregnant: true, dueDate: dueDate)
+
+        XCTAssertTrue((user.currentPregnancyWeek ?? 0) >= 37)
+        XCTAssertTrue(user.shouldShowLaborCTA)
+    }
+
+    func testActivateLaborAndResetLabor() {
+        let dueDate = Calendar.current.date(byAdding: .day, value: 10, to: Date())!
+        let user = UserData(phase: .pregnancy, isPregnant: true, dueDate: dueDate)
+
+        user.activateLabor()
+        XCTAssertEqual(user.laborStatus, .active)
+        XCTAssertNotNil(user.laborStartedAt)
+        XCTAssertTrue(user.isLaborActive)
+
+        user.resetLabor()
+        XCTAssertEqual(user.laborStatus, .notStarted)
+        XCTAssertNil(user.laborStartedAt)
+        XCTAssertFalse(user.isLaborActive)
+    }
+
+    func testCompleteBirthTransitionByterTillForalder() {
+        let dueDate = Calendar.current.date(byAdding: .day, value: 7, to: Date())!
+        let birthDate = Date()
+        let user = UserData(phase: .pregnancy, isPregnant: true, dueDate: dueDate)
+
+        user.completeBirthTransition(
+            birthDate: birthDate,
+            babyName: "Luna",
+            babyGender: .female,
+            birthWeight: 3450,
+            birthLength: 50,
+            birthHeadCircumference: 35,
+            babyPhoto: nil
+        )
+
+        XCTAssertEqual(user.phase, .parent)
+        XCTAssertFalse(user.isPregnant)
+        XCTAssertEqual(user.babyName, "Luna")
+        XCTAssertEqual(user.babyGender, .female)
+        XCTAssertEqual(user.birthWeight, 3450)
+        XCTAssertEqual(user.birthLength, 50)
+        XCTAssertEqual(user.birthHeadCircumference, 35)
+        XCTAssertNotNil(user.babyBirthDate)
+        XCTAssertEqual(user.laborStatus, .completed)
+        XCTAssertNotNil(user.laborCompletedAt)
+    }
+
     // MARK: - SleepLog beräkningar
 
     func testSleepLogDurationBeraknas() {

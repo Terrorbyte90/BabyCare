@@ -26,6 +26,20 @@ enum UserPhase: String, Codable, CaseIterable {
     }
 }
 
+enum LaborStatus: String, Codable, CaseIterable {
+    case notStarted
+    case active
+    case completed
+
+    var displayName: String {
+        switch self {
+        case .notStarted: return "Inte startad"
+        case .active: return "Pågår"
+        case .completed: return "Avslutad"
+        }
+    }
+}
+
 // MARK: - UserData
 
 @Model
@@ -45,6 +59,12 @@ final class UserData {
     var birthLength: Double?
     var birthHeadCircumference: Double?
     var babyPhoto: Data?
+    var laborStatusRaw: String?
+    var laborStartedAt: Date?
+    var laborCompletedAt: Date?
+    var laborPartnerName: String?
+    var laborPartnerPhone: String?
+    var birthPlanSummary: String?
 
     // Fertility data
     var menstrualCycleLength: Int?
@@ -66,6 +86,12 @@ final class UserData {
         birthWeight: Double? = nil,
         birthLength: Double? = nil,
         birthHeadCircumference: Double? = nil,
+        laborStatusRaw: String? = LaborStatus.notStarted.rawValue,
+        laborStartedAt: Date? = nil,
+        laborCompletedAt: Date? = nil,
+        laborPartnerName: String? = nil,
+        laborPartnerPhone: String? = nil,
+        birthPlanSummary: String? = nil,
         menstrualCycleLength: Int? = 28,
         lastPeriodDate: Date? = nil,
         fertilityGoal: FertilityGoal? = nil
@@ -84,6 +110,12 @@ final class UserData {
         self.birthWeight = birthWeight
         self.birthLength = birthLength
         self.birthHeadCircumference = birthHeadCircumference
+        self.laborStatusRaw = laborStatusRaw
+        self.laborStartedAt = laborStartedAt
+        self.laborCompletedAt = laborCompletedAt
+        self.laborPartnerName = laborPartnerName
+        self.laborPartnerPhone = laborPartnerPhone
+        self.birthPlanSummary = birthPlanSummary
         self.menstrualCycleLength = menstrualCycleLength
         self.lastPeriodDate = lastPeriodDate
         self.fertilityGoal = fertilityGoal
@@ -146,6 +178,61 @@ final class UserData {
     var pregnancyProgress: Double? {
         guard let days = pregnancyDaysElapsed else { return nil }
         return min(max(Double(days) / 280.0, 0), 1)
+    }
+
+    var laborStatus: LaborStatus {
+        get { LaborStatus(rawValue: laborStatusRaw ?? "") ?? .notStarted }
+        set { laborStatusRaw = newValue.rawValue }
+    }
+
+    var isLaborActive: Bool {
+        laborStatus == .active && phase == .pregnancy
+    }
+
+    var shouldShowLaborCTA: Bool {
+        phase == .pregnancy && (currentPregnancyWeek ?? 0) >= 37 && !isLaborActive
+    }
+
+    func activateLabor(at date: Date = Date()) {
+        laborStatus = .active
+        if laborStartedAt == nil {
+            laborStartedAt = date
+        }
+    }
+
+    func resetLabor() {
+        laborStatus = .notStarted
+        laborStartedAt = nil
+        laborCompletedAt = nil
+    }
+
+    static func estimatedDueDate(fromPregnancyWeek week: Int, referenceDate: Date = Date()) -> Date {
+        let clampedWeek = max(4, min(42, week))
+        let today = Calendar.current.startOfDay(for: referenceDate)
+        let daysToDueDate = (40 - clampedWeek) * 7
+        return Calendar.current.date(byAdding: .day, value: daysToDueDate, to: today) ?? today
+    }
+
+    func completeBirthTransition(
+        birthDate: Date,
+        babyName: String?,
+        babyGender: Gender?,
+        birthWeight: Double?,
+        birthLength: Double?,
+        birthHeadCircumference: Double?,
+        babyPhoto: Data?
+    ) {
+        phase = .parent
+        isPregnant = false
+        babyBirthDate = birthDate
+        self.babyName = babyName
+        self.babyGender = babyGender
+        self.birthWeight = birthWeight
+        self.birthLength = birthLength
+        self.birthHeadCircumference = birthHeadCircumference
+        self.babyPhoto = babyPhoto
+        laborStatus = .completed
+        laborCompletedAt = Date()
     }
 
     private var birthDateStartOfDay: Date? {

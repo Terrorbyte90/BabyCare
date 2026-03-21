@@ -23,9 +23,14 @@ struct HomeView: View {
     @State private var showAddJournal = false
     @State private var showKickCounter = false
     @State private var showTemperature = false
+    @State private var showPregnancyTransitionSheet = false
+    @State private var showLaborSheet = false
+    @State private var showBirthCompletionSheet = false
 
     private var user: UserData? { userData.first }
     private var phase: UserPhase { user?.phase ?? .pregnancy }
+    private var isLaborActive: Bool { user?.isLaborActive ?? false }
+    private var shouldShowLaborCTA: Bool { user?.shouldShowLaborCTA ?? false }
 
     private var upcomingAppointments: [Appointment] {
         appointments.filter { $0.date >= Date() }.prefix(3).map { $0 }
@@ -78,6 +83,25 @@ struct HomeView: View {
         .sheet(isPresented: $showAddPeriod)       { AddPeriodSheet() }
         .sheet(isPresented: $showKickCounter)     { KickCounterSheet() }
         .sheet(isPresented: $showTemperature)     { TemperatureLoggingSheet() }
+        .sheet(isPresented: $showPregnancyTransitionSheet) {
+            PregnancyTransitionSheet(user: user)
+        }
+        .sheet(isPresented: $showLaborSheet) {
+            if let user {
+                LaborSupportSheet(user: user)
+            } else {
+                Text("Ingen profil hittades.")
+                    .padding()
+            }
+        }
+        .sheet(isPresented: $showBirthCompletionSheet) {
+            if let user {
+                BirthCompletionSheet(user: user)
+            } else {
+                Text("Ingen profil hittades.")
+                    .padding()
+            }
+        }
     }
 
     // MARK: - Greeting Section
@@ -196,19 +220,22 @@ struct HomeView: View {
             .staggerAppear(index: 1)
         }
 
-        fertilityQuickLogSection
+        fertilityPregnancyTransitionCard
             .staggerAppear(index: 3)
+
+        fertilityQuickLogSection
+            .staggerAppear(index: 4)
 
         if !upcomingAppointments.isEmpty {
             upcomingSection
-                .staggerAppear(index: 4)
+                .staggerAppear(index: 5)
         }
 
         fertilityForumCard
-            .staggerAppear(index: 5)
+            .staggerAppear(index: 6)
 
         fertilityTipsCard
-            .staggerAppear(index: 6)
+            .staggerAppear(index: 7)
     }
 
     // Cycle Day Indicator
@@ -342,6 +369,39 @@ struct HomeView: View {
         }
     }
 
+    private var fertilityPregnancyTransitionCard: some View {
+        GlassCard(gradient: .pregnancyGradient) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                HStack(spacing: DS.s2) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(Color.appLavender)
+                    Text("Fått ett plus?")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+                }
+
+                Text("Tryck på knappen så hjälper vi dig ställa in rätt graviditetsvecka och byta fas direkt.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.appTextSec)
+                    .lineSpacing(3)
+
+                Button {
+                    HapticFeedback.light()
+                    showPregnancyTransitionSheet = true
+                } label: {
+                    HStack(spacing: DS.s2) {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                        Text("Jag är gravid!")
+                            .font(.system(size: 15, weight: .semibold))
+                    }
+                }
+                .buttonStyle(PrimaryButtonStyle(gradient: .pregnancyGradient, fullWidth: true))
+            }
+        }
+    }
+
     // Quick Log Buttons
     private var fertilityQuickLogSection: some View {
         VStack(spacing: DS.s3) {
@@ -402,22 +462,32 @@ struct HomeView: View {
         pregnancyHeroCard
             .staggerAppear(index: 1)
 
+        if shouldShowLaborCTA {
+            pregnancyLaborCTA
+                .staggerAppear(index: 2)
+        }
+
+        if isLaborActive {
+            pregnancyLaborActiveCard
+                .staggerAppear(index: 3)
+        }
+
         pregnancyFetalSizeCard
-            .staggerAppear(index: 2)
+            .staggerAppear(index: 4)
 
         pregnancyTipCard
-            .staggerAppear(index: 3)
+            .staggerAppear(index: 5)
 
         pregnancyQuickActionsSection
-            .staggerAppear(index: 4)
+            .staggerAppear(index: 6)
 
         if !upcomingAppointments.isEmpty {
             upcomingSection
-                .staggerAppear(index: 5)
+                .staggerAppear(index: 7)
         }
 
         pregnancyForumCard
-            .staggerAppear(index: 6)
+            .staggerAppear(index: 8)
     }
 
     // Pregnancy Week Hero
@@ -543,6 +613,76 @@ struct HomeView: View {
         }
     }
 
+    private var pregnancyLaborCTA: some View {
+        GlassCard(gradient: .pinkPurple) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                HStack(spacing: DS.s2) {
+                    Image(systemName: "bell.and.waves.left.and.right.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.appPeach)
+                    Text("Snart dags för BF")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+                }
+
+                Text("När förlossningen drar igång kan du aktivera BF-läget med instruktioner och snabb SMS-delning av förlossningsbrev.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.appTextSec)
+                    .lineSpacing(3)
+
+                Button {
+                    startLaborMode()
+                } label: {
+                    HStack(spacing: DS.s2) {
+                        Image(systemName: "heart.text.square.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                        Text("Dags för BF")
+                            .font(.system(size: 15, weight: .semibold))
+                    }
+                }
+                .buttonStyle(PrimaryButtonStyle(gradient: .pinkPurple, fullWidth: true))
+            }
+        }
+    }
+
+    private var pregnancyLaborActiveCard: some View {
+        GlassCard(gradient: .orangePink) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                HStack(spacing: DS.s2) {
+                    PulsingDot(color: .appOrange, size: 7)
+                    Text("Förlossning pågår...")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+                }
+
+                Text("BF-läget är aktivt. Öppna vyn för instruktioner och SMS-delning, eller markera klart när bebis är född.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.appTextSec)
+                    .lineSpacing(3)
+
+                HStack(spacing: DS.s2) {
+                    Button {
+                        showLaborSheet = true
+                    } label: {
+                        Text("Öppna BF-läge")
+                            .font(.system(size: 14, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(PrimaryButtonStyle(gradient: .orangePink))
+
+                    Button {
+                        showBirthCompletionSheet = true
+                    } label: {
+                        Text("Klar")
+                            .font(.system(size: 14, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(PrimaryButtonStyle(gradient: .babyGradient))
+                }
+            }
+        }
+    }
+
     // Quick Actions for Pregnancy
     private var pregnancyQuickActionsSection: some View {
         VStack(spacing: DS.s3) {
@@ -582,6 +722,14 @@ struct HomeView: View {
             DSSectionHeader(title: "Från forum")
             RotatingForumCard(quotes: HomeForumQuotes.pregnancyQuotes)
         }
+    }
+
+    private func startLaborMode() {
+        guard let user else { return }
+        user.activateLabor()
+        try? modelContext.save()
+        HapticFeedback.success()
+        showLaborSheet = true
     }
 
     // MARK: - Parent Content

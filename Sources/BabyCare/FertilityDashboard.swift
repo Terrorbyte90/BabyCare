@@ -13,6 +13,7 @@ struct FertilityDashboard: View {
     @State private var showTemperatureSheet = false
     @State private var showMucusSheet = false
     @State private var showSymptomsLogSheet = false
+    @State private var showPregnancyTransitionSheet = false
     @State private var selectedLogDay: Date = Date()
     @State private var bbtExpanded = false
 
@@ -115,28 +116,31 @@ struct FertilityDashboard: View {
                         predictionsSection
                             .staggerAppear(index: 2)
 
-                        quickLogSection
+                        pregnancyTransitionSection
                             .staggerAppear(index: 3)
 
-                        statisticsSection
+                        quickLogSection
                             .staggerAppear(index: 4)
 
-                        calendarSection
+                        statisticsSection
                             .staggerAppear(index: 5)
 
-                        bbtSection
+                        calendarSection
                             .staggerAppear(index: 6)
+
+                        bbtSection
+                            .staggerAppear(index: 7)
 
                         if user?.fertilityGoal == .tryingToConceive {
                             ttcBanner
-                                .staggerAppear(index: 7)
+                                .staggerAppear(index: 8)
                         }
 
                         logTodayButton
-                            .staggerAppear(index: 8)
+                            .staggerAppear(index: 9)
 
                         forumSection
-                            .staggerAppear(index: 9)
+                            .staggerAppear(index: 10)
 
                         Color.clear.frame(height: 90)
                     }
@@ -155,6 +159,9 @@ struct FertilityDashboard: View {
         .sheet(isPresented: $showMucusSheet) { MucusLoggingSheet() }
         .sheet(isPresented: $showSymptomsLogSheet) {
             SymptomsLogView(date: selectedLogDay)
+        }
+        .sheet(isPresented: $showPregnancyTransitionSheet) {
+            PregnancyTransitionSheet(user: user)
         }
         .preferredColorScheme(.dark)
     }
@@ -353,6 +360,45 @@ struct FertilityDashboard: View {
                         gradient: .warmGradient,
                         subtitle: "Nästa cykel"
                     )
+                }
+            }
+        }
+    }
+
+    // MARK: - Pregnancy Transition
+
+    private var pregnancyTransitionSection: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Nästa steg")
+
+            GlassCard(gradient: .pregnancyGradient) {
+                VStack(alignment: .leading, spacing: DS.s3) {
+                    HStack(spacing: DS.s2) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundStyle(Color.appLavender)
+                        Text("Om du fått ett plus")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.appText)
+                    }
+
+                    Text("Byt till gravid-fasen med ett klick. Vi hjälper dig sätta korrekt vecka och beräknat datum direkt.")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.appTextSec)
+                        .lineSpacing(3)
+
+                    Button {
+                        HapticFeedback.light()
+                        showPregnancyTransitionSheet = true
+                    } label: {
+                        HStack(spacing: DS.s2) {
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("Jag är gravid!")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle(gradient: .pregnancyGradient, fullWidth: true))
                 }
             }
         }

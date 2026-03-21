@@ -1,5 +1,9 @@
 import SwiftUI
 import SwiftData
+import PhotosUI
+#if canImport(MessageUI)
+import MessageUI
+#endif
 
 // MARK: - Pregnancy Dashboard ("Du just nu")
 
@@ -14,6 +18,8 @@ struct PregnancyDashboard: View {
     @State private var showHospitalBag = false
     @State private var showWeekGuide = false
     @State private var showSymptomTracker = false
+    @State private var showLaborSheet = false
+    @State private var showBirthCompletionSheet = false
 
     private var user: UserData? { userData.first }
 
@@ -29,6 +35,8 @@ struct PregnancyDashboard: View {
     private var clampedWeek: Int { max(4, min(42, weeksPregnant)) }
     private var daysUntilDue: Int { user?.pregnancyDaysUntilDue ?? 0 }
     private var progress: Double { user?.pregnancyProgress ?? (Double(clampedWeek) / 40.0) }
+    private var isLaborActive: Bool { user?.isLaborActive ?? false }
+    private var shouldShowLaborCTA: Bool { user?.shouldShowLaborCTA ?? false }
 
     private var trimester: Int {
         user?.currentPregnancyTrimester ?? {
@@ -65,25 +73,35 @@ struct PregnancyDashboard: View {
                             heroCard
                                 .staggerAppear(index: 0)
 
+                            if shouldShowLaborCTA {
+                                laborCTASection
+                                    .staggerAppear(index: 1)
+                            }
+
+                            if isLaborActive {
+                                laborActiveSection
+                                    .staggerAppear(index: 2)
+                            }
+
                             trimesterIndicator
-                                .staggerAppear(index: 1)
-
-                            fetalVisualization
-                                .staggerAppear(index: 2)
-
-                            weekHighlightsCard
                                 .staggerAppear(index: 3)
 
-                            quickActionsSection
+                            fetalVisualization
                                 .staggerAppear(index: 4)
+
+                            weekHighlightsCard
+                                .staggerAppear(index: 5)
+
+                            quickActionsSection
+                                .staggerAppear(index: 6)
 
                             if !upcomingAppointments.isEmpty {
                                 appointmentsSection
-                                    .staggerAppear(index: 5)
+                                    .staggerAppear(index: 7)
                             }
 
                             forumSection
-                                .staggerAppear(index: 6)
+                                .staggerAppear(index: 8)
 
                             Color.clear.frame(height: 90)
                         }
@@ -110,6 +128,22 @@ struct PregnancyDashboard: View {
         .sheet(isPresented: $showHospitalBag) { HospitalBagSheet() }
         .sheet(isPresented: $showWeekGuide) { WeekGuideSheet(week: clampedWeek) }
         .sheet(isPresented: $showSymptomTracker) { BodySymptomTrackerView() }
+        .sheet(isPresented: $showLaborSheet) {
+            if let user {
+                LaborSupportSheet(user: user)
+            } else {
+                Text("Ingen profil hittades.")
+                    .padding()
+            }
+        }
+        .sheet(isPresented: $showBirthCompletionSheet) {
+            if let user {
+                BirthCompletionSheet(user: user)
+            } else {
+                Text("Ingen profil hittades.")
+                    .padding()
+            }
+        }
         .preferredColorScheme(.dark)
     }
 
@@ -236,6 +270,94 @@ struct PregnancyDashboard: View {
                 .foregroundStyle(.white.opacity(0.5))
         }
         .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Labor Sections
+
+    private var laborCTASection: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Förlossning")
+
+            GlassCard(gradient: .pinkPurple) {
+                VStack(alignment: .leading, spacing: DS.s3) {
+                    HStack(spacing: DS.s2) {
+                        Image(systemName: "bell.and.waves.left.and.right.fill")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.appPeach)
+                        Text("Redo för BF-läge")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.appText)
+                    }
+
+                    Text("I de sista veckorna kan du aktivera BF-läge med instruktioner, partner-SMS och snabb avslutning när bebis är född.")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.appTextSec)
+                        .lineSpacing(3)
+
+                    Button {
+                        startLaborMode()
+                    } label: {
+                        HStack(spacing: DS.s2) {
+                            Image(systemName: "heart.text.square.fill")
+                                .font(.system(size: 13, weight: .semibold))
+                            Text("Dags för BF")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle(gradient: .pinkPurple, fullWidth: true))
+                }
+            }
+        }
+    }
+
+    private var laborActiveSection: some View {
+        VStack(spacing: DS.s3) {
+            DSSectionHeader(title: "Aktivt BF-läge")
+
+            GlassCard(gradient: .orangePink) {
+                VStack(alignment: .leading, spacing: DS.s3) {
+                    HStack(spacing: DS.s2) {
+                        PulsingDot(color: .appOrange, size: 7)
+                        Text("Förlossning pågår...")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.appText)
+                    }
+
+                    Text("Appen minns att ni är i BF. Öppna specialvyn för instruktioner och SMS, eller markera klart när bebis är född.")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.appTextSec)
+                        .lineSpacing(3)
+
+                    HStack(spacing: DS.s2) {
+                        Button {
+                            showLaborSheet = true
+                        } label: {
+                            Text("Öppna BF-läge")
+                                .font(.system(size: 14, weight: .semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(PrimaryButtonStyle(gradient: .orangePink))
+
+                        Button {
+                            showBirthCompletionSheet = true
+                        } label: {
+                            Text("Klar")
+                                .font(.system(size: 14, weight: .semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(PrimaryButtonStyle(gradient: .babyGradient))
+                    }
+                }
+            }
+        }
+    }
+
+    private func startLaborMode() {
+        guard let user else { return }
+        user.activateLabor()
+        try? modelContext.save()
+        HapticFeedback.success()
+        showLaborSheet = true
     }
 
     // MARK: - Trimester Indicator
@@ -1053,3 +1175,800 @@ private struct WeekGuideSheet: View {
     PregnancyDashboard()
         .modelContainer(for: [UserData.self, Appointment.self, KickSession.self, HospitalBagItem.self], inMemory: true)
 }
+// MARK: - Fertility -> Pregnancy transition
+
+struct PregnancyTransitionSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    let user: UserData?
+
+    @State private var pregnancyWeek: Int
+    @State private var dueDate: Date
+    @State private var babyName: String
+    @State private var babyGender: Gender
+    @State private var syncingFields = false
+
+    init(user: UserData?) {
+        self.user = user
+        let defaultWeek = max(4, min(42, user?.currentPregnancyWeek ?? 6))
+        let defaultDueDate = user?.dueDate ?? UserData.estimatedDueDate(fromPregnancyWeek: defaultWeek)
+        _pregnancyWeek = State(initialValue: defaultWeek)
+        _dueDate = State(initialValue: defaultDueDate)
+        _babyName = State(initialValue: user?.babyName ?? "")
+        _babyGender = State(initialValue: user?.babyGender ?? .unknown)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: DS.s5) {
+                        heroCard
+
+                        weekAndDueDateCard
+
+                        babyInfoCard
+
+                        DSInfoBanner(
+                            text: "Efter vecka 37 får du ett BF-läge med instruktioner och snabb delning av förlossningsbrev till partner.",
+                            style: .info
+                        )
+
+                        Button {
+                            activatePregnancyPhase()
+                        } label: {
+                            HStack(spacing: DS.s2) {
+                                Text("Gå vidare")
+                                    .font(.system(size: 17, weight: .semibold))
+                                Image(systemName: "arrow.right")
+                                    .font(.system(size: 15, weight: .bold))
+                            }
+                        }
+                        .buttonStyle(PrimaryButtonStyle(gradient: .pregnancyGradient, fullWidth: true))
+
+                        Color.clear.frame(height: DS.s4)
+                    }
+                    .padding(.horizontal, DS.s4)
+                    .padding(.top, DS.s4)
+                }
+            }
+            .navigationTitle("Jag är gravid!")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Avbryt") { dismiss() }
+                        .foregroundStyle(Color.appTextSec)
+                }
+            }
+            .onChange(of: pregnancyWeek) { _, _ in
+                syncDueDateFromWeek()
+            }
+            .onChange(of: dueDate) { _, _ in
+                syncWeekFromDueDate()
+            }
+        }
+    }
+
+    private var heroCard: some View {
+        GradientCard(gradient: .pregnancyGradient) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                HStack {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.9))
+                    Text("Grattis!".uppercased())
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .tracking(1.1)
+                }
+
+                Text("Vi ställer in graviditeten så innehållet blir korrekt direkt.")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white)
+
+                Text("Sätt nuvarande vecka eller beräknat datum. Du kan ändra allt senare i profil.")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.75))
+                    .lineSpacing(3)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var weekAndDueDateCard: some View {
+        GlassCard(gradient: .pregnancyGradient) {
+            VStack(alignment: .leading, spacing: DS.s4) {
+                Text("Graviditetsinställningar")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+
+                HStack {
+                    Text("Vecka \(pregnancyWeek)")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+
+                    Spacer()
+
+                    Stepper("", value: $pregnancyWeek, in: 4...42)
+                        .labelsHidden()
+                        .tint(.appPink)
+                }
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("BERÄKNAT DATUM")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    DatePicker("", selection: $dueDate, displayedComponents: .date)
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .tint(.appPink)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                .stroke(Color.appBorderMed, lineWidth: 1)
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+
+    private var babyInfoCard: some View {
+        GlassCard(gradient: .babyGradient) {
+            VStack(alignment: .leading, spacing: DS.s4) {
+                Text("Valfritt")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+
+                DSTextField(
+                    title: "Barnets namn (valfritt)",
+                    text: $babyName,
+                    placeholder: "Lägg till namn om ni vill"
+                )
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("KÖN")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        ForEach(Gender.allCases, id: \.self) { gender in
+                            Button {
+                                withAnimation(DS.springSnappy) {
+                                    babyGender = gender
+                                }
+                            } label: {
+                                Text(gender.displayName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(babyGender == gender ? .white : Color.appTextSec)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, DS.s2 + 2)
+                                    .background(
+                                        babyGender == gender
+                                            ? LinearGradient.babyGradient
+                                            : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom)
+                                    )
+                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                            .stroke(babyGender == gender ? Color.clear : Color.appBorderMed, lineWidth: 1)
+                                    )
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func syncDueDateFromWeek() {
+        guard !syncingFields else { return }
+        syncingFields = true
+        dueDate = UserData.estimatedDueDate(fromPregnancyWeek: pregnancyWeek)
+        syncingFields = false
+    }
+
+    private func syncWeekFromDueDate() {
+        guard !syncingFields else { return }
+        syncingFields = true
+        let today = Calendar.current.startOfDay(for: Date())
+        let targetDue = Calendar.current.startOfDay(for: dueDate)
+        let daysUntilDue = Calendar.current.dateComponents([.day], from: today, to: targetDue).day ?? 0
+        let daysPregnant = max(0, 280 - daysUntilDue)
+        pregnancyWeek = max(4, min(42, daysPregnant / 7))
+        syncingFields = false
+    }
+
+    private func activatePregnancyPhase() {
+        let trimmedName = normalizeOptionalText(babyName)
+
+        if let existing = user {
+            existing.phase = .pregnancy
+            existing.isPregnant = true
+            existing.dueDate = dueDate
+            existing.babyBirthDate = nil
+            existing.babyName = trimmedName
+            existing.babyGender = babyGender
+            existing.resetLabor()
+        } else {
+            let newUser = UserData(
+                babyName: trimmedName,
+                phase: .pregnancy,
+                isPregnant: true,
+                dueDate: dueDate,
+                babyGender: babyGender,
+                laborStatusRaw: LaborStatus.notStarted.rawValue
+            )
+            modelContext.insert(newUser)
+        }
+
+        try? modelContext.save()
+        HapticFeedback.success()
+        dismiss()
+    }
+}
+
+// MARK: - Labor support sheet
+
+struct LaborSupportSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
+    @Query private var plans: [BirthPlan]
+
+    let user: UserData
+
+    @State private var partnerName: String
+    @State private var partnerPhone: String
+    @State private var messageBody: String
+    @State private var showSMSComposer = false
+    @State private var showSMSUnavailableAlert = false
+
+    init(user: UserData) {
+        self.user = user
+        _partnerName = State(initialValue: user.laborPartnerName ?? "")
+        _partnerPhone = State(initialValue: user.laborPartnerPhone ?? "")
+        _messageBody = State(initialValue: user.birthPlanSummary ?? "")
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: DS.s5) {
+                        headerCard
+
+                        instructionsCard
+
+                        contactCard
+
+                        Button {
+                            sendBirthPlanSMS()
+                        } label: {
+                            HStack(spacing: DS.s2) {
+                                Image(systemName: "message.fill")
+                                    .font(.system(size: 14, weight: .bold))
+                                Text("Skicka förlossningsbrev via SMS")
+                                    .font(.system(size: 16, weight: .semibold))
+                            }
+                        }
+                        .buttonStyle(PrimaryButtonStyle(gradient: .pinkPurple, fullWidth: true))
+
+                        DSInfoBanner(
+                            text: "Du kan stänga den här vyn när som helst. BF-läget fortsätter vara aktivt tills du markerar klart.",
+                            style: .success
+                        )
+
+                        Color.clear.frame(height: DS.s4)
+                    }
+                    .padding(.horizontal, DS.s4)
+                    .padding(.top, DS.s4)
+                }
+            }
+            .navigationTitle("BF-läge")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Stäng") {
+                        persistDraftData()
+                        dismiss()
+                    }
+                    .foregroundStyle(Color.appTextSec)
+                }
+            }
+            .onAppear {
+                if messageBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    messageBody = suggestedBirthPlanSummary
+                }
+            }
+            .sheet(isPresented: $showSMSComposer) {
+                SMSComposerView(
+                    recipients: sanitizedRecipients,
+                    body: fullSMSBody
+                )
+            }
+            .alert("SMS kunde inte öppnas", isPresented: $showSMSUnavailableAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Kontrollera att SMS är tillgängligt på enheten och att telefonnummer är korrekt ifyllt.")
+            }
+        }
+    }
+
+    private var headerCard: some View {
+        GradientCard(gradient: .pinkPurple) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                HStack(spacing: DS.s2) {
+                    Image(systemName: "waveform.path.ecg")
+                        .font(.system(size: 14, weight: .bold))
+                    Text("Förlossning pågår".uppercased())
+                        .font(.system(size: 11, weight: .bold))
+                        .tracking(1.0)
+                }
+                .foregroundStyle(.white.opacity(0.75))
+
+                Text("Nu fokuserar vi på lugn, närvaro och tydlig kommunikation.")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+
+                if let started = user.laborStartedAt {
+                    Text("Start registrerad \(started.formatted(.dateTime.day().month(.abbreviated).hour().minute().locale(Locale(identifier: "sv_SE"))))")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.65))
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var instructionsCard: some View {
+        GlassCard(gradient: .pregnancyGradient) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                Text("Trygga nästa steg")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+
+                instructionRow("Andas lugnt och försök växla mellan vila, rörelse och vätska.")
+                instructionRow("Använd värkräknaren när värkarna blir regelbundna.")
+                instructionRow("Ha legitimation, journal och BB-väska redo innan avfärd.")
+                instructionRow("Kontakta förlossningen vid osäkerhet, vattenavgång eller minskade fosterrörelser.")
+            }
+        }
+    }
+
+    private func instructionRow(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: DS.s2) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color.appGreen)
+                .padding(.top, 1)
+
+            Text(text)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundStyle(Color.appTextSec)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var contactCard: some View {
+        GlassCard(gradient: .babyGradient) {
+            VStack(alignment: .leading, spacing: DS.s4) {
+                Text("Skicka till partner")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+
+                DSTextField(title: "Partnernamn (valfritt)", text: $partnerName, placeholder: "T.ex. Alex")
+                DSTextField(title: "Partnernummer", text: $partnerPhone, keyboard: .phonePad, placeholder: "+46...")
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("FÖRLOSSNINGSBREV (SMS)")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    TextEditor(text: $messageBody)
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.appText)
+                        .frame(minHeight: 120)
+                        .padding(DS.s2)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                .stroke(Color.appBorderMed, lineWidth: 1)
+                        )
+                }
+            }
+        }
+    }
+
+    private var suggestedBirthPlanSummary: String {
+        if let existing = normalizeOptionalText(user.birthPlanSummary) {
+            return existing
+        }
+
+        guard let plan = plans.first else {
+            return "Vi önskar ett lugnt bemötande, tydlig information och att partner är delaktig under hela förloppet."
+        }
+
+        let items = decodePlanItems(from: plan)
+        let prioritized = items.filter(\.isChecked)
+        let sourceItems = prioritized.isEmpty ? Array(items.prefix(6)) : Array(prioritized.prefix(8))
+
+        var lines: [String] = sourceItems.map { "• \($0.title)" }
+        if let notes = normalizeOptionalText(plan.notes) {
+            lines.append("\nAnteckning: \(notes)")
+        }
+
+        if lines.isEmpty {
+            lines = ["• Vi önskar ett lugnt bemötande och tydlig kommunikation."]
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    private func decodePlanItems(from plan: BirthPlan) -> [BirthPlanItem] {
+        guard let data = plan.itemsJSON.data(using: .utf8) else { return [] }
+        return (try? JSONDecoder().decode([BirthPlanItem].self, from: data)) ?? []
+    }
+
+    private var sanitizedRecipients: [String] {
+        let phone = partnerPhone.filter { $0.isNumber || $0 == "+" }
+        return phone.isEmpty ? [] : [phone]
+    }
+
+    private var fullSMSBody: String {
+        let recipientPrefix: String
+        if let normalizedName = normalizeOptionalText(partnerName) {
+            recipientPrefix = "Hej \(normalizedName)!\n\n"
+        } else {
+            recipientPrefix = "Hej!\n\n"
+        }
+
+        let summary = normalizeOptionalText(messageBody) ?? suggestedBirthPlanSummary
+        return recipientPrefix +
+            "Förlossningen har startat. Här är vårt förlossningsbrev:\n\n" +
+            summary
+    }
+
+    private func persistDraftData() {
+        user.laborPartnerName = normalizeOptionalText(partnerName)
+        user.laborPartnerPhone = normalizeOptionalText(partnerPhone)
+        user.birthPlanSummary = normalizeOptionalText(messageBody)
+        try? modelContext.save()
+    }
+
+    private func sendBirthPlanSMS() {
+        persistDraftData()
+
+#if canImport(MessageUI)
+        if MFMessageComposeViewController.canSendText() {
+            showSMSComposer = true
+            return
+        }
+#endif
+
+        let encodedBody = fullSMSBody.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let recipient = sanitizedRecipients.first ?? ""
+        let urlString = recipient.isEmpty
+            ? "sms:&body=\(encodedBody)"
+            : "sms:\(recipient)&body=\(encodedBody)"
+
+        guard let url = URL(string: urlString) else {
+            showSMSUnavailableAlert = true
+            return
+        }
+
+        openURL(url)
+    }
+}
+
+// MARK: - Birth completion sheet
+
+struct BirthCompletionSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    let user: UserData
+
+    @State private var babyName: String
+    @State private var babyGender: Gender
+    @State private var birthDate: Date
+    @State private var birthWeight: String
+    @State private var birthLength: String
+    @State private var birthHeadCircumference: String
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var photoData: Data?
+    @State private var showValidationAlert = false
+    @State private var validationMessage = ""
+
+    init(user: UserData) {
+        self.user = user
+        _babyName = State(initialValue: user.babyName ?? "")
+        _babyGender = State(initialValue: user.babyGender ?? .unknown)
+        _birthDate = State(initialValue: user.babyBirthDate ?? Date())
+        _birthWeight = State(initialValue: user.birthWeight.map { String(format: "%.0f", $0) } ?? "")
+        _birthLength = State(initialValue: user.birthLength.map { String(format: "%.0f", $0) } ?? "")
+        _birthHeadCircumference = State(initialValue: user.birthHeadCircumference.map { String(format: "%.0f", $0) } ?? "")
+        _photoData = State(initialValue: user.babyPhoto)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.appBg.ignoresSafeArea()
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: DS.s5) {
+                        heroCard
+
+                        photoCard
+
+                        detailsCard
+
+                        Button {
+                            finishBirth()
+                        } label: {
+                            HStack(spacing: DS.s2) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 15, weight: .bold))
+                                Text("Spara och gå till Förälder")
+                                    .font(.system(size: 17, weight: .semibold))
+                            }
+                        }
+                        .buttonStyle(PrimaryButtonStyle(gradient: .babyGradient, fullWidth: true))
+
+                        Color.clear.frame(height: DS.s4)
+                    }
+                    .padding(.horizontal, DS.s4)
+                    .padding(.top, DS.s4)
+                }
+            }
+            .navigationTitle("Välkommen bebis")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Stäng") { dismiss() }
+                        .foregroundStyle(Color.appTextSec)
+                }
+            }
+            .onChange(of: selectedPhotoItem) { _, newItem in
+                guard let item = newItem else { return }
+                Task {
+                    photoData = try? await item.loadTransferable(type: Data.self)
+                }
+            }
+            .alert("Kontrollera uppgifterna", isPresented: $showValidationAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(validationMessage)
+            }
+        }
+    }
+
+    private var heroCard: some View {
+        GradientCard(gradient: .babyGradient) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                HStack(spacing: DS.s2) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 14, weight: .bold))
+                    Text("Grattis".uppercased())
+                        .font(.system(size: 11, weight: .bold))
+                        .tracking(1.0)
+                }
+                .foregroundStyle(.white.opacity(0.75))
+
+                Text("Vilken fantastisk stund. Nu sparar vi de första uppgifterna om ert barn.")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+
+                Text("När du sparar växlar appen automatiskt till Förälder-fasen.")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.75))
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var photoCard: some View {
+        GlassCard(gradient: .pinkPurple) {
+            VStack(alignment: .leading, spacing: DS.s3) {
+                Text("Första foto")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color.appText)
+
+                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                    HStack(spacing: DS.s2) {
+                        Image(systemName: photoData == nil ? "camera.badge.plus" : "photo.badge.checkmark")
+                            .font(.system(size: 15, weight: .semibold))
+                        Text(photoData == nil ? "Välj foto" : "Byt foto")
+                            .font(.system(size: 14, weight: .semibold))
+                    }
+                    .foregroundStyle(Color.appText)
+                    .padding(.horizontal, DS.s3)
+                    .padding(.vertical, DS.s2 + 2)
+                    .background(Color.appSurface2)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                            .stroke(Color.appBorderMed, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+
+                if let data = photoData, let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 180)
+                        .frame(maxWidth: .infinity)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radius, style: .continuous))
+                }
+            }
+        }
+    }
+
+    private var detailsCard: some View {
+        GlassCard(gradient: .babyGradient) {
+            VStack(alignment: .leading, spacing: DS.s4) {
+                DSTextField(title: "Barnets namn", text: $babyName, placeholder: "Ange namn")
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("KÖN")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    HStack(spacing: DS.s2) {
+                        ForEach(Gender.allCases, id: \.self) { gender in
+                            Button {
+                                withAnimation(DS.springSnappy) {
+                                    babyGender = gender
+                                }
+                            } label: {
+                                Text(gender.displayName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(babyGender == gender ? .white : Color.appTextSec)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, DS.s2 + 2)
+                                    .background(
+                                        babyGender == gender
+                                            ? LinearGradient.babyGradient
+                                            : LinearGradient(colors: [Color.appSurface2], startPoint: .top, endPoint: .bottom)
+                                    )
+                                    .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                            .stroke(babyGender == gender ? Color.clear : Color.appBorderMed, lineWidth: 1)
+                                    )
+                            }
+                            .buttonStyle(ScaleButtonStyle())
+                        }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: DS.s2) {
+                    Text("FÖDELSETID")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Color.appTextTert)
+                        .tracking(0.6)
+
+                    DatePicker("", selection: $birthDate, in: ...Date(), displayedComponents: [.date, .hourAndMinute])
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .tint(.appBlue)
+                        .padding(DS.s3)
+                        .background(Color.appSurface2)
+                        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                                .stroke(Color.appBorderMed, lineWidth: 1)
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                DSTextField(title: "Vikt (gram)", text: $birthWeight, keyboard: .decimalPad, placeholder: "t.ex. 3520")
+                DSTextField(title: "Längd (cm)", text: $birthLength, keyboard: .decimalPad, placeholder: "t.ex. 50")
+                DSTextField(title: "Huvudomfång (cm)", text: $birthHeadCircumference, keyboard: .decimalPad, placeholder: "t.ex. 35")
+            }
+        }
+    }
+
+    private func finishBirth() {
+        guard let parsedWeight = parseOptionalNumber(birthWeight) else {
+            validationMessage = "Ange vikt i siffror, till exempel 3520."
+            showValidationAlert = true
+            return
+        }
+
+        guard let parsedLength = parseOptionalNumber(birthLength) else {
+            validationMessage = "Ange längd i siffror, till exempel 50."
+            showValidationAlert = true
+            return
+        }
+
+        guard let parsedHead = parseOptionalNumber(birthHeadCircumference) else {
+            validationMessage = "Ange huvudomfång i siffror, till exempel 35."
+            showValidationAlert = true
+            return
+        }
+
+        user.completeBirthTransition(
+            birthDate: birthDate,
+            babyName: normalizeOptionalText(babyName),
+            babyGender: babyGender,
+            birthWeight: parsedWeight,
+            birthLength: parsedLength,
+            birthHeadCircumference: parsedHead,
+            babyPhoto: photoData
+        )
+
+        try? modelContext.save()
+        HapticFeedback.success()
+        dismiss()
+    }
+
+    private func parseOptionalNumber(_ input: String) -> Double?? {
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return .some(nil) }
+
+        let normalized = trimmed.replacingOccurrences(of: ",", with: ".")
+        guard let value = Double(normalized) else { return nil }
+        return .some(value)
+    }
+}
+
+private func normalizeOptionalText(_ value: String?) -> String? {
+    guard let value else { return nil }
+    let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    return trimmed.isEmpty ? nil : trimmed
+}
+
+#if canImport(MessageUI)
+private struct SMSComposerView: UIViewControllerRepresentable {
+    let recipients: [String]
+    let body: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIViewController(context: Context) -> MFMessageComposeViewController {
+        let vc = MFMessageComposeViewController()
+        vc.messageComposeDelegate = context.coordinator
+        vc.recipients = recipients.isEmpty ? nil : recipients
+        vc.body = body
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: MFMessageComposeViewController, context: Context) {}
+
+    final class Coordinator: NSObject, MFMessageComposeViewControllerDelegate {
+        func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+            controller.dismiss(animated: true)
+        }
+    }
+}
+#else
+private struct SMSComposerView: View {
+    let recipients: [String]
+    let body: String
+
+    var body: some View {
+        Text("SMS stöds inte på den här enheten.")
+            .padding()
+    }
+}
+#endif

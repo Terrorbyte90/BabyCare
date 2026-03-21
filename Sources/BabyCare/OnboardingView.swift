@@ -216,7 +216,7 @@ struct OnboardingView: View {
                     phase: .pregnancy,
                     emoji: "🤰",
                     title: "Gravid",
-                    subtitle: "Jag är gravid nu"
+                    subtitle: "Jag är gravid nu (inkl. BF-stöd)"
                 )
                 phaseCard(
                     phase: .parent,
@@ -386,7 +386,7 @@ struct OnboardingView: View {
     private var detailsSubtitle: String {
         switch selectedPhase {
         case .fertility: return "Vi beräknar din fertila period med hjälp av dessa uppgifter"
-        case .pregnancy: return "Vi anpassar innehållet efter din graviditetsvecka"
+        case .pregnancy: return "Vi anpassar innehållet efter din graviditetsvecka och förbereder BF-läget"
         case .parent:    return "Vi anpassar tips och milstolpar efter ditt barns ålder"
         case nil:        return ""
         }
@@ -459,6 +459,13 @@ struct OnboardingView: View {
                 }
                 .padding(DS.s4)
             }
+
+            DSInfoBanner(
+                text: pregnancyWeek >= 37
+                    ? "BF-läge blir tillgängligt direkt efter onboarding så att du snabbt kan öppna instruktioner och dela förlossningsbrev."
+                    : "I slutet av graviditeten får du BF-läge med instruktioner, partner-SMS och snabb övergång till förälder-fasen.",
+                style: .info
+            )
 
             DSTextField(
                 title: "Barnets namn (valfritt)",
@@ -547,6 +554,7 @@ struct OnboardingView: View {
                 notifFeatureRow(icon: "moon.fill", color: .appBlue, text: "Vakna-varning baserad på sömnfönster")
                 notifFeatureRow(icon: "cross.case.fill", color: .appGreen, text: "BVC-påminnelser i rätt tid")
                 notifFeatureRow(icon: "heart.circle.fill", color: .appCoral, text: "Fertilt fönster — spara inte en dag")
+                notifFeatureRow(icon: "message.badge.fill", color: .appPink, text: "BF-läge med snabb delning till partner")
             }
             .padding(.horizontal, DS.s5)
             .padding(.top, DS.s5)
@@ -757,10 +765,7 @@ struct OnboardingView: View {
     }
 
     private func estimatedDueDate(fromPregnancyWeek week: Int) -> Date {
-        let clampedWeek = max(4, min(42, week))
-        let today = Calendar.current.startOfDay(for: Date())
-        let daysToDueDate = (40 - clampedWeek) * 7
-        return Calendar.current.date(byAdding: .day, value: daysToDueDate, to: today) ?? today
+        UserData.estimatedDueDate(fromPregnancyWeek: week)
     }
 }
 

@@ -900,10 +900,18 @@ struct PhaseChangeSheet: View {
                 switch phase {
                 case .fertility:
                     user.isPregnant = false
+                    user.resetLabor()
                 case .pregnancy:
                     user.isPregnant = true
+                    if user.laborStatus == .completed {
+                        user.resetLabor()
+                    }
                 case .parent:
                     user.isPregnant = false
+                    if user.laborStatus == .active {
+                        user.laborStatus = .completed
+                        user.laborCompletedAt = Date()
+                    }
                 }
 
                 try? modelContext.save()
@@ -1306,10 +1314,7 @@ struct ProfileSetupSheet: View {
         syncingPregnancyFields = true
         defer { syncingPregnancyFields = false }
 
-        let clampedWeek = max(4, min(42, pregnancyWeek))
-        let daysToDueDate = (40 - clampedWeek) * 7
-        let today = Calendar.current.startOfDay(for: Date())
-        dueDate = Calendar.current.date(byAdding: .day, value: daysToDueDate, to: today) ?? today
+        dueDate = UserData.estimatedDueDate(fromPregnancyWeek: pregnancyWeek)
     }
 
     private func syncAgeFieldsFromBirthDate() {
@@ -1349,6 +1354,12 @@ struct ProfileSetupSheet: View {
             existing.currentWeight = w
             existing.height = h
             existing.preferredUnits = units
+
+            if selectedPhase != .pregnancy {
+                existing.resetLabor()
+            } else if existing.laborStatus == .completed {
+                existing.resetLabor()
+            }
         } else {
             let newUser = UserData(
                 name: name,
@@ -1360,7 +1371,8 @@ struct ProfileSetupSheet: View {
                 currentWeight: w,
                 height: h,
                 preferredUnits: units,
-                babyGender: selectedPhase == .fertility ? nil : babyGender
+                babyGender: selectedPhase == .fertility ? nil : babyGender,
+                laborStatusRaw: LaborStatus.notStarted.rawValue
             )
             modelContext.insert(newUser)
         }
