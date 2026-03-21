@@ -73,7 +73,123 @@ struct StoriesView: View {
         }
     }
 
-    private var stories: [ChildrenStory] { ChildrenStory.all }
+    private var stories: [ChildrenStory] {
+        classicStories + ChildrenStory.all
+    }
+
+    private var classicStories: [ChildrenStory] {
+        [
+            ChildrenStory(
+                id: "classic_bockarna_bruse",
+                title: "Bockarna Bruse",
+                synopsis: """
+Tre bockar vill ta sig över bron till den frodiga ängen. Under bron väntar ett troll som hotar att äta upp den som passerar.
+Den lilla bocken ber trollet vänta på sin större bror. Mellanbocken gör samma sak. När den största bocken kommer möter han trollet med mod.
+Trollet försöker skrämmas, men den stora bocken stångar bort trollet och alla tre bockar kan beta i fred. De lär sig att klurighet och samarbete gör dem starka.
+""",
+                category: .aventyrssagor,
+                ageRange: .toddler,
+                length: .short,
+                readingTimeMinutes: 3,
+                mainCharacters: "Tre bockar, ett brotroll",
+                moral: "Samarbete, tålamod och mod hjälper oss igenom svåra hinder.",
+                visualDescription: "Färgstark sagobro över glittrande vatten, tre uttrycksfulla bockar och ett troll i grönblå skymning.",
+                recurringCharacterIDs: [],
+                keywords: ["klassiker", "bro", "troll", "mod", "samarbete"]
+            ),
+            ChildrenStory(
+                id: "classic_tre_sma_grisar",
+                title: "De tre små grisarna",
+                synopsis: """
+Tre små grisar bygger varsitt hus: ett av halm, ett av trä och ett av tegel.
+När vargen kommer blåser han lätt ner halm- och trähuset, men tegelhuset står stadigt.
+Grisarna hjälper varandra och håller ihop i det starka huset tills vargen ger upp.
+De firar med varm soppa och lovar att alltid bygga med omtanke.
+""",
+                category: .larosagor,
+                ageRange: .toddler,
+                length: .short,
+                readingTimeMinutes: 3,
+                mainCharacters: "Tre små grisar, en varg",
+                moral: "Noggrannhet och förberedelse gör skillnad när det blåser hårt.",
+                visualDescription: "Tre kontrasterande småhus i varma färger, virvlande vind och tryggt ljus i tegelhuset.",
+                recurringCharacterIDs: [],
+                keywords: ["klassiker", "hus", "varg", "trygghet", "lärdom"]
+            ),
+            ChildrenStory(
+                id: "classic_rodluvan",
+                title: "Rödluvan i skogen",
+                synopsis: """
+Rödluvan går genom skogen med en korg till mormor. En listig varg försöker lura henne att ta en omväg.
+När Rödluvan kommer fram märker hon att något inte stämmer. Med hjälp av vaksamhet och mod avslöjas vargens trick.
+Mormor räddas och Rödluvan lär sig att lyssna på sin magkänsla och hålla sig till den trygga stigen.
+""",
+                category: .kanslosagor,
+                ageRange: .preschool,
+                length: .medium,
+                readingTimeMinutes: 4,
+                mainCharacters: "Rödluvan, mormor, vargen",
+                moral: "Lyssna på din intuition och be om hjälp när något känns fel.",
+                visualDescription: "Djupröd mantel, gyllene skogsglänta och dramatiskt ljus i mormors lilla stuga.",
+                recurringCharacterIDs: [],
+                keywords: ["klassiker", "skog", "mod", "gränser", "trygghet"]
+            ),
+            ChildrenStory(
+                id: "classic_hans_och_greta",
+                title: "Hans och Greta",
+                synopsis: """
+Syskonen Hans och Greta går vilse i skogen och hittar ett hus av godsaker.
+Huset ägs av en häxa som vill hålla dem fångna, men barnen behåller lugnet.
+Genom smarta beslut och samarbete lyckas de fly, hitta hem och dela sina erfarenheter med byn.
+""",
+                category: .aventyrssagor,
+                ageRange: .preschool,
+                length: .medium,
+                readingTimeMinutes: 5,
+                mainCharacters: "Hans, Greta, häxan",
+                moral: "Klokhet och syskonstöd hjälper när världen känns skrämmande.",
+                visualDescription: "Magiskt pepparkakshus med karamellfärger, mörk skog och modiga barn i förgrunden.",
+                recurringCharacterIDs: [],
+                keywords: ["klassiker", "syskon", "äventyr", "klokhet", "hemkomst"]
+            ),
+            ChildrenStory(
+                id: "classic_fula_ankungen",
+                title: "Den fula ankungen",
+                synopsis: """
+En liten unge känner sig annorlunda och blir retad vart den än går.
+Genom årstidernas skiften växer den och hittar till slut sin plats bland svanar.
+Den förstår att det som kändes som svaghet var början på något vackert.
+""",
+                category: .kanslosagor,
+                ageRange: .preschool,
+                length: .short,
+                readingTimeMinutes: 4,
+                mainCharacters: "Ankungen, fågelflocken",
+                moral: "Du får växa i din egen takt, och din plats kommer.",
+                visualDescription: "Mjukt vattenlandskap från grå vinter till gyllene vår, med en vit svan i soluppgång.",
+                recurringCharacterIDs: [],
+                keywords: ["klassiker", "självkänsla", "tillhörighet", "utveckling", "hopp"]
+            ),
+            ChildrenStory(
+                id: "classic_kejsarens_nya_klader",
+                title: "Kejsarens nya kläder",
+                synopsis: """
+En fåfäng kejsare luras av två skräddare som påstår att de väver osynliga kläder.
+Ingen vågar säga sanningen förrän ett barn ropar att kejsaren är utan kläder.
+Kejsaren skäms men väljer till slut att skratta åt sig själv och lyssna mer på folket.
+""",
+                category: .larosagor,
+                ageRange: .preschool,
+                length: .medium,
+                readingTimeMinutes: 4,
+                mainCharacters: "Kejsaren, folket, barnet",
+                moral: "Ärlighet och modig sanning är viktigare än att följa flocken.",
+                visualDescription: "Festlig parad med starka färger, guldornament och ett barn i förgrunden som talar sanning.",
+                recurringCharacterIDs: [],
+                keywords: ["klassiker", "sanning", "mod", "självinsikt", "humor"]
+            )
+        ]
+    }
 
     private var filteredStories: [ChildrenStory] {
         var result = stories
@@ -377,8 +493,7 @@ private struct StoryCard: View {
     var body: some View {
         GlassCard(gradient: story.category.gradient) {
             HStack(spacing: DS.s3) {
-                // Icon
-                IconBadge(icon: story.category.icon, gradient: story.category.gradient, size: 52)
+                StoryArtworkView(story: story, size: CGSize(width: 64, height: 64))
 
                 VStack(alignment: .leading, spacing: DS.s1) {
                     Text(story.title)
@@ -428,6 +543,88 @@ private struct StoryCard: View {
                 .buttonStyle(ScaleButtonStyle())
                 .accessibilityLabel(progress?.isFavorite == true ? "Ta bort från favoriter" : "Lägg till i favoriter")
             }
+        }
+    }
+}
+
+private struct StoryArtworkView: View {
+    let story: ChildrenStory
+    var size: CGSize = CGSize(width: 120, height: 80)
+
+    @State private var drift = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var symbols: [String] {
+        let lower = story.title.lowercased()
+        if lower.contains("bruse") { return ["bridge.fill", "tortoise.fill", "hare.fill"] }
+        if lower.contains("gris") { return ["house.fill", "wind", "pawprint.fill"] }
+        if lower.contains("rödluvan") || lower.contains("rodluvan") { return ["figure.walk", "basket.fill", "moon.stars.fill"] }
+        if lower.contains("hans och greta") { return ["house.fill", "tree.fill", "sparkles"] }
+        if lower.contains("ankungen") { return ["drop.fill", "bird.fill", "sun.max.fill"] }
+        if lower.contains("kejsarens") { return ["crown.fill", "sparkles", "person.2.fill"] }
+        return [story.category.icon, "sparkles", "book.fill"]
+    }
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            story.category.color.opacity(0.85),
+                            Color.appPurple.opacity(0.7),
+                            Color.appBlue.opacity(0.65)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.white.opacity(0.35), Color.clear],
+                                center: .topLeading,
+                                startRadius: 10,
+                                endRadius: 160
+                            )
+                        )
+                )
+
+            Circle()
+                .fill(Color.white.opacity(0.2))
+                .frame(width: size.width * 0.52)
+                .offset(x: -size.width * 0.24, y: size.height * 0.15)
+                .blur(radius: 1)
+
+            Circle()
+                .fill(Color.appWarmYellow.opacity(0.20))
+                .frame(width: size.width * 0.42)
+                .offset(x: size.width * 0.22, y: -size.height * 0.18)
+                .blur(radius: 1)
+
+            HStack(spacing: size.width * 0.06) {
+                ForEach(Array(symbols.enumerated()), id: \.offset) { idx, symbol in
+                    Image(systemName: symbol)
+                        .font(.system(size: max(12, size.height * 0.26), weight: .semibold))
+                        .foregroundStyle(Color.white.opacity(0.92))
+                        .shadow(color: Color.black.opacity(0.25), radius: 3, y: 2)
+                        .offset(y: drift && !reduceMotion ? (idx.isMultiple(of: 2) ? -4 : 4) : 0)
+                        .animation(
+                            reduceMotion ? .linear(duration: 0.1) : .easeInOut(duration: 2.2).repeatForever(autoreverses: true).delay(Double(idx) * 0.15),
+                            value: drift
+                        )
+                }
+            }
+        }
+        .frame(width: size.width, height: size.height)
+        .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.radiusSm + 4, style: .continuous)
+                .stroke(Color.white.opacity(0.15), lineWidth: 0.8)
+        )
+        .onAppear {
+            drift = true
         }
     }
 }
@@ -655,24 +852,21 @@ struct StoryReaderView: View {
             VStack(spacing: DS.s5) {
                 // Illustration area
                 ZStack {
-                    RoundedRectangle(cornerRadius: DS.radiusLg)
-                        .fill(pageGradient(for: pageIndex).opacity(0.4))
-                        .frame(height: 200)
+                    RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
+                        .fill(pageGradient(for: pageIndex).opacity(0.35))
                         .overlay {
-                            RoundedRectangle(cornerRadius: DS.radiusLg)
-                                .stroke(story.category.gradient.opacity(0.3), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: DS.radiusLg, style: .continuous)
+                                .stroke(story.category.gradient.opacity(0.35), lineWidth: 1)
                         }
 
-                    VStack(spacing: DS.s3) {
-                        Image(systemName: pageSymbol(for: pageIndex))
-                            .font(.system(size: 56, weight: .light))
-                            .foregroundStyle(story.category.gradient)
-                            .shadow(color: story.category.color.opacity(0.3), radius: 10)
+                    VStack(spacing: DS.s2) {
+                        StoryArtworkView(story: story, size: CGSize(width: 220, height: 140))
 
                         if pageIndex == 0 {
                             Text(story.title)
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
+                                .padding(.horizontal, DS.s2)
                         }
                     }
                 }

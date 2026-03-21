@@ -523,6 +523,12 @@ struct HomeView: View {
                             .foregroundStyle(.white.opacity(0.6))
                             .tracking(0.6)
 
+                        if let babyName = user.babyName, !babyName.isEmpty {
+                            Text(babyName)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.85))
+                        }
+
                         Text(trimesterText(week: weeksPregnant))
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(.white)

@@ -8,7 +8,6 @@ enum FertilityTab: String, CaseIterable, Identifiable {
     case calendar = "Kalender"
     case insights = "Insikter"
     case guides = "Guider"
-    case community = "Community"
     case profile = "Profil"
 
     var id: String { rawValue }
@@ -19,7 +18,6 @@ enum FertilityTab: String, CaseIterable, Identifiable {
         case .calendar:  return "calendar"
         case .insights:  return "chart.line.uptrend.xyaxis"
         case .guides:    return "book.fill"
-        case .community: return "person.2.fill"
         case .profile:   return "person.fill"
         }
     }
@@ -31,7 +29,6 @@ enum PregnancyTab: String, CaseIterable, Identifiable {
     case dashboard = "Du & bebis"
     case log = "Logg"
     case guides = "Guider"
-    case community = "Community"
     case profile = "Profil"
 
     var id: String { rawValue }
@@ -43,7 +40,6 @@ enum PregnancyTab: String, CaseIterable, Identifiable {
         case .dashboard: return "figure.stand.dress"
         case .log:       return "square.and.pencil"
         case .guides:    return "book.fill"
-        case .community: return "person.2.fill"
         case .profile:   return "person.fill"
         }
     }
@@ -55,7 +51,6 @@ enum ParentTab: String, CaseIterable, Identifiable {
     case dujustnu = "Barnet"
     case growth = "Tillväxt"
     case guides = "Guider"
-    case community = "Community"
     case profile = "Profil"
 
     var id: String { rawValue }
@@ -67,7 +62,6 @@ enum ParentTab: String, CaseIterable, Identifiable {
         case .dujustnu:  return "figure.child"
         case .growth:    return "chart.xyaxis.line"
         case .guides:    return "book.fill"
-        case .community: return "person.2.fill"
         case .profile:   return "person.fill"
         }
     }
@@ -115,7 +109,6 @@ struct FertilityTabView: View {
                 case .calendar:  CycleTracker()
                 case .insights:  FertilityDashboard()
                 case .guides:    KnowledgeBaseView()
-                case .community: ForumView()
                 case .profile:   ProfileView()
                 }
             }
@@ -149,7 +142,6 @@ struct PregnancyTabView: View {
                 case .dashboard: PregnancyDashboard()
                 case .log:       LoggingHub()
                 case .guides:    KnowledgeBaseView()
-                case .community: ForumView()
                 case .profile:   ProfileView()
                 }
             }
@@ -183,7 +175,6 @@ struct ParentTabView: View {
                 case .dujustnu:  DuJustNuView()
                 case .growth:    GrowthCharts()
                 case .guides:    KnowledgeBaseView()
-                case .community: ForumView()
                 case .profile:   ProfileView()
                 }
             }

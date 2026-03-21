@@ -201,7 +201,7 @@ struct KnowledgeBaseView: View {
                                     .multilineTextAlignment(.leading)
 
                                 HStack(spacing: DS.s2) {
-                                    Text("5 kurser")
+                                    Text("\(Course.all.count) kurser")
                                         .font(.system(size: 10, weight: .semibold))
                                         .foregroundStyle(Color.appIndigo)
                                         .padding(.horizontal, DS.s2)

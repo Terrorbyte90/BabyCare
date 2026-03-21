@@ -227,8 +227,18 @@ struct ProfileView: View {
                             }
                         }
 
+                        if let babyName = user.babyName, !babyName.isEmpty {
+                            if user.dueDate != nil || user.currentPregnancyWeek != nil { DSRowDivider() }
+                            profileRow(
+                                icon: "heart.fill",
+                                gradient: .pinkPurple,
+                                label: "Barnets namn",
+                                value: babyName
+                            )
+                        }
+
                         if let gender = user.babyGender {
-                            if user.dueDate != nil { DSRowDivider() }
+                            if user.dueDate != nil || (user.babyName?.isEmpty == false) { DSRowDivider() }
                             profileRow(
                                 icon: "person.fill.questionmark",
                                 gradient: .pregnancyGradient,
@@ -1166,6 +1176,8 @@ struct ProfileSetupSheet: View {
                 .onChange(of: pregnancyWeek) { _, _ in
                     syncDueDateFromPregnancyWeek()
                 }
+
+                DSTextField(title: "Barnets namn (valfritt)", text: $babyName)
             }
 
             if selectedPhase == .parent {

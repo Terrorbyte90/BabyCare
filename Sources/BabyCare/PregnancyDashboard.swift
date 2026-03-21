@@ -160,6 +160,12 @@ struct PregnancyDashboard: View {
                             .foregroundStyle(.white.opacity(0.55))
                             .tracking(1.0)
 
+                        if let babyName = user?.babyName, !babyName.isEmpty {
+                            Text(babyName)
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(.white.opacity(0.82))
+                        }
+
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
                             Text("Vecka")
                                 .font(.system(size: 18, weight: .medium))

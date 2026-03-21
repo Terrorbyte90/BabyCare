@@ -67,7 +67,27 @@ extension Course {
         Course.bebisenForstaAret,
         Course.fertilitetKropp,
         Course.babySomn,
-        Course.livetSomNyForalder
+        Course.livetSomNyForalder,
+        Course.abcModellen,
+        Course.cosTryggBas,
+        Course.pmtoPrinciper,
+        Course.cpsSamarbete,
+        Course.emotionCoaching,
+        Course.coreglering,
+        Course.autonomistod,
+        Course.temperamentGoodFit,
+        Course.sprakbad,
+        Course.lekOchScaffolding,
+        Course.syskonRelationer,
+        Course.skarmPlan,
+        Course.satterDOR,
+        Course.responsiveFeeding,
+        Course.pottraningMognad,
+        Course.kvallsrutin,
+        Course.coParentingMentalLoad,
+        Course.foraldraBurnout,
+        Course.konfliktReparation,
+        Course.aktivtFaderskap
     ]
     static var allCourses: [Course] { all }
 }
@@ -4471,5 +4491,1309 @@ extension Course {
         ],
         targetAudience: "Nyblivna föräldrar",
         estimatedWeeks: 4
+    )
+}
+
+// MARK: - Additional Parent Courses
+
+extension Course {
+    static let abcModellen = Course(
+        id: "abc-modelen",
+        title: "ABC-modellen i vardagen",
+        subtitle: "Se mönstret bakom beteendet",
+        description: "En praktisk kurs i beteendeanalys inspirerad av ABC-modellen och Patterson. Lär dig att beskriva vad som händer före, under och efter ett beteende så att ni kan ändra miljön istället för att fastna i konflikter.",
+        icon: "rectangle.3.group.fill",
+        gradient: LinearGradient(colors: [Color(hex: "2563EB"), Color(hex: "60A5FA")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "abc-1",
+                title: "Antecedent, beteende, konsekvens",
+                subtitle: "Gör beteendet synligt",
+                icon: "chart.bar.doc.horizontal",
+                introduction: """
+                ABC står för Antecedent, Behavior och Consequence. Du börjar med att beskriva vad som händer precis före ett beteende, själva beteendet i konkreta ord och vad som händer direkt efteråt. Det hjälper dig att se om barnet försöker få kontakt, undvika något eller få tillgång till något.
+
+                Poängen är inte att analysera allt i överkant utan att hitta ett tydligt mönster. När vuxna ändrar på triggern eller konsekvensen blir beteendet ofta lättare att förstå och påverka.
+                """,
+                keyPoints: [
+                    "Antecedent = vad som händer före beteendet",
+                    "Beteendet ska beskrivas konkret, inte med tolkning",
+                    "Konsekvensen visar ofta vad beteendet förstärks av",
+                    "Det som får effekt upprepas, även när vi inte vill det"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Ditt barn skriker varje gång du stänger av paddan.",
+                        wrongApproach: "Du fokuserar bara på att barnet är 'trotsigt'.",
+                        rightApproach: "Du noterar att skriket alltid kommer när paddan stängs av utan förvarning. Du testar förvarning, tidsbegränsning och en tydlig övergångsritual.",
+                        explanation: "När du ser antecedenten och konsekvensen kan du ändra situationen istället för att enbart reagera på utbrottet."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "ABC-logg i tre dagar",
+                    description: "Notera ett återkommande beteende och fyll i ABC-kedjan.",
+                    steps: [
+                        "Välj ett beteende du vill förstå bättre",
+                        "Skriv ned vad som hände precis innan",
+                        "Skriv ned beteendet utan värdering",
+                        "Skriv ned vad som hände direkt efter",
+                        "Testa en liten förändring i miljön och se vad som händer"
+                    ],
+                    duration: "10 minuter per observation"
+                ),
+                reflectionQuestions: [
+                    "Vilka triggers ser du oftast i vardagen?",
+                    "Vilka konsekvenser råkar du förstärka utan att vilja det?",
+                    "Vilket beteende vill du förstå istället för att bara stoppa?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som arbetat med ABC-modellen beskriver ofta en aha-upplevelse:",
+                    consensus: "Att skriva ned beteendet gör det mindre mystiskt och mer hanterbart.",
+                    quotes: [
+                        "\"Jag trodde min son var 'alltid arg'. ABC-loggen visade att han mest blev överväldigad när vi skyndade honom.\" – Lina",
+                        "\"När vi såg mönstret före kvällströttheten kunde vi ändra rutinen istället för att bråka varje kväll.\" – Erik"
+                    ],
+                    source: "Patterson GR (1982). Coercive Family Process; modern tillämpad beteendeanalys"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let cosTryggBas = Course(
+        id: "circle-of-security",
+        title: "Circle of Security",
+        subtitle: "Var barnets trygghet och bas",
+        description: "En kurs inspirerad av Circle of Security Parenting. Du lär dig att läsa barnets behov av utforskande och närhet, så att du kan vara både trygg hamn och säker bas.",
+        icon: "circle.grid.2x2.fill",
+        gradient: LinearGradient(colors: [Color(hex: "0EA5E9"), Color(hex: "22C55E")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "cos-1",
+                title: "Trygg bas och trygg hamn",
+                subtitle: "Två jobb samtidigt",
+                icon: "house.fill",
+                introduction: """
+                Circle of Security beskriver hur barn behöver en trygg bas att utforska ifrån och en trygg hamn att komma tillbaka till. När barnet vågar gå ut i världen och vet att du finns där, blir nyfikenheten starkare och rädslan mindre.
+
+                Modellen hjälper föräldrar att se att barnets beteenden ofta är ett sätt att visa behov av kontakt eller stöd. Det är inte ett misslyckande när barnet söker dig igen, utan ett tecken på att anknytningen fungerar.
+                """,
+                keyPoints: [
+                    "Utforskande behöver en trygg bas",
+                    "Stress och osäkerhet behöver en trygg hamn",
+                    "Barn visar behov genom beteenden, inte alltid ord",
+                    "Närvaro är viktigare än perfektion"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "På lekplatsen vill ditt barn klättra upp igen och igen men blir ledset när du går för långt bort.",
+                        wrongApproach: "Du pushar barnet att vara självständigt hela tiden.",
+                        rightApproach: "Du stannar nära, bekräftar modet och låter barnet komma tillbaka till dig mellan försöken.",
+                        explanation: "Barn blir ofta modigare när de vet att basen finns kvar. Trygghet och självständighet går ihop."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Rita er säkerhetscirkel",
+                    description: "Kartlägg när barnet utforskar och när hen behöver återkoppla.",
+                    steps: [
+                        "Rita en cirkel med barnet i mitten",
+                        "Skriv vad barnet brukar utforska själv",
+                        "Skriv vad som brukar få barnet att komma tillbaka",
+                        "Identifiera ett ögonblick när du kan vara mer närvarande",
+                        "Testa att säga mindre och vara mer tillgänglig"
+                    ],
+                    duration: "15 minuter"
+                ),
+                reflectionQuestions: [
+                    "När behöver ditt barn mest stöd?",
+                    "När brukar du själv bli osäker som förälder?",
+                    "Hur märker barnet att du finns kvar även när det testar gränser?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som gått Circle of Security-kursen återkommer ofta till samma insikt:",
+                    consensus: "Att vara tillgänglig utan att styra överallt känns lugnande både för barn och vuxna.",
+                    quotes: [
+                        "\"Jag slutade tolka närhet som klängighet. Det var ett stort skifte.\" – Maja",
+                        "\"När jag blev mer trygg i att vara bas blev vardagen mindre dramatisk.\" – Jonas"
+                    ],
+                    source: "Cooper, Hoffman & Powell. Circle of Security Parenting"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let pmtoPrinciper = Course(
+        id: "pmto-principer",
+        title: "PMTO-principer",
+        subtitle: "Positivt ledarskap utan skrik",
+        description: "En kurs med kärnan från Parent Management Training Oregon: tydliga instruktioner, konsekvent uppföljning och mer förstärkning av det du vill se.",
+        icon: "hand.raised.fill",
+        gradient: LinearGradient(colors: [Color(hex: "F97316"), Color(hex: "FBBF24")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "pmto-1",
+                title: "Tydlighet och förstärkning",
+                subtitle: "Gör det enkelt att lyckas",
+                icon: "megaphone.fill",
+                introduction: """
+                PMTO betonar att barn behöver tydliga, korta instruktioner och mycket positiv feedback för sådant som fungerar. När vuxna blir mer förutsägbara minskar behovet av att barnet gissar vad som förväntas.
+
+                Den praktiska kärnan är att förstärka önskat beteende snabbt, konkret och ofta. Det du uppmärksammar växer. Det du gör otydligt blir svårare att följa.
+                """,
+                keyPoints: [
+                    "Kort instruktion ger större chans till samarbete",
+                    "Beröm det du vill se, direkt när det händer",
+                    "Följ upp konsekvent utan att förhandla i affekt",
+                    "Rutin och förutsägbarhet minskar motstånd"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet ignorerar dina tio upprepade påminnelser om att ta på skor.",
+                        wrongApproach: "Du höjer rösten och ger fler ord.",
+                        rightApproach: "Du går nära, säger lugnt 'Skor på nu', väntar, och ger beröm direkt när första steget tas.",
+                        explanation: "Korta instruktioner och snabb förstärkning fungerar bättre än långa förklaringar när barnet redan är upptaget."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Beröm med precision",
+                    description: "Öva på att ge konkret beröm under en dag.",
+                    steps: [
+                        "Välj tre beteenden du vill se mer av",
+                        "Beröm med namn på beteendet, inte bara 'bra jobbat'",
+                        "Ge beröm direkt när det händer",
+                        "Notera om barnets samarbete förändras under dagen",
+                        "Utvärdera om du behöver vara tydligare i instruktionerna"
+                    ],
+                    duration: "En dag"
+                ),
+                reflectionQuestions: [
+                    "Är dina instruktioner korta nog för att kunna följas?",
+                    "Vilket positivt beteende får för lite uppmärksamhet hos er?",
+                    "När blir du otydlig för att slippa konflikt?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som arbetat med PMTO-principer beskriver ofta en snabb effekt på vardagskaos:",
+                    consensus: "När vuxna blir tydligare blir barnet mindre motsträvigt.",
+                    quotes: [
+                        "\"Det var inte fler regler vi behövde, utan bättre instruktioner.\" – Sara",
+                        "\"När jag började berömma små steg blev morgnarna mycket mjukare.\" – Oskar"
+                    ],
+                    source: "Forgatch & Patterson; PMTO-programmet"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let cpsSamarbete = Course(
+        id: "cps-samarbete",
+        title: "CPS och svåra situationer",
+        subtitle: "Lös problem tillsammans",
+        description: "Ross Greens Collaborative & Proactive Solutions visar hur du kan se svåra beteenden som olösta problem och arbeta med Plan B i stället för maktkamp.",
+        icon: "hands.sparkles.fill",
+        gradient: LinearGradient(colors: [Color(hex: "7C3AED"), Color(hex: "A78BFA")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "cps-1",
+                title: "Vad är det som är svårt?",
+                subtitle: "Leta efter den osynliga färdigheten",
+                icon: "brain.head.profile",
+                introduction: """
+                CPS utgår från att barn gör bra ifrån sig när de kan. Om de inte lyckas finns det oftast en laggande färdighet eller ett olöst problem. I stället för att utgå från vilja utgår du från färdigheter.
+
+                Metoden hjälper föräldrar att sluta fastna i samma konflikt om och om igen. När ni hittar det underliggande problemet blir lösningen mer hållbar.
+                """,
+                keyPoints: [
+                    "Barn gör rätt när de kan",
+                    "Det bakomliggande problemet är ofta otydligt",
+                    "Empatisk nyfikenhet öppnar för samarbete",
+                    "Plan B skapas tillsammans, inte uppifrån"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Varje kväll exploderar det när tandborsten kommer fram.",
+                        wrongApproach: "Du ser det som ren olydnad och skruvar upp konsekvenserna.",
+                        rightApproach: "Du frågar vad som är svårt med tandborstningen och upptäcker att barnet hatar smaken. Ni provar annan tandkräm och en förvarning.",
+                        explanation: "När du ser problemet genom barnets ögon blir lösningen ofta enkel och relationen mindre laddad."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Plan B-samtal",
+                    description: "Välj en återkommande konflikt och prata igenom den i lugn tid.",
+                    steps: [
+                        "Beskriv problemet utan skuld",
+                        "Fråga barnet vad som är svårt",
+                        "Berätta vad som är viktigt för dig",
+                        "Hitta en lösning tillsammans",
+                        "Testa planen i några dagar och utvärdera"
+                    ],
+                    duration: "20 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vilken konflikt återkommer mest hos er?",
+                    "Vad är svårt för barnet som du kanske inte har sett?",
+                    "Hur låter det när du pratar om problemet utan skuld?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som provat CPS beskriver ofta att tonen förändras direkt:",
+                    consensus: "Samarbete fungerar bättre än att vinna.",
+                    quotes: [
+                        "\"När vi slutade tala om 'trots' blev samtalen mycket bättre.\" – Elin",
+                        "\"Plan B tog bort en stor del av dagliga maktkamperna.\" – Viktor"
+                    ],
+                    source: "Ross W. Greene, The Explosive Child; CPS-modellen"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let emotionCoaching = Course(
+        id: "emotion-coaching",
+        title: "Emotion coaching",
+        subtitle: "Validera känslor och sätt gränser",
+        description: "En kurs inspirerad av Gottmans emotion coaching: se känslan, sätt ord på den och hjälp barnet vidare utan att skämmas bort från gränser.",
+        icon: "heart.text.square.fill",
+        gradient: LinearGradient(colors: [Color(hex: "DB2777"), Color(hex: "F472B6")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "ec-1",
+                title: "Säg vad du ser",
+                subtitle: "Känslor tål att nämnas",
+                icon: "text.bubble.fill",
+                introduction: """
+                Emotion coaching handlar om att lägga märke till barnets känsla, sätta ord på den och visa att den går att bära. Det betyder inte att alla beteenden tillåts, men att känslan inte avvisas.
+
+                När barnet känner sig sett blir det lättare att återvända till lugn. Validering är inte samma sak som att hålla med. Det är att säga: jag ser dig, och jag hjälper dig igenom detta.
+                """,
+                keyPoints: [
+                    "Namnge känslan",
+                    "Validera utan att ge upp gränsen",
+                    "Hjälp barnet tillbaka till kroppsligt lugn",
+                    "Lös först när barnet kan lyssna"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet kastar sig på golvet när du säger nej till en extra glass.",
+                        wrongApproach: "Du säger 'sluta överdriv' och går därifrån.",
+                        rightApproach: "Du säger 'du är jättebesviken, jag hör det. Glass är slut i dag. Vi kan välja frukt eller yoghurt.'",
+                        explanation: "Känslan kan vara stor även när gränsen står fast. Det lugnar ofta barnet snabbare än att argumentera."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Tre steg i känslomötet",
+                    description: "Öva på att svara på känsla innan du löser beteende.",
+                    steps: [
+                        "Beskriv känslan du ser",
+                        "Bekräfta att känslan får finnas",
+                        "Håll gränsen och erbjud nästa steg",
+                        "Öva samma fras flera gånger",
+                        "Utvärdera om barnet lugnar sig snabbare"
+                    ],
+                    duration: "5 minuter per tillfälle"
+                ),
+                reflectionQuestions: [
+                    "Vilka känslor har du svårast att tåla hos ditt barn?",
+                    "Hur låter du när du validerar i stället för att förminska?",
+                    "Var går din gräns även när känslan är stor?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta emotion coaching som mindre dramatik och mer kontakt:",
+                    consensus: "Att först bekräfta känslan gör gränser lättare att acceptera.",
+                    quotes: [
+                        "\"Jag trodde jag behövde lösa allt direkt. Att bara sätta ord på känslan gjorde enorm skillnad.\" – Hanna",
+                        "\"Det blev mycket mindre skam när jag slutade säga 'det där är väl inget'.\" – Fredrik"
+                    ],
+                    source: "John Gottman & Joan DeClaire, The Heart of Parenting"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let coreglering = Course(
+        id: "coreglering",
+        title: "Co-reglering",
+        subtitle: "Låna ditt lugn till barnet",
+        description: "En kurs om hur vuxnas nervsystem hjälper barnets nervsystem att hitta tillbaka till balans. Bygger på co-regulation, affektreglering och trygg närvaro.",
+        icon: "leaf.fill",
+        gradient: LinearGradient(colors: [Color(hex: "0F766E"), Color(hex: "5EEAD4")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "cr-1",
+                title: "När lugn smittar",
+                subtitle: "Reglera först, prata sen",
+                icon: "wind",
+                introduction: """
+                Co-reglering handlar om att ditt lugn kan lånas av barnet när det egna systemet går upp i varv. Små barn kan sällan reglera stark stress själva och behöver en vuxen som hjälper kroppen att hitta ner igen.
+
+                Det betyder att tonfall, tempo, ansiktsuttryck och kroppshållning är minst lika viktiga som orden du använder. När du sänker ditt tempo ger du barnet en chans att följa med.
+                """,
+                keyPoints: [
+                    "Barn behöver ofta först yttre reglering, sedan inre",
+                    "Kort och lugnt språk hjälper mer än många ord",
+                    "Din kropp signalerar säkerhet",
+                    "Fysisk närhet är ofta första steget"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet skriker i affären och går inte att nå.",
+                        wrongApproach: "Du pratar snabbt och högt om varför det måste sluta.",
+                        rightApproach: "Du sänker rösten, håller barnet nära och säger kort vad som händer härnäst: 'Jag är här. Vi går ut en stund.'",
+                        explanation: "När vuxenregleringen kommer först blir det lättare för barnet att följa med kroppen, inte bara orden."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Din lugn-rutin",
+                    description: "Bygg en kort ordning du använder när barnet spårar ur.",
+                    steps: [
+                        "Andas ut längre än du andas in",
+                        "Sänk axlar och röst",
+                        "Kom nära utan att ta över",
+                        "Säg en kort trygg fras",
+                        "Upprepa samma sekvens nästa gång"
+                    ],
+                    duration: "2 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vad händer i din egen kropp när barnet blir överväldigat?",
+                    "Vilken fras hjälper dig att hålla dig lugn?",
+                    "Hur ser du när barnet börjar reglera ner?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta att deras egna andning blev startpunkten för lugnare konflikter:",
+                    consensus: "Barn smittas av vuxnas tempo lika mycket som av deras ord.",
+                    quotes: [
+                        "\"När jag började prata långsammare blev allting mindre farligt.\" – Amanda",
+                        "\"Jag behövde reglera mig själv innan jag kunde hjälpa mitt barn.\" – David"
+                    ],
+                    source: "Polyvagal teori, affektreglering och modern utvecklingspsykologi"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let autonomistod = Course(
+        id: "autonomy-support",
+        title: "Autonomistödjande föräldraskap",
+        subtitle: "Stöd utan att styra sönder",
+        description: "En kurs inspirerad av Self-Determination Theory. Lär dig att ge val inom ramar, minska kontrollspråk och bygga barns egen motivation.",
+        icon: "hand.raised.circle.fill",
+        gradient: LinearGradient(colors: [Color(hex: "06B6D4"), Color(hex: "67E8F9")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "as-1",
+                title: "Val inom ramar",
+                subtitle: "Autonomi behöver struktur",
+                icon: "slider.horizontal.3",
+                introduction: """
+                Autonomistödjande föräldraskap betyder inte att barnet får bestämma allt. Det betyder att du erbjuder tydliga ramar och ger val där val faktiskt är möjliga. Barn samarbetar ofta bättre när de upplever viss kontroll.
+
+                Självbestämmandeteorin lyfter tre behov: autonomi, kompetens och tillhörighet. När du stödjer alla tre blir motivationen mer hållbar än när du bara pressar fram lydnad.
+                """,
+                keyPoints: [
+                    "Val inom ramar bygger motivation",
+                    "Kontrollspråk skapar ofta mer motstånd",
+                    "Bekräfta barnets perspektiv innan du styr vidare",
+                    "Kompetens växer när barnet får lyckas själv"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet vägrar ta på ytterkläderna.",
+                        wrongApproach: "Du säger att det är din order och att barnet måste lyda.",
+                        rightApproach: "Du säger: 'Vill du ta jackan först eller mössan först?' och hjälper sedan vidare inom den ram som finns.",
+                        explanation: "När barnet får ett verkligt val minskar känslan av att bli överkörd, samtidigt som vuxenriktningen finns kvar."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Byt ut kontrollspråk",
+                    description: "Öva på att göra om tre vardagsfraser till autonomistödjande versioner.",
+                    steps: [
+                        "Skriv ner tre saker du ofta säger",
+                        "Gör dem kortare och mindre kontrollerande",
+                        "Lägg till ett val där det är möjligt",
+                        "Testa dem samma dag",
+                        "Notera om motståndet minskar"
+                    ],
+                    duration: "10 minuter"
+                ),
+                reflectionQuestions: [
+                    "Var använder du kontrollspråk oftare än du tror?",
+                    "Vilka val kan barnet faktiskt få?",
+                    "Hur märker du att barnet känner mer kompetens?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som tränar autonomistöd beskriver ofta mindre kamp och mer samarbete:",
+                    consensus: "Små val ger ofta stor effekt.",
+                    quotes: [
+                        "\"När jag slutade kommandera och började erbjuda val blev mornarna lugnare.\" – Sofia",
+                        "\"Barnet ville bidra när vi lät honom välja mellan två rimliga alternativ.\" – Amir"
+                    ],
+                    source: "Deci & Ryan; Self-Determination Theory"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let temperamentGoodFit = Course(
+        id: "temperament-good-fit",
+        title: "Temperament och good fit",
+        subtitle: "Rätt matchning slår rätt mall",
+        description: "En kurs om barns temperament, från Thomas och Chess till goodness of fit. När du ser barnets personlighet tydligare blir det lättare att anpassa miljön i stället för att försöka göra alla likadana.",
+        icon: "person.fill.badge.plus",
+        gradient: LinearGradient(colors: [Color(hex: "8B5CF6"), Color(hex: "C4B5FD")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "tf-1",
+                title: "Vad är temperament?",
+                subtitle: "Barn är olika från början",
+                icon: "person.2.fill",
+                introduction: """
+                Temperament handlar om hur barnet reagerar, inte om hur bra eller dåligt barnet är. Vissa barn är snabbt varma, andra behöver längre tid. Vissa är intensiva, andra lågmälda. Good fit uppstår när den vuxna anpassar sitt bemötande efter barnets stil.
+
+                När du slutar se temperament som ett problem och börjar se det som information blir mycket lättare begripligt. Barnet är inte felstavat, bara annorlunda.
+                """,
+                keyPoints: [
+                    "Temperament är ett mönster av reaktioner",
+                    "Good fit betyder att miljö och barn passar bättre ihop",
+                    "Samma strategi passar inte alla barn",
+                    "Anpassning minskar onödiga konflikter"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Ditt barn hatar övergångar och blir alltid upprört när ni ska gå hem från lekplatsen.",
+                        wrongApproach: "Du försöker träna bort känsligheten genom att skynda på ännu mer.",
+                        rightApproach: "Du ger varning i god tid, använder samma avskedsritual och låter övergången ta lite längre tid.",
+                        explanation: "Ett barn med långsam uppvärmning behöver mer förutsägbarhet, inte mer press."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Temperamentprofil",
+                    description: "Beskriv ditt barns temperament med tre ord och anpassa en situation därefter.",
+                    steps: [
+                        "Välj tre ord som beskriver barnet",
+                        "Beskriv en situation som blir svår",
+                        "Anpassa miljön eller tajmingen till barnets stil",
+                        "Testa förändringen i några dagar",
+                        "Notera vad som blev lättare"
+                    ],
+                    duration: "15 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vilken typ av temperament har ditt barn?",
+                    "Vilka situationer missar ofta din anpassning?",
+                    "Vad skulle vara en bättre 'good fit' i vardagen?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta lättnad när temperament ses som en styrka och inte ett fel:",
+                    consensus: "När man möter barnets stil i stället för att kämpa mot den blir vardagen mjukare.",
+                    quotes: [
+                        "\"Det var skönt att sluta tänka att min dotter var 'svår'. Hon behöver bara mer förutsägbarhet.\" – Anna",
+                        "\"När vi anpassade tempot blev konflikterna färre direkt.\" – Johan"
+                    ],
+                    source: "Thomas & Chess; temperamentforskning"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let sprakbad = Course(
+        id: "sprakbad",
+        title: "Språkbad i vardagen",
+        subtitle: "Prata, läsa, sjunga och peka",
+        description: "En kurs om språkets vardagskraft. Bygger på serve-and-return, högläsning och små samtal som gör stor skillnad för barns språk och hjärnans utveckling.",
+        icon: "text.book.closed.fill",
+        gradient: LinearGradient(colors: [Color(hex: "14B8A6"), Color(hex: "99F6E4")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "sl-1",
+                title: "Språk finns överallt",
+                subtitle: "Ord + rytm + blick",
+                icon: "quote.bubble.fill",
+                introduction: """
+                Barn lär sig språk genom upprepning, respons och meningsfull kontakt. Det viktigaste är inte avancerade ord utan att du sätter ord på det ni redan gör tillsammans. Språket blir starkast när det används i vardagen.
+
+                Högläsning, sång och vardagssnack är alla delar av samma språkbad. Ju fler gånger barnet hör ord i meningsfulla sammanhang, desto lättare blir det att förstå och senare använda dem själv.
+                """,
+                keyPoints: [
+                    "Prata om det du gör",
+                    "Följ barnets fokus och bygg vidare",
+                    "Läs högt varje dag",
+                    "Sång och rim stärker språkmelodin"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet pekar på en bil i stället för att använda ord.",
+                        wrongApproach: "Du ber barnet säga hela ordet rätt direkt.",
+                        rightApproach: "Du svarar: 'Ja, det är en bil! En röd bil.' och väntar på nästa interaktion.",
+                        explanation: "Språk växer av respons och expansion, inte av press."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "10 minuter språkbad",
+                    description: "Gör en kort språkrutin varje dag i en vecka.",
+                    steps: [
+                        "Välj en vardagssituation",
+                        "Berätta högt vad som händer",
+                        "Stanna upp och vänta på barnets respons",
+                        "Läs en kort bok eller sjung en sång",
+                        "Utvärdera vilka stunder som fungerade bäst"
+                    ],
+                    duration: "10 minuter per dag"
+                ),
+                reflectionQuestions: [
+                    "Vilka stunder pratar ni mest i vardagen?",
+                    "Hur ofta läser du högt utan att skynda igenom det?",
+                    "Var kan du lägga in mer rytm och respons?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar märker ofta hur små språkvanor blir stora över tid:",
+                    consensus: "Barnet behöver inte flashiga aktiviteter, utan fler små språkstunder.",
+                    quotes: [
+                        "\"När vi började kommentera allt i vardagen kom orden snabbare.\" – Ingrid",
+                        "\"Högläsningen före läggdags blev vår bästa rutin.\" – Simon"
+                    ],
+                    source: "Center on the Developing Child; Hart & Risley; högläsningsforskning"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let lekOchScaffolding = Course(
+        id: "lek-scaffolding",
+        title: "Lek och scaffolding",
+        subtitle: "Stötta utan att ta över",
+        description: "En kurs om Vygotskij, närmaste utvecklingszonen och hur lek kan bli lärande när du hjälper lagom mycket i stället för för mycket.",
+        icon: "figure.and.child.holdinghands",
+        gradient: LinearGradient(colors: [Color(hex: "F59E0B"), Color(hex: "FCD34D")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "ls-1",
+                title: "Lagom svårt",
+                subtitle: "Zonen där lärande händer",
+                icon: "puzzlepiece.extension",
+                introduction: """
+                Scaffolding betyder att du ger precis lagom mycket stöd för att barnet ska kunna ta nästa steg. Om du gör för mycket lär sig barnet mindre. Om du gör för lite blir barnet frustrerat. Den rätta nivån finns någonstans mitt emellan.
+
+                Lek är den plats där scaffolding blir naturligt. Genom att följa barnets idéer och lägga till ett litet steg hjälper du utvecklingen utan att ta över kontrollen.
+                """,
+                keyPoints: [
+                    "Hjälp ska vara temporär",
+                    "Nästa steg ska vara möjligt men inte för lätt",
+                    "Frågor kan bromsa lek, kommentarer kan stötta",
+                    "Barn lär sig bäst när de är engagerade"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet försöker bygga ett torn men blir argt när det rasar.",
+                        wrongApproach: "Du bygger klart tornet åt barnet.",
+                        rightApproach: "Du säger 'vill du ha en bredare botten?' och låter barnet prova igen med lite stöd.",
+                        explanation: "Scaffolding hjälper barnet att lyckas själv. Det känns bättre än att bli hjälpt bort från utmaningen."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Fem minuters lekstöd",
+                    description: "Öva på att stötta utan att styra över leken.",
+                    steps: [
+                        "Välj en lek barnet redan gör",
+                        "Följ barnets initiativ utan att ta över",
+                        "Lägg till ett litet utmanande steg",
+                        "Kommentera vad barnet gör",
+                        "Lämna tillbaka kontrollen till barnet"
+                    ],
+                    duration: "5 minuter"
+                ),
+                reflectionQuestions: [
+                    "När tar du över för snabbt?",
+                    "Hur ser du att barnet är nära nästa utvecklingssteg?",
+                    "Vad blir lättare när du följer barnets idéer?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver lek som roligare när de inte försöker leda varje minut:",
+                    consensus: "Barn behöver stöd, inte regissering.",
+                    quotes: [
+                        "\"När jag slutade styra leken blev min dotter mer kreativ direkt.\" – Petra",
+                        "\"Att bara kommentera och lägga till ett steg gjorde stor skillnad.\" – Marcus"
+                    ],
+                    source: "Vygotskij, Wood/Bruner/Ross och scaffolding-litteraturen"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let syskonRelationer = Course(
+        id: "syskon-relationer",
+        title: "Syskonrelationer utan jämförelse",
+        subtitle: "Minska rivalitet och öka allians",
+        description: "En kurs om syskonsjalusi, rättvisa och hur du hjälper barn att vara olika utan att göra varje konflikt till ett mått på din föräldraskap.",
+        icon: "person.2.fill",
+        gradient: LinearGradient(colors: [Color(hex: "EC4899"), Color(hex: "F9A8D4")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "sr-1",
+                title: "Rivalitet är inte misslyckande",
+                subtitle: "Det betyder att syskonen märker varandra",
+                icon: "arrow.triangle.branch",
+                introduction: """
+                Syskonrelationer är ofta både kärleksfulla och konfliktfyllda. Rivalitet betyder inte att något är fel. Det betyder att barnen delar på viktiga resurser som uppmärksamhet, tid och plats i familjen.
+
+                När du slutar kräva att syskon alltid ska vara snälla lär du dig i stället att coacha reparation, gränser och respekt. Det är mer realistiskt och mer hjälpsamt.
+                """,
+                keyPoints: [
+                    "Jämförelser skapar mer friktion",
+                    "Särskild tid med varje barn minskar konkurrens",
+                    "Reparation är viktigare än perfekt harmoni",
+                    "Alla syskon behöver inte vara lika nära"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Storasyrran säger att bebisen får all uppmärksamhet.",
+                        wrongApproach: "Du förklarar att hon är stor och borde förstå bättre.",
+                        rightApproach: "Du bekräftar känslan, visar särskild tid med henne och hjälper henne hitta ett sätt att vara delaktig utan att konkurrera.",
+                        explanation: "Känslan av orättvisa blir mindre när barnet får egen plats, inte bara förklaringar."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Enskild tid",
+                    description: "Boka en liten stund med varje barn utan syskonen.",
+                    steps: [
+                        "Välj 10–15 minuter per barn",
+                        "Låt barnet styra aktivitetens innehåll",
+                        "Undvik att undervisa eller rätta",
+                        "Spegel barnet i ord och uppmärksamhet",
+                        "Upprepa några gånger i veckan"
+                    ],
+                    duration: "10–15 minuter per barn"
+                ),
+                reflectionQuestions: [
+                    "Var jämför du syskonen mest?",
+                    "Hur kan du ge varje barn egen tid?",
+                    "Vad behöver barnen öva på i relationen till varandra?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar upptäcker ofta att syskonbråk minskar när varje barn får sin egen plats:",
+                    consensus: "Jämförelser gör nästan alltid mer skada än nytta.",
+                    quotes: [
+                        "\"När jag slutade säga 'se på din bror' blev konflikterna mindre.\" – Cecilia",
+                        "\"En egen liten stund med varje barn förändrade hela dynamiken hemma.\" – Henrik"
+                    ],
+                    source: "Faber & Mazlish, Siblings Without Rivalry"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let skarmPlan = Course(
+        id: "skarmplan",
+        title: "Skärmplan för familjen",
+        subtitle: "Regler som går att hålla",
+        description: "En kurs som hjälper er skapa en familjemediepakt: tydliga ramar, mindre konflikter och mer medvetna val kring skärmar i vardagen.",
+        icon: "tv.fill",
+        gradient: LinearGradient(colors: [Color(hex: "334155"), Color(hex: "94A3B8")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "sp-1",
+                title: "Gemensamma regler",
+                subtitle: "En plan som alla kan följa",
+                icon: "doc.text.fill",
+                introduction: """
+                En fungerande skärmplan är enkel, tydlig och konsekvent. Den berättar när, var och hur skärmar används i familjen. När ramarna är tydliga behöver du inte förhandla om samma sak varje dag.
+
+                Målet är inte noll skärm för alltid. Målet är att skärmanvändningen inte styr familjens rytm eller relationerna runt bord och läggdags.
+                """,
+                keyPoints: [
+                    "Inga skärmar vid måltider",
+                    "Ingen skärm nära läggdags",
+                    "Titta tillsammans när det går",
+                    "Konsekvens minskar konflikter"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet vill ha paddan varje gång det blir tråkigt.",
+                        wrongApproach: "Du ger efter ibland och säger nej ibland.",
+                        rightApproach: "Du har en tydlig regel för när skärm erbjuds och håller den konsekvent, samtidigt som du erbjuder annat som också fungerar.",
+                        explanation: "Förutsägbarhet gör att barnet lättare accepterar gränsen. Blandade signaler leder ofta till mer tjat."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Familjens medieplan",
+                    description: "Skriv ned er egen plan för skärmvanor hemma.",
+                    steps: [
+                        "Bestäm var skärmar inte får användas",
+                        "Bestäm när skärmen stängs av för kvällen",
+                        "Skriv en regel för vuxnas telefonanvändning",
+                        "Välj ett undantag som faktiskt är rimligt",
+                        "Sätt upp planen där alla ser den"
+                    ],
+                    duration: "20 minuter"
+                ),
+                reflectionQuestions: [
+                    "Var skapar skärmar mest konflikt hos er?",
+                    "Vilken regel skulle göra störst skillnad direkt?",
+                    "Följer vuxna samma plan som barnen?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som gjort en skärmplan beskriver ofta att tjatet minskade snabbt:",
+                    consensus: "Det är lättare att hålla en regel som är bestämd i förväg.",
+                    quotes: [
+                        "\"När planen sattes upp blev det plötsligt inte förhandlingsbart varje kväll.\" – Therese",
+                        "\"Vi började faktiskt prata mer när vi slutade ha tv:n på i bakgrunden.\" – Patrik"
+                    ],
+                    source: "AAP Family Media Plan; WHO under-5 media guidance"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let satterDOR = Course(
+        id: "satter-dor",
+        title: "DOR vid måltider",
+        subtitle: "Du bestämmer ramarna, barnet innehållet",
+        description: "En kurs byggd på Ellyn Satters Division of Responsibility. När du slutar trycka på och börjar lita på aptit och rytm blir måltider ofta lugnare.",
+        icon: "fork.knife.circle.fill",
+        gradient: LinearGradient(colors: [Color(hex: "16A34A"), Color(hex: "86EFAC")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "dor-1",
+                title: "Vem ansvarar för vad?",
+                subtitle: "Ramen är ditt jobb",
+                icon: "list.bullet.rectangle",
+                introduction: """
+                Division of Responsibility är enkel: den vuxna bestämmer vad som serveras, när det serveras och var det äts. Barnet bestämmer om det vill äta och hur mycket. Det låter lättare än det känns, men det är en av de mest kraftfulla förändringarna i matbordsklimatet.
+
+                När ansvarsfördelningen blir tydlig minskar behovet av tjat, lock och mutor. Barnet får möjlighet att lyssna till sin egen hunger och mättnad i stället för att reagera på press.
+                """,
+                keyPoints: [
+                    "Vuxen = vad, när, var",
+                    "Barn = om och hur mycket",
+                    "Press ökar ofta motstånd",
+                    "Regelbunden struktur hjälper aptiten"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet äter bara två ärtor och du blir orolig.",
+                        wrongApproach: "Du försöker få barnet att äta mer genom att kommentera varje tugga.",
+                        rightApproach: "Du serverar maten utan press och låter barnet avgöra mängden. Nästa måltid kommer i sin tid.",
+                        explanation: "Barn lär sig bäst när måltiden inte blir en maktkamp. Aptiten kommer och går över dagen."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Bygg måltidsramen",
+                    description: "Skapa en förutsägbar måltidsstruktur för en vecka.",
+                    steps: [
+                        "Bestäm ungefärliga måltids- och mellanmålstider",
+                        "Servera samma typ av struktur varje dag",
+                        "Lägg till minst en sak barnet brukar acceptera",
+                        "Undvik att kommentera mängden barnet äter",
+                        "Observera om samtalet vid bordet förändras"
+                    ],
+                    duration: "En vecka"
+                ),
+                reflectionQuestions: [
+                    "Hur ofta kommenterar du hur mycket barnet äter?",
+                    "Vad händer när du inte försöker styra tuggorna?",
+                    "Hur tydlig är er måltidsstruktur idag?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta DOR som en lättnad efter år av matstress:",
+                    consensus: "Mindre press gav ofta mer matglädje.",
+                    quotes: [
+                        "\"När jag slutade jaga varje tugga åt han faktiskt bättre.\" – Karin",
+                        "\"Sällan har något känts så enkelt i teorin och så svårt i praktiken. Men det fungerar.\" – Markus"
+                    ],
+                    source: "Ellyn Satter, Division of Responsibility"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let responsiveFeeding = Course(
+        id: "responsive-feeding",
+        title: "Responsive feeding",
+        subtitle: "Se hunger, mättnad och tempo",
+        description: "En kurs om att mata med lyhördhet. Du lär dig se när barnet vill ha mer, när det är klart och hur matningen kan bli lugnare oavsett om det gäller bröst, flaska eller vanlig mat.",
+        icon: "drop.circle.fill",
+        gradient: LinearGradient(colors: [Color(hex: "0284C7"), Color(hex: "7DD3FC")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "rf-1",
+                title: "Barnets signaler",
+                subtitle: "Lyssna på kroppen, inte på tallriken",
+                icon: "eye.fill",
+                introduction: """
+                Responsive feeding innebär att du svarar på barnets hunger- och mättnadssignaler och inte pressar när signalerna säger stopp. Det är särskilt viktigt i början av matresan, när barnet fortfarande lär sig att äta och reglera sitt tempo.
+
+                När vuxna följer signalerna blir måltiderna ofta mindre konfliktfyllda och barnet bygger bättre förtroende för mat och kropp.
+                """,
+                keyPoints: [
+                    "Hunger kommer före gråt",
+                    "Mättnad kan se ut som att barnet vänder bort huvudet",
+                    "Tempo är viktigare än mängd i början",
+                    "Press stör ofta barnets egen reglering"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Bebisen vänder bort huvudet efter några skedar.",
+                        wrongApproach: "Du fortsätter mata ändå för att få i lite mer.",
+                        rightApproach: "Du slutar när barnet signalerar mättnad och erbjuder igen vid nästa måltid.",
+                        explanation: "Respekt för mättnad hjälper barnet att lita på sin egen kropp."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Cue-logg",
+                    description: "Notera hunger- och mättnadssignaler under två dagar.",
+                    steps: [
+                        "Skriv ned hur hunger ser ut hos ditt barn",
+                        "Skriv ned hur mättnad ser ut",
+                        "Notera hur snabbt barnet äter när det är hungrigt",
+                        "Prova att pausa en gång mitt i måltiden",
+                        "Utvärdera om barnet visar tydligare signaler"
+                    ],
+                    duration: "2 dagar"
+                ),
+                reflectionQuestions: [
+                    "Vilka signaler missar du lätt?",
+                    "Hur kan du mata långsammare utan att bli orolig?",
+                    "Vad händer när du slutar övertala barnet?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar brukar beskriva att matningen blir lugnare när de släpper kontrollen över mängden:",
+                    consensus: "Barnets tempo är ofta den bästa guiden.",
+                    quotes: [
+                        "\"När jag slutade stressa över mängden blev vår lilla mycket tryggare kring mat.\" – Nina",
+                        "\"Paced bottle feeding räddade vårt amnings/fla ske-pussel.\" – Joel"
+                    ],
+                    source: "WHO responsive feeding guidance; pediatrisk näringslära"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let pottraningMognad = Course(
+        id: "pottraning-mognad",
+        title: "Potträning vid rätt tid",
+        subtitle: "Mognad först, metod sen",
+        description: "En kurs om potträning som börjar med readiness och slutar med mindre drama. Fokuset ligger på att vänta in mognad och hålla processen positiv.",
+        icon: "toilet.fill",
+        gradient: LinearGradient(colors: [Color(hex: "14B8A6"), Color(hex: "A7F3D0")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "pt-1",
+                title: "Redo eller inte?",
+                subtitle: "Mognadstecken före kalender",
+                icon: "checkmark.seal.fill",
+                introduction: """
+                Potträning fungerar bäst när barnet visar tydliga mognadstecken: intresse, förmåga att sitta still korta stunder, att märka när blöjan är blöt och att kunna förstå enkla instruktioner. Ålder hjälper som riktmärke, men mognad är viktigare.
+
+                När du väntar in barnet blir processen ofta kortare och mer positiv. För tidig start leder ofta bara till motstånd och extra tvätt.
+                """,
+                keyPoints: [
+                    "Intresse är viktigt",
+                    "Barnet behöver kunna kommunicera något om kiss/bajs",
+                    "Konsekvens är bättre än press",
+                    "Olyckor hör till"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du börjar potträna för att barnet snart ska börja förskolan.",
+                        wrongApproach: "Du kör på trots att barnet verkar ointresserat och upprört.",
+                        rightApproach: "Du väntar in mognad och gör potta till något neutralt och tryggt först.",
+                        explanation: "Stress och tidskrav gör ofta processen sämre. Mognad är en bättre startpunkt än önsketänkande."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Readiness-checklista",
+                    description: "Gå igenom barnets mognad innan ni startar.",
+                    steps: [
+                        "Skriv ned minst tre mognadstecken",
+                        "Bestäm en lugn startperiod",
+                        "Låt barnet bekanta sig med pottan utan krav",
+                        "Beröm nyfikenhet, inte resultat",
+                        "Acceptera att olyckor är en del av lärandet"
+                    ],
+                    duration: "15 minuter"
+                ),
+                reflectionQuestions: [
+                    "Är det du eller barnet som är mest redo?",
+                    "Vilka mognadstecken ser du redan?",
+                    "Hur kan ni göra pottan tryggare och mindre laddad?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som väntat in mognad beskriver ofta att det gick snabbare när de väl började:",
+                    consensus: "Rätt timing slog nästan alltid snabbhet.",
+                    quotes: [
+                        "\"Vi väntade några månader extra och det blev mycket enklare.\" – Sara",
+                        "\"När vi tog bort pressen gick det från kaos till att faktiskt fungera.\" – Olof"
+                    ],
+                    source: "Brazelton potty training research; AAP guidance"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let kvallsrutin = Course(
+        id: "kvallsrutin",
+        title: "Kvällsrutin som håller",
+        subtitle: "Bygg en kväll som signalerar sömn",
+        description: "En kurs om att skapa en lugn, repeterbar kvällssekvens som hjälper barnets kropp att förstå att sömn är på väg.",
+        icon: "moon.stars.fill",
+        gradient: LinearGradient(colors: [Color(hex: "4338CA"), Color(hex: "818CF8")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "kr-1",
+                title: "Samma ordning varje kväll",
+                subtitle: "Förutsägbarhet sänker motstånd",
+                icon: "clock.fill",
+                introduction: """
+                En bra kvällsrutin är kort, lugn och görs i samma ordning nästan varje kväll. Barnets hjärna älskar förutsägbarhet. När kvällen följer samma mönster blir övergången till sömn mindre dramatisk.
+
+                Målet är inte perfektion utan en återkommande signal om att dagen är slut. Det är ofta sekvensen, inte de enskilda aktiviteterna, som hjälper mest.
+                """,
+                keyPoints: [
+                    "Kort rutin slår lång rutin",
+                    "Låg stimulans före läggdags hjälper",
+                    "Samma ord och samma ordning bygger trygghet",
+                    "Rutinen avslutas i sängen eller sovplatsen"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Barnet vill ha 'bara en till' i en evig kedja av önskemål vid läggning.",
+                        wrongApproach: "Du förhandlar länge och ändrar rutinen varje kväll.",
+                        rightApproach: "Du håller rutinen kort, upprepar samma avslutningsfras och leder tillbaka till sängen lugnt och konsekvent.",
+                        explanation: "Barn testar ofta gränser vid läggning. En konsekvent rutin minskar förhandlingarna över tid."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Designa er 15-minutersrutin",
+                    description: "Sätt ihop en kvällssekvens som ni kan upprepa.",
+                    steps: [
+                        "Välj tre eller fyra steg",
+                        "Bestäm en fast avslutningsfras",
+                        "Håll ljus och ljud dämpade",
+                        "Öva samma ordning i en vecka",
+                        "Justera endast om något verkligen inte fungerar"
+                    ],
+                    duration: "15 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vilken del av läggningen skapar mest motstånd?",
+                    "Hur lång är er rutin egentligen?",
+                    "Vad skulle hända om ni gjorde färre saker men varje kväll likadant?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta att kvällsrutinen blev lättare först när de kortade den:",
+                    consensus: "Kort, lugn och konsekvent slår ofta varierad och lång.",
+                    quotes: [
+                        "\"När vi skippade två steg och höll samma ordning somnade hon snabbare.\" – Jenny",
+                        "\"Rutinen blev vårt ankare när allt annat var kaos.\" – Magnus"
+                    ],
+                    source: "Mindell bedtime routine research; sömnmedicin"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let coParentingMentalLoad = Course(
+        id: "co-parenting-mental-load",
+        title: "Co-parenting och mentala lasset",
+        subtitle: "Gör ansvar synligt och delbart",
+        description: "En kurs om att dela på det som syns och det som bara finns i huvudet. Inspirerad av mental load-forskning och moderna verktyg för rättvist familjearbete.",
+        icon: "square.grid.2x2.fill",
+        gradient: LinearGradient(colors: [Color(hex: "64748B"), Color(hex: "CBD5E1")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "cp-1",
+                title: "Synligt, osynligt och ägande",
+                subtitle: "Det handlar om mer än uppgifter",
+                icon: "list.bullet.clipboard.fill",
+                introduction: """
+                Det mentala lasset är allt det du måste komma ihåg, planera och följa upp för att familjelivet ska fungera. Det är lätt att se blöjbyten och diskmaskiner men svårare att se den ständiga koordineringen runt BVC, kläder, presenter och tider.
+
+                Co-parenting blir bättre när ni gör ansvar till ägarskap. Då räcker det inte att någon 'hjälper till'; någon behöver faktiskt äga en domän från början till slut.
+                """,
+                keyPoints: [
+                    "Ägarskap är mer än att hjälpa",
+                    "Det osynliga arbetet måste bli synligt",
+                    "Veckovisa check-ins minskar missförstånd",
+                    "Tydliga överlämningar skapar mindre friktion"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "En förälder har huvudansvar för allt som gäller BVC medan den andra bara följer med ibland.",
+                        wrongApproach: "Ni fortsätter som vanligt och hoppas att belastningen jämnar ut sig.",
+                        rightApproach: "Ni skriver ned hela BVC-domänen och fördelar ägarskap tydligt, inklusive tider, frågor och uppföljning.",
+                        explanation: "När ansvar blir synligt blir det också möjligt att fördela rättvist."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Ansvarskarta",
+                    description: "Kartlägg allt som ingår i ett familjeområde och fördela det fullt ut.",
+                    steps: [
+                        "Välj ett område i familjelivet",
+                        "Skriv ned alla små steg som ingår",
+                        "Markera vem som äger vad idag",
+                        "Flytta över ett helt område till den andra vuxna",
+                        "Ha en kort avstämning efter en vecka"
+                    ],
+                    duration: "45 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vad bär du i huvudet som ingen annan ser?",
+                    "Vilken domän kan du lämna över helt?",
+                    "Hur pratar ni om ansvar utan att det blir kritik?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar som gjort det osynliga synligt beskriver ofta stor lättnad:",
+                    consensus: "När ägarskap blir tydligt blir ansvar mindre personligt och mer praktiskt.",
+                    quotes: [
+                        "\"Det var först när vi skrev ned allt som vi förstod hur ojämnt det faktiskt var.\" – Sofia",
+                        "\"Att äga en hel domän är mycket bättre än att få en lista över småsaker.\" – Adam"
+                    ],
+                    source: "Mental load-forskning; Fair Play"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let foraldraBurnout = Course(
+        id: "foraldra-burnout",
+        title: "Föräldraburnout",
+        subtitle: "När belastningen blir för hög",
+        description: "En kurs om föräldrautmattning, återhämtning och hur du känner igen skillnaden mellan vanlig trötthet och ett system som gått för länge utan paus.",
+        icon: "bolt.heart.fill",
+        gradient: LinearGradient(colors: [Color(hex: "B91C1C"), Color(hex: "FCA5A5")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "pb-1",
+                title: "Utmattning är ett signalvärde",
+                subtitle: "Inte ett karaktärsfel",
+                icon: "flame.fill",
+                introduction: """
+                Föräldraburnout handlar om långvarig utmattning, emotionell distans och en känsla av att man inte räcker till. Det är inte samma sak som att vara trött efter en dålig natt. Det är ett system som har gått för länge utan återhämtning.
+
+                När du ser burnout som information blir nästa steg mer praktiskt: minska belastningen, öka återhämtningen och be om stöd innan systemet kraschar helt.
+                """,
+                keyPoints: [
+                    "Burnout är mer än sömnbrist",
+                    "Avstånd till barnet kan vara ett varningstecken",
+                    "Återhämtning kräver små pauser varje dag",
+                    "Stöd från andra vuxna är skyddande"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du känner dig tom och irriterad nästan varje dag trots att inget enskilt 'händer'.",
+                        wrongApproach: "Du fortsätter som vanligt och väntar på att det ska gå över av sig själv.",
+                        rightApproach: "Du identifierar belastningar, sänker kraven och bokar in återhämtningstid varje dag. Du ber om konkret hjälp.",
+                        explanation: "Burnout blir sällan bättre av att bara bita ihop. Systemet behöver regelbunden avlastning."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Återhämtningsmeny",
+                    description: "Gör en lista över små saker som faktiskt laddar dig.",
+                    steps: [
+                        "Skriv fem saker som lugnar dig",
+                        "Skriv fem saker som ger energi",
+                        "Välj en sak per dag från listan",
+                        "Be någon annan ta ett praktiskt ansvar",
+                        "Utvärdera efter en vecka vad som hjälpte mest"
+                    ],
+                    duration: "20 minuter"
+                ),
+                reflectionQuestions: [
+                    "Vad tömmer dig snabbast just nu?",
+                    "Vilken liten paus skulle göra mest skillnad?",
+                    "Vem kan du be om konkret hjälp utan att förklara allt?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta en stark lättnad när burnout får ett namn:",
+                    consensus: "Det går att vara en bra förälder utan att vara konstant överkapabel.",
+                    quotes: [
+                        "\"Jag trodde jag var en dålig mamma. Det visade sig att jag var utmattad.\" – Rebecka",
+                        "\"När vi tog bort ett par krav om dagen blev allt mer hanterbart.\" – Johan"
+                    ],
+                    source: "Mikolajczak & Roskam; parental burnout research"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let konfliktReparation = Course(
+        id: "konflikt-reparation",
+        title: "Konflikt och reparation",
+        subtitle: "Hur man återkopplar efter att det brustit",
+        description: "En kurs om reparation efter svåra stunder. Inspirerad av Gottmans reparationsidéer och familjeforskning om att det inte är frånvaron av konflikt som räknas utan kvaliteten på återkopplingen.",
+        icon: "arrow.triangle.2.circlepath",
+        gradient: LinearGradient(colors: [Color(hex: "F59E0B"), Color(hex: "FB7185")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "krp-1",
+                title: "Reparation efter brist",
+                subtitle: "Säg förlåt specifikt",
+                icon: "bandage.fill",
+                introduction: """
+                Alla föräldrar tappar tålamod ibland. Det som stärker relationen är inte att du aldrig brister, utan att du reparerar tydligt efteråt. Barn lär sig mycket av hur vuxna återknyter efter en svår stund.
+
+                En bra reparation är enkel, specifik och utan försvar. Den visar att relationen håller även efter en spricka.
+                """,
+                keyPoints: [
+                    "Reparation är en färdighet",
+                    "Specifik ursäkt slår vag förklaring",
+                    "Återkoppla när du är lugn",
+                    "Barn behöver se att vuxna kan reparera"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du höjde rösten åt ditt barn i stress och ångrar det direkt efteråt.",
+                        wrongApproach: "Du låtsas som ingenting och hoppas att det glöms bort.",
+                        rightApproach: "Du säger att du blev för arg, att det inte var okej och att du ska försöka igen. Sedan gör du en konkret ny start.",
+                        explanation: "Barn lär sig trygghet när vuxna kan reparera. Det minskar skam och stärker kontakt."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Reparationsfraser",
+                    description: "Skriv tre sätt att reparera som känns naturliga för dig.",
+                    steps: [
+                        "Skriv en ursäkt utan försvar",
+                        "Skriv hur du vill göra annorlunda nästa gång",
+                        "Skriv en kort kontaktåterkoppling",
+                        "Öva fraserna högt",
+                        "Använd dem nästa gång du behöver"
+                    ],
+                    duration: "10 minuter"
+                ),
+                reflectionQuestions: [
+                    "Hur ser en bra ursäkt ut i er familj?",
+                    "När reparerar du för sent eller inte alls?",
+                    "Vad behöver barnet höra efter en svår stund?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Föräldrar beskriver ofta att relationen stärks när reparation blir normalt:",
+                    consensus: "Det är fullt möjligt att vara varm, gränssättande och mänsklig samtidigt.",
+                    quotes: [
+                        "\"När jag började be om förlåtelse blev det faktiskt mindre drama, inte mer.\" – Emma",
+                        "\"Min son slutade bli lika rädd för mina misstag när jag började reparera dem högt.\" – Lars"
+                    ],
+                    source: "Gottman, repair attempts; familjeterapiforskning"
+                ),
+                readingTimeMinutes: 5
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
+    )
+
+    static let aktivtFaderskap = Course(
+        id: "aktivt-faderskap",
+        title: "Aktivt faderskap",
+        subtitle: "Närvaro som bygger trygghet",
+        description: "En kurs om aktivt och engagerat faderskap eller medföräldraskap. Fokus ligger på praktisk kompetens, trygg närvaro och att vara mer än en hjälpreda.",
+        icon: "figure.2.and.child.holdinghands",
+        gradient: LinearGradient(colors: [Color(hex: "2563EB"), Color(hex: "38BDF8")], startPoint: .topLeading, endPoint: .bottomTrailing),
+        modules: [
+            CourseModule(
+                id: "af-1",
+                title: "Egen kompetens",
+                subtitle: "Du behöver inte vänta på instruktioner",
+                icon: "person.badge.plus",
+                introduction: """
+                Aktivt faderskap handlar om att ta plats i omsorgen på riktigt, inte bara hjälpa till när någon annan frågar. Barnet behöver fler än en person som kan trösta, natta, mata och förstå vardagen.
+
+                När den icke-bärande vuxna bygger egen kompetens stärks både barnet och relationen mellan de vuxna. Trygghet växer av regelbunden närvaro, inte av att någon alltid är assistent.
+                """,
+                keyPoints: [
+                    "Du äger uppgifter, inte bara hjälper till",
+                    "Barn lär känna dig genom upprepad vård",
+                    "Praktisk kompetens bygger trygghet",
+                    "Delat ansvar minskar belastning på den andra vuxna"
+                ],
+                examples: [
+                    CourseExample(
+                        scenario: "Du väntar på att den andra föräldern ska berätta exakt hur nattningen ska gå till.",
+                        wrongApproach: "Du ser dig själv som oduglig tills du får instruktioner.",
+                        rightApproach: "Du lär dig rutinen och äger den fullt ut, även om den inte blir exakt som den andra vuxna gör den.",
+                        explanation: "Barn mår bra av att fler vuxna är kompetenta omsorgspersoner. Det minskar också stressen i relationen."
+                    )
+                ],
+                exercise: CourseExercise(
+                    title: "Ett helt ansvar",
+                    description: "Välj en omsorgsdomän du tar fullt ansvar för i två veckor.",
+                    steps: [
+                        "Välj ett område, till exempel kvällsrutin eller morgonlogistik",
+                        "Bestäm vad som ingår från början till slut",
+                        "Ta ansvar utan att vänta på påminnelser",
+                        "Utvärdera vad du lärde dig",
+                        "Behåll området om det fungerade"
+                    ],
+                    duration: "Två veckor"
+                ),
+                reflectionQuestions: [
+                    "Vilket ansvar kan du ta helt och hållet?",
+                    "Var blir du för mycket assistent och för lite ägare?",
+                    "Hur märker barnet att du finns där på riktigt?"
+                ],
+                forumSection: CourseForumSection(
+                    intro: "Många föräldrar beskriver att aktivt ansvar skapade snabbare trygghet och mindre stress:",
+                    consensus: "Att ta egen kompetens på allvar förändrar familjens dynamik.",
+                    quotes: [
+                        "\"När jag tog över nattningen på riktigt blev vi båda lugnare.\" – Emil",
+                        "\"Jag väntade för länge med att ta ansvar själv. När jag väl gjorde det blev allt enklare.\" – Tobias"
+                    ],
+                    source: "Lambs forskning om involved fathering; jämställdhets- och föräldraforskning"
+                ),
+                readingTimeMinutes: 6
+            )
+        ],
+        targetAudience: "Förälder",
+        estimatedWeeks: 1
     )
 }

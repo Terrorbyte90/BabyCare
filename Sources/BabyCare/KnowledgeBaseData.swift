@@ -2551,5 +2551,5 @@ Undvik walker (gåstol med hjul). De är farliga (fallrisk, trappor) och bevisli
         ),
     ]
 
-    static let all: [Article] = _allOriginal
+    static let all: [Article] = _allOriginal + pregnancyWeekArticles
 }

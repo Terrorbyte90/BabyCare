@@ -3,31 +3,108 @@ import SwiftData
 
 // Course data structures defined in CourseData.swift
 
+// MARK: - Course Phase Filter
+
+enum CoursePhaseFilter: String, CaseIterable, Identifiable {
+    case all = "All"
+    case fertility = "Fertilitet"
+    case pregnancy = "Graviditet"
+    case parent = "Förälder"
+
+    var id: String { rawValue }
+
+    var icon: String? {
+        switch self {
+        case .all: return nil
+        case .fertility: return "heart.circle.fill"
+        case .pregnancy: return "heart.fill"
+        case .parent: return "person.2.fill"
+        }
+    }
+}
+
 // MARK: - Courses View (Catalog)
 
 struct CoursesView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var allCourseProgress: [CourseProgress]
     @Query private var userData: [UserData]
+    @State private var selectedPhaseFilter: CoursePhaseFilter = .all
 
     private var user: UserData? { userData.first }
     private var phase: UserPhase { user?.phase ?? .parent }
 
-    // Sorterar kurser så att fas-relevanta kurser kommer överst
-    private var sortedCourses: [Course] {
-        Course.all.sorted { a, b in
-            let aRelevant = isRelevant(a, for: phase)
-            let bRelevant = isRelevant(b, for: phase)
-            if aRelevant == bRelevant { return false }
-            return aRelevant && !bRelevant
+    private var phaseFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DS.s2) {
+                ForEach(CoursePhaseFilter.allCases) { filter in
+                    CategoryPill(
+                        title: filter.rawValue,
+                        icon: filter.icon,
+                        isSelected: selectedPhaseFilter == filter,
+                        gradient: gradient(for: filter)
+                    ) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                            selectedPhaseFilter = filter
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, DS.s4)
+            .padding(.vertical, DS.s3)
         }
     }
 
     private var visibleCourses: [Course] {
-        sortedCourses.filter { isRelevant($0, for: phase) }
+        let courses = selectedPhaseFilter == .all
+            ? Course.all
+            : Course.all.filter { courseMatches($0, filter: selectedPhaseFilter) }
+
+        return courses.sorted { a, b in
+            if selectedPhaseFilter == .all {
+                let aRelevant = isRelevant(a, for: phase)
+                let bRelevant = isRelevant(b, for: phase)
+                if aRelevant != bRelevant {
+                    return aRelevant && !bRelevant
+                }
+            }
+
+            if a.estimatedWeeks != b.estimatedWeeks {
+                return a.estimatedWeeks < b.estimatedWeeks
+            }
+
+            return a.title.localizedCaseInsensitiveCompare(b.title) == .orderedAscending
+        }
     }
 
-    // Avgör om en kurs är primärt relevant för nuvarande fas
+    private func gradient(for filter: CoursePhaseFilter) -> LinearGradient {
+        switch filter {
+        case .all:
+            return .pinkPurple
+        case .fertility:
+            return LinearGradient(colors: [Color(hex: "D81B60"), Color(hex: "F06292")], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .pregnancy:
+            return LinearGradient(colors: [Color(hex: "C2185B"), Color(hex: "E91E8C")], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .parent:
+            return LinearGradient(colors: [Color(hex: "00695C"), Color(hex: "4DB6AC")], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    private func courseMatches(_ course: Course, filter: CoursePhaseFilter) -> Bool {
+        let audience = course.targetAudience.lowercased()
+
+        switch filter {
+        case .all:
+            return true
+        case .fertility:
+            return audience.contains("ttc") || audience.contains("fertil") || audience.contains("försöker")
+        case .pregnancy:
+            return audience.contains("gravid") || audience.contains("förloss") || audience.contains("amning")
+        case .parent:
+            return audience.contains("förälder") || audience.contains("baby") || audience.contains("barn") || audience.contains("nybliv")
+        }
+    }
+
     private func isRelevant(_ course: Course, for phase: UserPhase) -> Bool {
         let audience = course.targetAudience.lowercased()
         switch phase {
@@ -36,7 +113,7 @@ struct CoursesView: View {
         case .pregnancy:
             return audience.contains("gravid") || audience.contains("förlossning") || audience.contains("amning")
         case .parent:
-            return audience.contains("föräldrar") || audience.contains("baby") || audience.contains("barn") || audience.contains("nyblivna")
+            return audience.contains("förälder") || audience.contains("föräldrar") || audience.contains("baby") || audience.contains("barn") || audience.contains("nyblivna")
         }
     }
 
@@ -49,34 +126,38 @@ struct CoursesView: View {
             ZStack {
                 Color.appBg.ignoresSafeArea()
 
-                if visibleCourses.isEmpty {
-                    DSEmptyState(
-                        icon: "book.closed.fill",
-                        gradient: .blueIndigo,
-                        title: "Inga kurser för denna fas",
-                        subtitle: "Byt fas i profilen för att se kurser som matchar din nuvarande situation."
-                    )
-                } else {
-                    ScrollView(showsIndicators: false) {
-                        LazyVStack(spacing: DS.s4) {
-                            ForEach(Array(visibleCourses.enumerated()), id: \.element.id) { idx, course in
-                                NavigationLink {
-                                    CourseDetailView(course: course)
-                                } label: {
-                                    CourseCardView(
-                                        course: course,
-                                        progress: progressFor(course.id),
-                                        isRecommended: isRelevant(course, for: phase)
-                                    )
-                                }
-                                .buttonStyle(ScaleButtonStyle())
-                                .staggerAppear(index: idx)
-                            }
+                VStack(spacing: 0) {
+                    phaseFilterBar
 
-                            Color.clear.frame(height: 90)
+                    if visibleCourses.isEmpty {
+                        DSEmptyState(
+                            icon: "book.closed.fill",
+                            gradient: .blueIndigo,
+                            title: "Inga kurser för det här filtret",
+                            subtitle: "Testa All eller välj en annan fas för att se fler kurser."
+                        )
+                    } else {
+                        ScrollView(showsIndicators: false) {
+                            LazyVStack(spacing: DS.s4) {
+                                ForEach(Array(visibleCourses.enumerated()), id: \.element.id) { idx, course in
+                                    NavigationLink {
+                                        CourseDetailView(course: course)
+                                    } label: {
+                                        CourseCardView(
+                                            course: course,
+                                            progress: progressFor(course.id),
+                                            isRecommended: isRelevant(course, for: phase)
+                                        )
+                                    }
+                                    .buttonStyle(ScaleButtonStyle())
+                                    .staggerAppear(index: idx)
+                                }
+
+                                Color.clear.frame(height: 90)
+                            }
+                            .padding(.horizontal, DS.s4)
+                            .padding(.top, DS.s3)
                         }
-                        .padding(.horizontal, DS.s4)
-                        .padding(.top, DS.s3)
                     }
                 }
             }
