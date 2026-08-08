@@ -59,14 +59,35 @@ enum NotificationCategory: String, CaseIterable {
 final class NotificationManager: ObservableObject {
     static let shared = NotificationManager()
 
-    @Published var enabledTypes: Set<NotificationType> = Set(
-        NotificationType.allCases.filter { $0.defaultEnabled }
-    )
+    @Published var enabledTypes: Set<NotificationType> {
+        didSet {
+            let rawValues = enabledTypes.map(\.rawValue)
+            UserDefaults.standard.set(rawValues, forKey: Self.enabledTypesKey)
+        }
+    }
 
     private let center = UNUserNotificationCenter.current()
+    private static let enabledTypesKey = "notificationManager.enabledTypes"
+
+    init() {
+        if let stored = UserDefaults.standard.stringArray(forKey: Self.enabledTypesKey) {
+            enabledTypes = Set(stored.compactMap(NotificationType.init(rawValue:)))
+        } else {
+            enabledTypes = Set(NotificationType.allCases.filter { $0.defaultEnabled })
+        }
+    }
 
     nonisolated static func identifier(for type: NotificationType, childName: String) -> String {
-        "ljusglimt.\(type.rawValue).\(childName.lowercased().replacingOccurrences(of: " ", with: "_"))"
+        let normalized = childName
+            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+            .unicodeScalars
+            .map { scalar in
+                CharacterSet.alphanumerics.contains(scalar) ? String(scalar) : "_"
+            }
+            .joined()
+            .replacingOccurrences(of: "_+", with: "_", options: .regularExpression)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "_"))
+        return "ljusglimt.\(type.rawValue).\(normalized.isEmpty ? "child" : normalized)"
     }
 
     nonisolated static func content(for type: NotificationType, childName: String, extra: String? = nil) -> UNMutableNotificationContent {
@@ -120,6 +141,7 @@ final class NotificationManager: ObservableObject {
         let wakeTime = WakeWindowCalculator.nextWakeTime(from: sleepStart, ageInDays: ageInDays)
         let notifyAt = wakeTime.addingTimeInterval(TimeInterval(-minutesBefore * 60))
         guard notifyAt > Date() else { return }
+        cancelNotification(type: .wakeWindow, childName: childName)
         let trigger = UNCalendarNotificationTrigger(
             dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: notifyAt),
             repeats: false
@@ -135,8 +157,10 @@ final class NotificationManager: ObservableObject {
     func scheduleFertilityPeakNotification(peakDate: Date) {
         guard enabledTypes.contains(.fertilityPeak) else { return }
         let fireDate = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: peakDate) ?? peakDate
+        guard fireDate > Date() else { return }
+        cancelNotification(type: .fertilityPeak, childName: "user")
         let trigger = UNCalendarNotificationTrigger(
-            dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour], from: fireDate),
+            dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate),
             repeats: false
         )
         center.add(UNNotificationRequest(
