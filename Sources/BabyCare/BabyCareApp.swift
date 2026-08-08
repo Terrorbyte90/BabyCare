@@ -6,10 +6,6 @@ import UserNotifications
 struct BabyCareApp: App {
     @AppStorage("onboardingComplete") private var onboardingComplete = false
 
-    init() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
-    }
-
     var body: some Scene {
         WindowGroup {
             Group {

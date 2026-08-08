@@ -2019,7 +2019,13 @@ struct AddAppointmentSheet: View {
     private func save() {
         let appointment = Appointment(date: date, title: title, notes: notes, type: type)
         modelContext.insert(appointment)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.delete(appointment)
+            HapticFeedback.error()
+            return
+        }
         NotificationHelper.scheduleAppointmentReminders(for: appointment)
         dismiss()
     }

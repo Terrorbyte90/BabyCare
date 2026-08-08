@@ -6,6 +6,7 @@ import UserNotifications
 
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var existingUsers: [UserData]
     @AppStorage("onboardingComplete") private var onboardingComplete = false
 
     @State private var currentStep = 0
@@ -756,8 +757,27 @@ struct OnboardingView: View {
             fertilityGoal: phase == .fertility ? .tryingToConceive : nil
         )
 
-        modelContext.insert(user)
-        try? modelContext.save()
+        if let existingUser = existingUsers.first {
+            existingUser.name = user.name
+            existingUser.babyName = user.babyName
+            existingUser.phase = user.phase
+            existingUser.isPregnant = user.isPregnant
+            existingUser.dueDate = user.dueDate
+            existingUser.babyBirthDate = user.babyBirthDate
+            existingUser.menstrualCycleLength = user.menstrualCycleLength
+            existingUser.lastPeriodDate = user.lastPeriodDate
+            existingUser.fertilityGoal = user.fertilityGoal
+        } else {
+            modelContext.insert(user)
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            // Keep onboarding visible if persistence fails; the user can retry
+            // instead of entering an app with an apparently empty profile.
+            return
+        }
 
         withAnimation(.easeInOut(duration: 0.4)) {
             onboardingComplete = true
