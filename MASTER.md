@@ -99,7 +99,7 @@ Prioritized by user value and Swedish market differentiation:
 3. **iCloud sync** — SwiftData is CloudKit-compatible by design; enabling sync across devices (phone + iPad) is a high-value feature for couples who share parenting duties
 4. **Multiple children support** — single-child architecture only; families with siblings need separate tracking per child
 5. **Photo attachments to journal entries** — parents want to attach photos to milestones and diary entries; SwiftData model supports it but UI is missing
-6. **Pregnancy week content** — PregnancyWeek model exists but content is incomplete; all 40 weeks need rich text, illustrations, and maternal symptom guidance
+6. **Pregnancy week content** — Weeks 4–42 now have rich text, illustrations, symptom guidance, navigation, and care guidance; continue factual review as content evolves
 7. **Swift Charts growth visualization** — display weight/height/head circumference on a curve with BVC percentile bands
 8. **EPDS postpartum depression screening** — Edinburgh Postnatal Depression Scale is standard in Swedish BVC; integrate as a self-assessment tool
 9. **Data export to PDF** — parents need to bring data to BVC and 1177 appointments; export a clean summary PDF
@@ -111,13 +111,13 @@ Prioritized by user value and Swedish market differentiation:
 
 | Priority | Issue | Notes |
 |----------|-------|-------|
-| **High** | No growth chart visualization | GrowthCharts.swift exists as a list; Swift Charts integration missing — core feature gap |
+| **High** | Dedicated UI test coverage missing | Unit tests and simulator launch are covered, but end-to-end UI interaction coverage is not yet a separate target |
 | **High** | Imperial unit conversion missing | Values stored in metric; display conversion not implemented; affects international users |
-| **High** | Pregnancy week content incomplete | PregnancyWeekData.swift has structure but weeks are sparsely populated |
+| **High** | Pregnancy week content needs ongoing clinical review | The week guide is implemented for weeks 4–42; medical content should be reviewed against current Swedish care guidance |
 | **Medium** | Single child only | No way to add a second child; architectural limitation to address before v2 |
 | **Medium** | No iCloud sync | SwiftData is CloudKit-compatible but sync is not enabled; couples on two devices cannot share data |
 | **Medium** | No photo attachments | Journal and milestone views have no way to attach photos |
 | **Medium** | No data export | Parents cannot export data for healthcare visits |
-| **Low** | Dark theme only | Light mode not implemented; low priority but required for App Store Best Practices guidelines |
+| **Low** | Dark theme only | Light mode remains a future accessibility and platform-polish improvement |
 | **Low** | No EPDS screening | Standard Swedish postnatal assessment not included; postpartum parents are underserved |
-| **Low** | Package.swift and .xcodeproj coexist | Dual build system creates confusion; consolidate to Xcode project for team clarity |
+| **Low** | Package.swift and .xcodeproj coexist | The Xcode project is the supported app build; package tooling remains for package-level workflows |

@@ -51,7 +51,7 @@ BabyCare/
 | `SleepLog`         | Sleep sessions with start/end/quality        |
 | `DiaperLog`        | Diaper change log with type                  |
 | `BabyMeasurement`  | Weight/height/head circumference over time   |
-| `PregnancyWeek`    | Weekly pregnancy content (future use)        |
+| `PregnancyWeek`    | Weekly pregnancy content and illustrations   |
 
 ---
 
@@ -63,11 +63,11 @@ BabyCare/
 
 ### Run
 1. Clone the repository
-2. Open in Xcode: `open Package.swift`
+2. Open in Xcode: `open BabyCare.xcodeproj`
 3. Select an iOS 17+ simulator
 4. Build and run (`⌘R`)
 
-> **Note:** This project uses Swift Package Manager. There is no `.xcodeproj` — open via `Package.swift`.
+> **Note:** The supported iOS app build is `BabyCare.xcodeproj`. `Package.swift` remains for package-level tooling.
 
 ---
 
@@ -84,38 +84,34 @@ BabyCare/
 - ✅ Quick actions from home screen (all 4 functional)
 - ✅ Empty states on all screens
 - ✅ Swipe-to-delete on all list views
+- ✅ Week-by-week pregnancy guide with week 4–42 content, illustrations, navigation, and care guidance
+- ✅ Growth charts for weight, length, and head circumference
+- ✅ Local notifications and notification settings
+- ✅ Onboarding for fertility, pregnancy, and parent phases
 
 ### Work In Progress / Not Yet Implemented
-- ⏳ Push notifications for upcoming appointments
-- ⏳ Growth charts (visual graphs for weight/height over time)
-- ⏳ Pregnancy week content (PregnancyWeek model exists but has no content)
-- ⏳ Baby kick counter
-- ⏳ Contraction timer
 - ⏳ Imperial unit conversion (UI accepts input but stores as metric internally)
 - ⏳ iCloud sync
-- ⏳ Data export (CSV/PDF)
+- ⏳ Multi-child profiles
 
 ---
 
 ## Known Issues
 
 - Imperial unit display: the app stores all values in metric (kg/cm) regardless of the selected unit. Display conversion to lb/in is not yet implemented.
-- `PregnancyWeek` model is fully defined but no content is seeded; the weekly tips feature is not connected to the UI.
-- No onboarding flow — users land directly on the Home tab and must navigate to Profile themselves if no data exists (a "Get Started" prompt is shown).
+- The Xcode project contains app and unit-test targets; a dedicated UI-test target is still a future improvement.
 
 ---
 
 ## Roadmap / Next Steps
 
 ### High Priority
-1. **Growth charts** — Line charts for weight and height using Swift Charts
-2. **Appointment notifications** — Local notifications for upcoming appointments
-3. **Unit conversion** — Proper lb/oz and imperial display throughout
+1. **Unit conversion** — Proper lb/oz and imperial display throughout
+2. **Dedicated UI tests** — Cover onboarding, phase transitions, week navigation, tracking, and keyboard flows
 
 ### Medium Priority
-4. **Pregnancy week tips** — Seed `PregnancyWeek` content and show weekly info on the Home screen
-5. **Kick counter** — Simple tap-to-count feature for fetal movement tracking
-6. **Contraction timer** — Start/stop timer with interval tracking
+4. **Kick counter improvements** — Expand fetal movement tracking and summaries
+5. **Contraction timer improvements** — Add richer interval history and guidance
 
 ### Nice to Have
 7. **iCloud sync** — Sync data across devices
