@@ -262,10 +262,13 @@ struct WeekByWeekView: View {
             tipsSection(data)
                 .staggerAppear(index: 6)
 
+            careGuidanceCard
+                .staggerAppear(index: 7)
+
             // Prenatal visit if applicable
             if let visit = data.prenatalVisit {
                 prenatalVisitCard(visit)
-                    .staggerAppear(index: 7)
+                    .staggerAppear(index: 8)
             }
 
             // Forum card
@@ -275,7 +278,7 @@ struct WeekByWeekView: View {
                 quotes: data.forumSection.quotes,
                 source: data.forumSection.source
             ))
-            .staggerAppear(index: 8)
+            .staggerAppear(index: 9)
 
             // 1177 link
             Link("Läs mer på 1177.se", destination: URL(string: "https://www.1177.se/gravid/om-graviditeten/graviditeten-vecka-for-vecka/")!)
@@ -651,5 +654,29 @@ struct WeekByWeekView: View {
                 Spacer(minLength: 0)
             }
         }
+    }
+
+    private var careGuidanceCard: some View {
+        GlassCard(gradient: .blueIndigo) {
+            HStack(alignment: .top, spacing: DS.s3) {
+                Image(systemName: "cross.case.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Color.appBlue)
+                    .frame(width: 30)
+
+                VStack(alignment: .leading, spacing: DS.s1 + 2) {
+                    Text("Generell information")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color.appText)
+
+                    Text("Innehållet är generell vägledning och ersätter inte råd från barnmorska eller vården. Kontakta 1177 eller din vårdgivare om du känner oro eller har frågor om just din graviditet.")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.appTextSec)
+                        .lineSpacing(3)
+                }
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Generell information. Innehållet är generell vägledning och ersätter inte råd från barnmorska eller vården. Kontakta 1177 eller din vårdgivare om du känner oro eller har frågor om just din graviditet.")
     }
 }
