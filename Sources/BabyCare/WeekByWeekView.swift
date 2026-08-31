@@ -45,6 +45,9 @@ struct WeekByWeekView: View {
                         weekSelector
                             .staggerAppear(index: 0)
 
+                        weekNavigation
+                            .staggerAppear(index: 1)
+
                         // Content for selected week
                         if let week = displayWeek, let weekData = weekContent(for: week) {
                             weekContentView(weekData)
@@ -146,6 +149,71 @@ struct WeekByWeekView: View {
                 }
             }
         }
+    }
+
+    private var weekNavigation: some View {
+        HStack(spacing: DS.s3) {
+            Button {
+                moveWeek(by: -1)
+            } label: {
+                Label("Föregående", systemImage: "chevron.left")
+                    .font(.system(size: 13, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DS.s2)
+            }
+            .disabled(displayWeek == 4 || displayWeek == nil)
+            .accessibilityHint("Visar veckan före den valda veckan")
+
+            VStack(spacing: 2) {
+                if let displayWeek {
+                    Text("Vecka (displayWeek) av 40")
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                    if displayWeek == currentWeekForContent {
+                        Text("Din aktuella vecka")
+                            .font(.caption2)
+                            .foregroundStyle(Color.appLavender)
+                    } else {
+                        Text("Bläddrar i guiden")
+                            .font(.caption2)
+                            .foregroundStyle(Color.appTextTert)
+                    }
+                } else {
+                    Text("Välj graviditetsvecka")
+                        .font(.system(size: 13, weight: .semibold))
+                }
+            }
+            .frame(minWidth: 110)
+            .multilineTextAlignment(.center)
+
+            Button {
+                moveWeek(by: 1)
+            } label: {
+                Label("Nästa", systemImage: "chevron.right")
+                    .labelStyle(.titleAndIcon)
+                    .font(.system(size: 13, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DS.s2)
+            }
+            .disabled(displayWeek == 42 || displayWeek == nil)
+            .accessibilityHint("Visar veckan efter den valda veckan")
+        }
+        .foregroundStyle(Color.appText)
+        .padding(.horizontal, DS.s2)
+        .background(Color.appSurface, in: RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous)
+                .stroke(Color.appBorderMed, lineWidth: 0.75)
+        }
+    }
+
+    private func moveWeek(by offset: Int) {
+        guard let displayWeek else { return }
+        let newWeek = min(42, max(4, displayWeek + offset))
+        guard newWeek != displayWeek else { return }
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.72)) {
+            selectedWeek = newWeek
+        }
+        HapticFeedback.selection()
     }
 
     private func trimesterGradient(_ trimester: Int) -> LinearGradient {
