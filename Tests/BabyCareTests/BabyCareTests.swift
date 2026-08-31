@@ -67,9 +67,9 @@ final class BabyCareTests: XCTestCase {
     }
 
     func testBabyAgeStringManaderNar1Manad() {
-        let birthDate = Calendar.current.date(byAdding: .day, value: -60, to: Date())!
+        let birthDate = Calendar.current.date(byAdding: .month, value: -2, to: Date())!
         let user = UserData(phase: .parent, babyBirthDate: birthDate)
-        // 60 dagar = 2 månader (60/30 = 2)
+        // Två kalendermånader ska visas som två månader oavsett månadens längd.
         XCTAssertEqual(user.babyAgeString, "2 månader")
     }
 
