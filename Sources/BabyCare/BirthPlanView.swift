@@ -85,11 +85,8 @@ struct BirthPlanView: View {
                             Label("Exportera PDF", systemImage: "square.and.arrow.up")
                         }
                     } else {
-                        Button {
-                            // PDF generation placeholder when plan is empty
-                        } label: {
-                            Label("Exportera PDF", systemImage: "square.and.arrow.up")
-                        }
+                        Label("Lägg till en punkt för att exportera", systemImage: "doc.badge.plus")
+                            .foregroundStyle(Color.appTextTert)
                     }
                 }
             }
