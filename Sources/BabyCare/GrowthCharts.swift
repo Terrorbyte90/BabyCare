@@ -850,6 +850,7 @@ struct AddMeasurementSheet: View {
     @State private var length: String = ""
     @State private var headCircumference: String = ""
     @State private var date = Date()
+    @State private var saveError = false
 
     private var canSave: Bool {
         !weight.isEmpty || !length.isEmpty
@@ -904,6 +905,11 @@ struct AddMeasurementSheet: View {
                 )
             }
         }
+        .alert("Mätningen kunde inte sparas", isPresented: $saveError) {
+            Button("Försök igen", role: .cancel) {}
+        } message: {
+            Text("Din inmatning finns kvar. Kontrollera att lagringen är tillgänglig och försök igen.")
+        }
     }
 
     private func measurementField(title: String, text: Binding<String>, icon: String, gradient: LinearGradient, placeholder: String) -> some View {
@@ -945,7 +951,13 @@ struct AddMeasurementSheet: View {
             headCircumference: hc
         )
         modelContext.insert(measurement)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.delete(measurement)
+            saveError = true
+            return
+        }
         HapticFeedback.success()
         dismiss()
     }
