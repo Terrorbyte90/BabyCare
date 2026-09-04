@@ -51,6 +51,16 @@ extension Color {
     static let appWarmYellow = Color(hex: "FFD54F")
     static let appAmber      = Color(hex: "FFB74D")
     static let appPeach      = Color(hex: "FFAB91")
+    
+    // Premium surface colors
+    static let appSurfaceElevated = Color.white.opacity(0.06)
+    static let appSurfaceCard = Color.white.opacity(0.04)
+    static let appSurfaceOverlay = Color.black.opacity(0.3)
+    
+    // Premium glow effects
+    static let appGlowPink = Color(hex: "FF375F").opacity(0.4)
+    static let appGlowPurple = Color(hex: "BF5AF2").opacity(0.4)
+    static let appGlowBlue = Color(hex: "0A84FF").opacity(0.4)
 
     init(hex: String) {
         let h = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -90,7 +100,9 @@ enum DS {
     static let springSmooth   = Animation.spring(response: 0.42, dampingFraction: 0.80)
     static let springBouncy   = Animation.spring(response: 0.36, dampingFraction: 0.62)
     static let springGentle   = Animation.spring(response: 0.55, dampingFraction: 0.85)
-
+    static let springPremium  = Animation.spring(response: 0.5, dampingFraction: 0.75)
+    static let springSmoothLong = Animation.easeInOut(duration: 0.35)
+    
     // Touch target minimum
     static let minTouchTarget: CGFloat = 44
 }
