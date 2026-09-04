@@ -70,7 +70,10 @@ struct ContractionTimerView: View {
         let avgDur = recent.compactMap { $0.duration }.reduce(0, +) / Double(recent.count)
 
         // 5-1-1 rule: contractions 5 min apart, lasting 1 min, for 1 hour
-        if avgInt <= 5 * 60 && avgDur >= 55 && recent.count >= 6 {
+        // Match the one-hour evidence used by the alert below. Without this
+        // guard, six contractions in 25 minutes were labelled "go time".
+        let recentSpan = recent.last!.startTime.timeIntervalSince(recent.first!.startTime)
+        if avgInt <= 5 * 60 && avgDur >= 55 && recent.count >= 6 && recentSpan >= 55 * 60 {
             return .goTime
         }
 

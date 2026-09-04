@@ -34,13 +34,11 @@ private enum AgeGroup: String, CaseIterable {
 
     static func from(ageInDays: Int) -> AgeGroup {
         switch ageInDays {
-        case 0...6:       return .newborn
-        case 7...119:
-            if ageInDays <= 75 { return .threeM }
-            return .fiveM
-        case 120...269:
-            if ageInDays <= 165 { return .fiveM }
-            return .twelveM
+        // Milestone windows follow the schedule's actual ages. The previous
+        // ranges incorrectly put a 90-day (3 month) dose in the 5-month group.
+        case 0...59:      return .newborn
+        case 60...119:    return .threeM
+        case 120...269:   return .fiveM
         case 270...419:   return .twelveM
         case 420...730:   return .eighteenM
         case 731...1825:  return .fourY
@@ -111,7 +109,6 @@ struct VaccinationView: View {
                 guard let vacDate = Calendar.current.date(byAdding: .day, value: entry.ageInDays, to: birth) else { return nil }
                 return (entry, vacDate)
             }
-            .filter { _, date in date >= today }
             .sorted { $0.1 < $1.1 }
             .first
     }
@@ -175,28 +172,29 @@ struct VaccinationView: View {
 
     private func nextVaccinationBanner(entry: VaccinationEntry, date: Date) -> some View {
         let daysLeft = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: date).day ?? 0
-        let isSoon = daysLeft <= 14
+        let isOverdue = daysLeft < 0
+        let isSoon = !isOverdue && daysLeft <= 14
 
-        return GlassCard(gradient: isSoon ? .orangePink : .blueIndigo) {
+        return GlassCard(gradient: isOverdue || isSoon ? .orangePink : .blueIndigo) {
             HStack(spacing: DS.s3) {
                 ZStack {
                     Circle()
-                        .fill(isSoon ? Color.appOrange.opacity(0.2) : Color.appBlue.opacity(0.2))
+                        .fill(isOverdue || isSoon ? Color.appOrange.opacity(0.2) : Color.appBlue.opacity(0.2))
                         .frame(width: 44, height: 44)
-                    Image(systemName: isSoon ? "exclamationmark.circle.fill" : "syringe.fill")
+                    Image(systemName: isOverdue || isSoon ? "exclamationmark.circle.fill" : "syringe.fill")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(isSoon ? Color.appOrange : Color.appBlue)
+                        .foregroundStyle(isOverdue || isSoon ? Color.appOrange : Color.appBlue)
                 }
                 .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: DS.s1) {
-                    Text(isSoon ? "Snart dags för vaccination!" : "Nästa vaccination")
+                    Text(isOverdue ? "Vaccination att följa upp" : isSoon ? "Snart dags för vaccination!" : "Nästa vaccination")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(Color.appText)
 
                     Text(entry.vaccineName)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(isSoon ? Color.appOrange : Color.appBlue)
+                        .foregroundStyle(isOverdue || isSoon ? Color.appOrange : Color.appBlue)
 
                     HStack(spacing: DS.s1) {
                         Text(date, format: .dateTime.day().month().year())
@@ -204,9 +202,9 @@ struct VaccinationView: View {
                             .foregroundStyle(Color.appTextSec)
                         Text("·")
                             .foregroundStyle(Color.appTextTert)
-                        Text(daysLeft == 0 ? "Idag" : "om \(daysLeft) dagar")
+                        Text(isOverdue ? "försenad med \(-daysLeft) dagar" : daysLeft == 0 ? "Idag" : "om \(daysLeft) dagar")
                             .font(.caption.bold())
-                            .foregroundStyle(isSoon ? Color.appOrange : Color.appTextSec)
+                            .foregroundStyle(isOverdue || isSoon ? Color.appOrange : Color.appTextSec)
                     }
                 }
 
