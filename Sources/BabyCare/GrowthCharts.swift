@@ -653,71 +653,19 @@ struct GrowthCharts: View {
         }
     }
 
-    // Keep legacy helper used by comparisonSection and computePercentile
-    private struct PercentileSet {
-        let p3: [MockFirebaseService.GrowthPercentiles]
-        let p15: [MockFirebaseService.GrowthPercentiles]
-        let p50: [MockFirebaseService.GrowthPercentiles]
-        let p85: [MockFirebaseService.GrowthPercentiles]
-        let p97: [MockFirebaseService.GrowthPercentiles]
-    }
-
-    private enum PercentileLevel {
-        case p3, p15, p50, p85, p97
-    }
-
-    private func valueForPercentile(_ p: MockFirebaseService.GrowthPercentiles, percentile: PercentileLevel) -> Double {
-        switch percentile {
-        case .p3: return p.p3
-        case .p15: return p.p15
-        case .p50: return p.p50
-        case .p85: return p.p85
-        case .p97: return p.p97
-        }
-    }
-
-    private func percentilesForTab() -> PercentileSet {
-        let data: [MockFirebaseService.GrowthPercentiles]
-
-        switch selectedTab {
-        case .weight:
-            data = isBoy ? MockFirebaseService.boyWeightPercentiles : MockFirebaseService.girlWeightPercentiles
-        case .length:
-            data = isBoy ? MockFirebaseService.boyLengthPercentiles : MockFirebaseService.girlLengthPercentiles
-        case .head:
-            data = isBoy ? MockFirebaseService.boyHeadPercentiles : GrowthCharts.girlHeadPercentiles
-        }
-
-        return PercentileSet(p3: data, p15: data, p50: data, p85: data, p97: data)
-    }
-
     // MARK: - Head Percentile Calculation
 
     private func percentileForHead(headCm: Double, ageMonths: Int, isBoy: Bool) -> Double {
-        let data = isBoy ? MockFirebaseService.boyHeadPercentiles : GrowthCharts.girlHeadPercentiles
+        let data = isBoy ? SwedishGrowthReference.headBoys : SwedishGrowthReference.headGirls
         guard let closest = data.min(by: { abs($0.ageMonths - ageMonths) < abs($1.ageMonths - ageMonths) }) else { return 50 }
 
         if headCm <= closest.p3 { return 3 }
-        if headCm <= closest.p15 { return 3 + (headCm - closest.p3) / (closest.p15 - closest.p3) * 12 }
-        if headCm <= closest.p50 { return 15 + (headCm - closest.p15) / (closest.p50 - closest.p15) * 35 }
-        if headCm <= closest.p85 { return 50 + (headCm - closest.p50) / (closest.p85 - closest.p50) * 35 }
-        if headCm <= closest.p97 { return 85 + (headCm - closest.p85) / (closest.p97 - closest.p85) * 12 }
+        if headCm <= closest.p10 { return 3 + (headCm - closest.p3) / (closest.p10 - closest.p3) * 7 }
+        if headCm <= closest.p50 { return 10 + (headCm - closest.p10) / (closest.p50 - closest.p10) * 40 }
+        if headCm <= closest.p90 { return 50 + (headCm - closest.p50) / (closest.p90 - closest.p50) * 40 }
+        if headCm <= closest.p97 { return 90 + (headCm - closest.p90) / (closest.p97 - closest.p90) * 7 }
         return 97
     }
-
-    // MARK: - Girl Head Circumference Data (WHO)
-
-    static let girlHeadPercentiles: [MockFirebaseService.GrowthPercentiles] = [
-        MockFirebaseService.GrowthPercentiles(ageMonths: 0, p3: 31.5, p15: 32.4, p50: 33.9, p85: 35.1, p97: 36.2),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 1, p3: 34.2, p15: 35.1, p50: 36.5, p85: 37.7, p97: 38.7),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 2, p3: 35.7, p15: 36.8, p50: 38.3, p85: 39.5, p97: 40.5),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 3, p3: 37.0, p15: 38.0, p50: 39.5, p85: 40.8, p97: 41.9),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 6, p3: 39.7, p15: 40.8, p50: 42.2, p85: 43.5, p97: 44.6),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 9, p3: 41.2, p15: 42.3, p50: 43.8, p85: 45.2, p97: 46.3),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 12, p3: 42.2, p15: 43.4, p50: 44.9, p85: 46.3, p97: 47.5),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 18, p3: 43.5, p15: 44.7, p50: 46.2, p85: 47.7, p97: 48.9),
-        MockFirebaseService.GrowthPercentiles(ageMonths: 24, p3: 44.3, p15: 45.5, p50: 47.0, p85: 48.5, p97: 49.7),
-    ]
 }
 
 // MARK: - Swedish BVC Growth Reference Data

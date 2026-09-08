@@ -444,7 +444,7 @@ struct ContractionTimerView: View {
                 HStack(spacing: DS.s2) {
                     Image(systemName: "info.circle.fill")
                         .foregroundStyle(Color.appBlue)
-                    Text("Sa här använder du")
+                    Text("Så här använder du")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(Color.appText)
                 }
