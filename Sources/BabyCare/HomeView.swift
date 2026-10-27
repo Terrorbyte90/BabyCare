@@ -26,6 +26,8 @@ struct HomeView: View {
     @State private var showPregnancyTransitionSheet = false
     @State private var showLaborSheet = false
     @State private var showBirthCompletionSheet = false
+    @State private var fetalIllustration: UIImage?
+    @State private var isGeneratingIllustration = true
 
     private var user: UserData? { userData.first }
     private var phase: UserPhase { user?.phase ?? .pregnancy }
@@ -570,36 +572,85 @@ struct HomeView: View {
         if let user, let week = user.currentPregnancyWeek {
             let clampedWeek = max(4, min(42, week))
             let content = PregnancyWeekContent.forWeek(clampedWeek)
+            let isMilestone = [12, 20, 28, 37, 40].contains(clampedWeek)
 
             GlassCard(gradient: .pregnancyGradient) {
-                VStack(alignment: .leading, spacing: DS.s3) {
-                    HStack(spacing: DS.s3) {
-                        Text(content.sizeEmoji)
-                            .font(.system(size: 40))
-                            .frame(width: 56, height: 56)
-                            .background(Color.appLavender.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: DS.radiusSm, style: .continuous))
+                HStack(spacing: DS.s3) {
+                    // Premium illustration or emoji
+                    ZStack {
+                        // Background glow
+                        Circle()
+                            .fill(Color.appLavender.opacity(0.12))
+                            .frame(width: 64, height: 64)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(spacing: DS.s1) {
-                                Text("Vecka \(clampedWeek)")
-                                    .font(.system(size: 13, weight: .bold))
-                                    .foregroundStyle(Color.appLavender)
+                        if isGeneratingIllustration {
+                            Circle()
+                                .fill(Color.appSurface2)
+                                .frame(width: 56, height: 56)
+                                .shimmer()
+                        } else if let image = fetalIllustration {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 56, height: 56)
+                                .clipShape(Circle())
+                        } else {
+                            Text(content.sizeEmoji)
+                                .font(.system(size: 36))
+                                .frame(width: 56, height: 56)
+                        }
 
-                                Text("·")
-                                    .foregroundStyle(Color.appTextTert)
-
-                                Text("Stor som en \(content.sizeComparison.lowercased())")
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundStyle(Color.appTextSec)
-                            }
-
-                            Text(content.highlight)
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundStyle(Color.appText)
-                                .lineSpacing(2)
+                        // Milestone badge
+                        if isMilestone {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(Color.appWarmYellow)
+                                .padding(4)
+                                .background(Circle().fill(Color.appBg))
+                                .offset(x: 22, y: -22)
                         }
                     }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: DS.s1) {
+                            Text("Vecka \(clampedWeek)")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(Color.appLavender)
+
+                            Text("·")
+                                .foregroundStyle(Color.appTextTert)
+
+                            Text("~\(content.sizeComparison.lowercased())")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
+                        }
+
+                        Text(content.highlight)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.appText)
+                            .lineSpacing(2)
+                    }
+
+                    Spacer()
+                }
+            }
+            .onAppear {
+                generateFetalIllustration(for: clampedWeek)
+            }
+        }
+    }
+
+    private func generateFetalIllustration(for week: Int) {
+        let clampedWeek = max(4, min(42, week))
+        isGeneratingIllustration = true
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            let image = FetalIllustrationGenerator.makeImage(for: clampedWeek, size: CGSize(width: 256, height: 256))
+
+            DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self.fetalIllustration = image
+                    self.isGeneratingIllustration = false
                 }
             }
         }

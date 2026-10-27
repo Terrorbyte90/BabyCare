@@ -557,58 +557,15 @@ struct PregnancyDashboard: View {
     }
 }
 
-// MARK: - Fetal Visualization (Animated Concentric Circles + SF Symbol)
+// MARK: - Fetal Visualization (Generated Illustration + Animated Circles)
 
 private struct FetalVisualizationView: View {
     let week: Int
     @State private var pulse = false
     @State private var appeared = false
+    @State private var illustrationImage: UIImage?
+    @State private var isGenerating = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    // MARK: - Fetal emoji per vecka
-    private static func fetalEmoji(for week: Int) -> String {
-        switch week {
-        case ..<5:   return "🫘"
-        case 5:      return "🫘"
-        case 6:      return "🫘"
-        case 7:      return "🫐"
-        case 8:      return "🍇"
-        case 9:      return "🍇"
-        case 10:     return "🍓"
-        case 11:     return "🍓"
-        case 12:     return "🍋"
-        case 13:     return "🍋"
-        case 14:     return "🍊"
-        case 15:     return "🍊"
-        case 16:     return "🥑"
-        case 17:     return "🥑"
-        case 18:     return "🥭"
-        case 19:     return "🥭"
-        case 20:     return "🍌"
-        case 21:     return "🍌"
-        case 22:     return "🍌"
-        case 23:     return "🌽"
-        case 24:     return "🌽"
-        case 25:     return "🌽"
-        case 26:     return "🥦"
-        case 27:     return "🥦"
-        case 28:     return "🥦"
-        case 29:     return "🥥"
-        case 30:     return "🥥"
-        case 31:     return "🥥"
-        case 32:     return "🍍"
-        case 33:     return "🍍"
-        case 34:     return "🍍"
-        case 35:     return "🎃"
-        case 36:     return "🎃"
-        case 37:     return "🎃"
-        default:     return "🍉"
-        }
-    }
-
-    private var weekEmoji: String {
-        Self.fetalEmoji(for: max(1, min(week, 42)))
-    }
 
     // Gradient baserat på trimester
     private var trimester: Int {
@@ -627,36 +584,90 @@ private struct FetalVisualizationView: View {
         }
     }
 
+    private var trimesterAccentColor: Color {
+        switch trimester {
+        case 1: return .appLavender
+        case 2: return .appRose
+        default: return .appPink
+        }
+    }
+
+    private var isMilestone: Bool {
+        [12, 20, 28, 37, 40].contains(week)
+    }
+
     var body: some View {
         GlassCard(gradient: .pregnancyGradient) {
             VStack(spacing: DS.s3) {
                 ZStack {
-                    // Gradient-cirkel bakgrund baserat på trimester
+                    // Outer gradient circle
                     Circle()
                         .fill(trimesterGradient)
-                        .frame(width: 140, height: 140)
-                        .opacity(0.35)
-                        .scaleEffect((pulse && !reduceMotion) ? 1.08 : 1.0)
+                        .frame(width: 150, height: 150)
+                        .opacity(0.3)
+                        .scaleEffect((pulse && !reduceMotion) ? 1.06 : 1.0)
 
+                    // Middle glow circle
                     Circle()
                         .fill(trimesterGradient)
-                        .frame(width: 110, height: 110)
-                        .opacity(0.25)
-                        .scaleEffect((pulse && !reduceMotion) ? 1.05 : 1.0)
+                        .frame(width: 120, height: 120)
+                        .opacity(0.2)
+                        .scaleEffect((pulse && !reduceMotion) ? 1.04 : 1.0)
 
-                    // Inre puls-ring
+                    // Inner ring
                     Circle()
-                        .strokeBorder(Color.appLilac.opacity(0.3), lineWidth: 1.5)
+                        .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
                         .frame(width: 100, height: 100)
 
-                    // Stor emoji — hjärtat av vyn
-                    Text(weekEmoji)
-                        .font(.system(size: 62))
-                        .scaleEffect(appeared ? 1.0 : 0.1)
-                        .opacity(appeared ? 1 : 0)
+                    // Illustration or loading state
+                    if isGenerating {
+                        // Loading shimmer
+                        Circle()
+                            .fill(Color.appSurface2)
+                            .frame(width: 90, height: 90)
+                            .overlay {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: trimesterAccentColor))
+                                    .scaleEffect(1.0)
+                            }
+                            .shimmer()
+                    } else if let image = illustrationImage {
+                        // Generated illustration
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 90, height: 90)
+                            .clipShape(Circle())
+                            .overlay {
+                                Circle()
+                                    .strokeBorder(
+                                        LinearGradient(
+                                            colors: [Color.white.opacity(0.2), Color.clear],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1
+                                    )
+                            }
+                    } else {
+                        // Fallback emoji
+                        Text(PregnancyWeekContent.forWeek(week).sizeEmoji)
+                            .font(.system(size: 50))
+                            .frame(width: 90, height: 90)
+                    }
+
+                    // Milestone sparkle overlay
+                    if isMilestone && !isGenerating && illustrationImage != nil {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(Color.appWarmYellow)
+                            .offset(x: 35, y: -35)
+                            .opacity(pulse ? 0.8 : 0.4)
+                    }
                 }
-                .frame(height: 160)
+                .frame(height: 170)
                 .onAppear {
+                    generateIllustration()
                     if !reduceMotion {
                         withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true)) {
                             pulse = true
@@ -667,10 +678,19 @@ private struct FetalVisualizationView: View {
                     }
                 }
 
+                // Label
                 VStack(spacing: 3) {
-                    Text("Bebisen just nu")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color.appTextSec)
+                    HStack(spacing: 4) {
+                        if isMilestone {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.appWarmYellow)
+                        }
+                        Text("Bebisen just nu")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.appTextSec)
+                    }
+
                     Text("Vecka \(week)")
                         .font(.system(size: 11, weight: .medium))
                         .foregroundStyle(Color.appTextTert)
@@ -679,6 +699,22 @@ private struct FetalVisualizationView: View {
             .frame(maxWidth: .infinity)
         }
         .accessibilityLabel("Foster-visualisering, vecka \(week)")
+    }
+
+    private func generateIllustration() {
+        let clampedWeek = max(4, min(42, week))
+        isGenerating = true
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            let image = FetalIllustrationGenerator.makeImage(for: clampedWeek, size: CGSize(width: 256, height: 256))
+
+            DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self.illustrationImage = image
+                    self.isGenerating = false
+                }
+            }
+        }
     }
 }
 

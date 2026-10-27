@@ -1076,69 +1076,243 @@ struct FloatingActionButton: View {
     }
 }
 
-// MARK: - Celebration Effect
+// MARK: - Premium Celebration Effect
 
 struct CelebrationEffect: View {
     @Binding var isActive: Bool
     @State private var particles: [CelebrationParticle] = []
+    @State private var isAnimating = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     struct CelebrationParticle: Identifiable {
         let id = UUID()
         var x: CGFloat
         var y: CGFloat
+        var endX: CGFloat
+        var endY: CGFloat
         var scale: CGFloat
+        var endScale: CGFloat
         var rotation: Double
+        var endRotation: Double
         var color: Color
         var symbol: String
+        var delay: Double
+        var size: CGFloat
     }
 
     var body: some View {
         ZStack {
             ForEach(particles) { p in
                 Image(systemName: p.symbol)
-                    .font(.system(size: 16))
+                    .font(.system(size: p.size, weight: .medium))
                     .foregroundStyle(p.color)
+                    .shadow(color: p.color.opacity(0.5), radius: 2, y: 1)
                     .scaleEffect(p.scale)
                     .rotationEffect(.degrees(p.rotation))
                     .position(x: p.x, y: p.y)
+                    .opacity(p.delay > 0 ? 0 : 1)
             }
         }
         .allowsHitTesting(false)
         .onChange(of: isActive) { _, newValue in
-            if newValue { startCelebration() }
+            if newValue && !isAnimating { startCelebration() }
         }
     }
 
     private func startCelebration() {
-        let colors: [Color] = [.appPink, .appPurple, .appBlue, .appGreen, .appOrange, .appWarmYellow]
-        let symbols = ["star.fill", "heart.fill", "sparkle", "circle.fill"]
+        guard !reduceMotion else {
+            isActive = false
+            return
+        }
+
+        isAnimating = true
+
+        // Rich celebration colors matching the app's phase palettes
+        let colors: [Color] = [
+            .appPink, .appPurple, .appLavender,
+            .appBlue, .appTeal, .appGreen,
+            .appOrange, .appWarmYellow, .appAmber,
+            .appRose, .appCoral, .appLilac
+        ]
+
+        // Extended symbol set for variety
+        let symbols = [
+            "star.fill", "star.leadinghalf.filled", "sparkle",
+            "heart.fill", "heart.circle.fill",
+            "drop.fill", "circle.fill",
+            "moon.fill", "sun.max.fill",
+            "gift.fill", "figure.child",
+            "hand.thumbsup.fill", "leaf.fill"
+        ]
+
         var newParticles: [CelebrationParticle] = []
 
-        for _ in 0..<30 {
+        // Generate 50 particles for a richer effect
+        for i in 0..<50 {
+            let startX = CGFloat.random(in: 20...380)
+            let startY = CGFloat.random(in: -80...(-20))
+
+            let endX = startX + CGFloat.random(in: -150...150)
+            let endY = CGFloat.random(in: 500...900)
+
             newParticles.append(CelebrationParticle(
-                x: CGFloat.random(in: 50...350),
-                y: CGFloat.random(in: -50...0),
-                scale: CGFloat.random(in: 0.3...1.0),
+                x: startX,
+                y: startY,
+                endX: endX,
+                endY: endY,
+                scale: CGFloat.random(in: 0.4...1.2),
+                endScale: CGFloat.random(in: 0.1...0.4),
                 rotation: Double.random(in: 0...360),
+                endRotation: Double.random(in: 180...720) * (Bool.random() ? 1 : -1),
                 color: colors.randomElement()!,
-                symbol: symbols.randomElement()!
+                symbol: symbols.randomElement()!,
+                delay: Double(i) * 0.02,
+                size: CGFloat.random(in: 12...24)
             ))
         }
 
         particles = newParticles
 
-        withAnimation(.easeOut(duration: 2.0)) {
-            for i in particles.indices {
-                particles[i].y += CGFloat.random(in: 400...800)
-                particles[i].x += CGFloat.random(in: -100...100)
-                particles[i].rotation += Double.random(in: 180...720)
-                particles[i].scale *= 0.3
+        // Animate each particle with staggered delay
+        for (index, _) in particles.enumerated() {
+            let delay = particles[index].delay
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                withAnimation(.easeOut(duration: 2.0)) {
+                    self.particles[index].x = self.particles[index].endX
+                    self.particles[index].y = self.particles[index].endY
+                    self.particles[index].scale = self.particles[index].endScale
+                    self.particles[index].rotation = self.particles[index].endRotation
+                    self.particles[index].delay = 0
+                }
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+        // Clean up after animation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
             particles = []
+            isAnimating = false
             isActive = false
+        }
+    }
+}
+
+// MARK: - Milestone Celebration (specialized for achievement unlocks)
+
+struct MilestoneCelebration: View {
+    let milestoneName: String
+    @Binding var isActive: Bool
+    @State private var showParticles = false
+    @State private var showText = false
+    @State private var showBadge = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        ZStack {
+            if showParticles {
+                CelebrationEffect(isActive: $showParticles)
+            }
+
+            if showText || showBadge {
+                VStack(spacing: 20) {
+                    // Badge
+                    if showBadge {
+                        ZStack {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.appWarmYellow, .appAmber],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 100, height: 100)
+                                .shadow(color: .appWarmYellow.opacity(0.6), radius: 20, y: 8)
+
+                            Circle()
+                                .strokeBorder(
+                                    LinearGradient(
+                                        colors: [Color.white.opacity(0.5), Color.clear],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2
+                                )
+                                .frame(width: 100, height: 100)
+
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 44, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                        .scaleEffect(showBadge ? 1.0 : 0.5)
+                        .opacity(showBadge ? 1.0 : 0)
+                    }
+
+                    // Text
+                    if showText {
+                        VStack(spacing: 8) {
+                            Text("Milstolpe!")
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color.appText)
+
+                            Text(milestoneName)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(Color.appTextSec)
+                        }
+                        .multilineTextAlignment(.center)
+                        .opacity(showText ? 1.0 : 0)
+                        .offset(y: showText ? 0 : 20)
+                    }
+                }
+                .padding(40)
+                .background(
+                    RoundedRectangle(cornerRadius: 24)
+                        .fill(Color.appSurface.opacity(0.95))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 24)
+                                .strokeBorder(Color.white.opacity(0.15), lineWidth: 1)
+                        )
+                        .shadow(color: Color.black.opacity(0.3), radius: 30, y: 15)
+                )
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+        .onChange(of: isActive) { _, newValue in
+            if newValue { triggerCelebration() }
+        }
+    }
+
+    private func triggerCelebration() {
+        guard !reduceMotion else {
+            isActive = false
+            return
+        }
+
+        // Sequential reveal animation
+        showBadge = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                showText = true
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            showParticles = true
+        }
+
+        // Auto-dismiss
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            withAnimation(.easeOut(duration: 0.3)) {
+                showText = false
+                showBadge = false
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                showParticles = false
+                isActive = false
+            }
         }
     }
 }
@@ -1614,6 +1788,122 @@ struct DSSectionDivider: View {
             Rectangle()
                 .fill(Color.appBorder)
                 .frame(height: 0.5)
+        }
+    }
+}
+
+// MARK: - Achievement Badge
+
+struct AchievementBadge: View {
+    let title: String
+    let icon: String
+    let gradient: LinearGradient
+    var isUnlocked: Bool = true
+    var size: BadgeSize = .medium
+
+    enum BadgeSize {
+        case small, medium, large
+
+        var iconSize: CGFloat {
+            switch self {
+            case .small: return 16
+            case .medium: return 24
+            case .large: return 32
+            }
+        }
+
+        var frameSize: CGFloat {
+            switch self {
+            case .small: return 44
+            case .medium: return 64
+            case .large: return 88
+            }
+        }
+
+        var fontSize: CGFloat {
+            switch self {
+            case .small: return 9
+            case .medium: return 11
+            case .large: return 13
+            }
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            ZStack {
+                // Outer glow ring for unlocked badges
+                if isUnlocked {
+                    Circle()
+                        .fill(gradient.opacity(0.15))
+                        .frame(width: size.frameSize * 1.25, height: size.frameSize * 1.25)
+                        .blur(radius: 4)
+                }
+
+                // Main circle
+                Circle()
+                    .fill(isUnlocked ? gradient : LinearGradient(colors: [Color.appSurface3], startPoint: .top, endPoint: .bottom))
+                    .frame(width: size.frameSize, height: size.frameSize)
+                    .overlay {
+                        // Inner highlight for unlocked badges
+                        if isUnlocked {
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.white.opacity(0.25), Color.clear],
+                                        startPoint: .top,
+                                        endPoint: .center
+                                    )
+                                )
+                        }
+                    }
+                    .overlay {
+                        // Border
+                        Circle()
+                            .strokeBorder(
+                                isUnlocked
+                                    ? LinearGradient(colors: [Color.white.opacity(0.3), Color.white.opacity(0.1)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                    : LinearGradient(colors: [Color.appBorderMed, Color.appBorder], startPoint: .top, endPoint: .bottom),
+                                lineWidth: isUnlocked ? 1.5 : 1
+                            )
+                    }
+
+                // Icon
+                Image(systemName: icon)
+                    .font(.system(size: size.iconSize, weight: .semibold))
+                    .foregroundStyle(isUnlocked ? .white : Color.appTextTert)
+            }
+            .shadow(
+                color: isUnlocked ? Color.appPink.opacity(0.3) : Color.clear,
+                radius: 8,
+                y: 4
+            )
+
+            // Title
+            Text(title)
+                .font(.system(size: size.fontSize, weight: .semibold))
+                .foregroundStyle(isUnlocked ? Color.appText : Color.appTextTert)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+                .frame(width: size.frameSize + 20)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(isUnlocked ? "upplåst" : "låst")")
+    }
+}
+
+// MARK: - Locked Badge Overlay
+
+struct LockedBadgeOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.5)
+                .clipShape(Circle())
+
+            Image(systemName: "lock.fill")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(Color.appTextSec)
         }
     }
 }
